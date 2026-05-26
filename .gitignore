@@ -1,0 +1,22 @@
+# WeChat DevTools — local / machine-specific
+project.private.config.json
+
+# Local AppID (copy from project.config.example.json)
+project.config.json
+
+# One-off local scripts
+temp_fix.js
+apply_fix.js
+fix_talent_card.bat
+
+# OS & editors
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Logs & deps
+*.log
+node_modules/

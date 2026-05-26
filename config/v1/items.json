@@ -1,0 +1,67 @@
+[
+  {
+    "id": "item_coffee_coupon",
+    "name": "咖啡券",
+    "description": "使用后立刻压力 -2。",
+    "type": "consumable",
+    "effects": { "pressure": -2 },
+    "gainNarrative": "店员把印着校徽的券塞进你手心：「第二杯半价别浪费。」你闻着磨豆机的香气，觉得这周还能再撑一撑。"
+  },
+  {
+    "id": "item_study_notes",
+    "name": "学长笔记",
+    "description": "使用后立刻 GPA +0.06。",
+    "type": "consumable",
+    "effects": { "gpa": 0.06 },
+    "gainNarrative": "泛黄的纸页上画满箭头与口诀，像有人替你踩过一遍坑。你把它夹进课本里，突然有点想谢谢那位匿名学长。"
+  },
+  {
+    "id": "item_gym_card",
+    "name": "健身体验卡",
+    "description": "使用后未来2周健康 +2（持续效果）。",
+    "type": "status",
+    "statusEffect": { "id": "status_gym_boost", "durationWeeks": 2, "effects": { "health": 2 } },
+    "gainNarrative": "前台递来一张体验卡：「先试两周，别办卡压力。」你捏着卡角，仿佛已经闻到橡胶跑道和消毒水的味道。"
+  },
+  {
+    "id": "item_savings_book",
+    "name": "记账手册",
+    "description": "使用后金钱 +90、压力 -1。",
+    "type": "consumable",
+    "effects": { "money": 90, "pressure": -1 },
+    "gainNarrative": "封面上写着「先记账，再剁手」。你翻开第一页，发现还夹着一张超市满减券——生活偶尔也讲点冷幽默。"
+  },
+  {
+    "id": "item_meal_card",
+    "name": "食堂储值券",
+    "description": "使用后健康 +3、金钱 +40。",
+    "type": "consumable",
+    "effects": { "health": 3, "money": 40 },
+    "gainNarrative": "阿姨多刷了一次「学生优惠」：「多吃点，别饿着。」你把券收进卡套，胃和钱包同时感到被善待。"
+  },
+  {
+    "id": "item_mentor_letter",
+    "name": "导师推荐信模板",
+    "description": "使用后能力 +3、社交 +1。",
+    "type": "consumable",
+    "effects": { "skill": 3, "social": 1 },
+    "gainNarrative": "打印店角落里躺着一叠「万能褒奖句式」。你心想：模板归模板，真正落款还得靠自己把履历填满。"
+  },
+  {
+    "id": "item_sleep_patch",
+    "name": "睡眠修复贴",
+    "description": "使用后压力 -4，未来2周健康 +1。",
+    "type": "status",
+    "effects": { "pressure": -4 },
+    "statusEffect": { "id": "status_sleep_patch", "durationWeeks": 2, "effects": { "health": 1 } },
+    "gainNarrative": "包装上写着「草本舒缓」。你半信半疑地收下——至少今晚可以名正言顺地早点爬上床。"
+  },
+  {
+    "id": "item_exam_luck",
+    "name": "考试好运签",
+    "description": "使用后 GPA +0.06，压力 +1。",
+    "type": "consumable",
+    "effects": { "gpa": 0.06, "pressure": 1 },
+    "gainNarrative": "红色小签上印着「逢考必过」。你知道玄学救不了裸考，但还是把它夹进笔袋——图个心安也算生产力。"
+  }
+]

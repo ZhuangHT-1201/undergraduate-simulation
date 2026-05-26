@@ -1,0 +1,981 @@
+[
+  {
+    "id": "rnd_flu",
+    "title": "突发感冒",
+    "description": "你这周着凉了，效率掉了一截。",
+    "probability": 0.12,
+    "conditions": {
+      "all": [
+        {
+          "stat": "health",
+          "lte": 55
+        }
+      ]
+    },
+    "effects": {
+      "health": -5,
+      "pressure": 2
+    },
+    "responses": [
+      {
+        "text": "硬扛继续卷",
+        "narrative": "你灌了杯热水就继续熬，结果整周都在和疲惫拉扯。",
+        "effects": {
+          "health": -6,
+          "pressure": 5,
+          "gpa": -0.02
+        }
+      },
+      {
+        "text": "请假休息两天",
+        "narrative": "你决定先休息，虽然进度慢了点，但身体总算稳住。",
+        "effects": {
+          "health": 4,
+          "pressure": -3,
+          "skill": -1
+        }
+      },
+      {
+        "text": "去校医院看诊",
+        "narrative": "挂号花了半天，但药吃上后状态明显好转。",
+        "effects": {
+          "money": -120,
+          "health": 6,
+          "pressure": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_scholarship_chance",
+    "title": "奖学金名额临时扩容",
+    "description": "你刚好赶上增补名额，拿到一笔额外补助。",
+    "probability": 0.08,
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "gte": 3.3
+        }
+      ]
+    },
+    "effects": {
+      "money": 500,
+      "pressure": -2
+    }
+  },
+  {
+    "id": "rnd_roommate_conflict",
+    "title": "寝室矛盾升级",
+    "description": "作息冲突加剧，这周你心态有点爆炸。",
+    "probability": 0.1,
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "lte": 45
+        }
+      ]
+    },
+    "effects": {
+      "pressure": 5,
+      "health": -2
+    },
+    "responses": [
+      {
+        "text": "当场吵翻",
+        "narrative": "你没忍住直接开吵，场面很快失控，气氛跌到冰点。",
+        "effects": {
+          "social": -8,
+          "pressure": 8,
+          "health": -3
+        }
+      },
+      {
+        "text": "冷处理不说话",
+        "narrative": "你选择沉默，冲突暂时停下，但隔阂还在。",
+        "effects": {
+          "social": -4,
+          "pressure": 3
+        }
+      },
+      {
+        "text": "主动沟通+约法三章",
+        "narrative": "你把话摊开讲清楚，虽然尴尬，但关系慢慢回暖。",
+        "effects": {
+          "social": 4,
+          "pressure": -2,
+          "skill": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_contest_invite",
+    "title": "临时比赛邀约",
+    "description": "同学临时拉你补位参赛，忙但有机会。",
+    "probability": 0.08,
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 60
+        }
+      ]
+    },
+    "effects": {
+      "skill": 2,
+      "pressure": 2,
+      "social": 1
+    },
+    "responses": [
+      {
+        "text": "接下并通宵赶工",
+        "narrative": "你咬牙接了，短期成长很快，但体力条快见底。",
+        "effects": {
+          "skill": 5,
+          "pressure": 7,
+          "health": -4
+        }
+      },
+      {
+        "text": "礼貌拒绝，保住节奏",
+        "narrative": "你没有逞强，把精力留给主线安排。",
+        "effects": {
+          "pressure": -2,
+          "social": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_meme_midnight",
+    "title": "凌晨表情包轰炸",
+    "description": "群里全在刷“明天开始一定早睡”，你笑完发现两点半了。",
+    "probability": 0.1,
+    "conditions": {
+      "all": [
+        {
+          "stat": "pressure",
+          "gte": 40
+        }
+      ]
+    },
+    "effects": {
+      "health": -1,
+      "pressure": 1,
+      "social": 1
+    },
+    "responses": [
+      {
+        "text": "继续刷到天亮",
+        "narrative": "你完全停不下来，第二天像灵魂出窍。",
+        "effects": {
+          "health": -7,
+          "pressure": 6,
+          "gpa": -0.03
+        }
+      },
+      {
+        "text": "设闹钟立刻睡",
+        "narrative": "你强行收手机，虽然心痒但第二天状态在线。",
+        "effects": {
+          "health": 3,
+          "pressure": -2
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_group_buy",
+    "title": "拼单神券掉落",
+    "description": "室友突然发来羊毛链接，你手速拉满成功薅到券。",
+    "probability": 0.08,
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "lte": 1800
+        }
+      ]
+    },
+    "effects": {
+      "money": 220,
+      "pressure": -2
+    }
+  },
+  {
+    "id": "rnd_hot_search",
+    "title": "热搜事件分心",
+    "description": "你本想看五分钟，结果一小时过去了，只能自嘲一句又上当了。",
+    "probability": 0.09,
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 40
+        }
+      ]
+    },
+    "effects": {
+      "gpa": -0.01,
+      "pressure": 1,
+      "social": 1
+    },
+    "responses": [
+      {
+        "text": "继续吃瓜围观",
+        "narrative": "你越看越上头，计划表彻底报废。",
+        "effects": {
+          "gpa": -0.06,
+          "pressure": 4,
+          "skill": -2
+        }
+      },
+      {
+        "text": "看五分钟就关",
+        "narrative": "你把注意力拉了回来，损失不大。",
+        "effects": {
+          "pressure": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_finance_crash",
+    "title": "冲动消费翻车",
+    "description": "你一时上头下单太多，账单像山一样压下来。",
+    "probability": 0.07,
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "lte": 1200
+        }
+      ]
+    },
+    "effects": {
+      "money": -180,
+      "pressure": 4
+    },
+    "responses": [
+      {
+        "text": "继续分期硬撑",
+        "narrative": "你把未来几个月也透支了，短期轻松，长期更痛。",
+        "effects": {
+          "money": -320,
+          "pressure": 8,
+          "health": -2
+        }
+      },
+      {
+        "text": "立刻止损卖闲置",
+        "narrative": "你咬牙清理了不少东西，现金流暂时回暖。",
+        "effects": {
+          "money": 260,
+          "pressure": -1,
+          "social": -1
+        }
+      },
+      {
+        "text": "直接退学打工还债",
+        "narrative": "你决定先离开校园，用最现实的方式解决问题。",
+        "effects": {
+          "pressure": 12,
+          "health": -5
+        },
+        "gameOverEndingId": "end_dropout_gpa"
+      }
+    ]
+  },
+  {
+    "id": "rnd_blackout_week",
+    "title": "全校停电检修",
+    "description": "整栋楼临时停电，学习计划与生活节奏都被打乱。",
+    "probability": 0.05,
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 45
+        }
+      ]
+    },
+    "effects": {
+      "pressure": 3,
+      "health": -1
+    },
+    "responses": [
+      {
+        "text": "抱着电脑去通宵自习区抢座",
+        "narrative": "你硬着头皮转移阵地，勉强保住学习进度。",
+        "effects": {
+          "gpa": 0.03,
+          "pressure": 5,
+          "health": -3
+        }
+      },
+      {
+        "text": "直接放弃计划先休整",
+        "narrative": "你承认这周节奏崩了，先把状态稳住。",
+        "effects": {
+          "pressure": -3,
+          "skill": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_cloud_data_loss",
+    "title": "云盘同步灾难",
+    "description": "你的阶段资料被错误覆盖，很多文件突然消失。",
+    "probability": 0.04,
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "gte": 2.8
+        }
+      ]
+    },
+    "effects": {
+      "pressure": 5,
+      "skill": -2
+    },
+    "responses": [
+      {
+        "text": "通宵补档重做",
+        "narrative": "你把关键部分连夜补回来了，但代价不小。",
+        "effects": {
+          "gpa": -0.02,
+          "pressure": 7,
+          "health": -4,
+          "skill": 2
+        }
+      },
+      {
+        "text": "找同学借资料协作恢复",
+        "narrative": "你低头求助，效率反而比想象中高。",
+        "effects": {
+          "social": 4,
+          "gpa": 0.02,
+          "pressure": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_family_emergency",
+    "title": "家中突发状况",
+    "description": "你临时接到家里电话，需要马上处理现实问题。",
+    "probability": 0.03,
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "lte": 900
+        }
+      ]
+    },
+    "effects": {
+      "pressure": 6,
+      "money": -160
+    },
+    "responses": [
+      {
+        "text": "请假回家处理",
+        "narrative": "你把校园节奏按下暂停键，先把家里的事情解决。",
+        "effects": {
+          "health": -2,
+          "social": -2,
+          "pressure": -1
+        }
+      },
+      {
+        "text": "继续留校硬扛",
+        "narrative": "你选择留在学校，但心理负担明显加重。",
+        "effects": {
+          "pressure": 8,
+          "health": -4,
+          "gpa": -0.04
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_makeup_exam_window",
+    "title": "补考窗口意外开放",
+    "description": "教务系统临时开放一次补考与成绩替换机会。",
+    "probability": 0.07,
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "lte": 2.5
+        }
+      ]
+    },
+    "effects": {
+      "pressure": 2
+    },
+    "responses": [
+      {
+        "text": "全力冲刺补考",
+        "narrative": "你短期高压拉满，但成绩终于回暖。",
+        "effects": {
+          "gpa": 0.16,
+          "skill": 3,
+          "pressure": 6,
+          "health": -3
+        }
+      },
+      {
+        "text": "保守准备，先稳住",
+        "narrative": "你没有赌命，稳扎稳打拿回了一些分数。",
+        "effects": {
+          "gpa": 0.08,
+          "pressure": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_alumni_referral",
+    "title": "校友内推名额",
+    "description": "你在校友群里意外拿到一张内推券。",
+    "probability": 0.06,
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 48
+        },
+        {
+          "stat": "money",
+          "lte": 700
+        }
+      ]
+    },
+    "effects": {
+      "social": 2
+    },
+    "responses": [
+      {
+        "text": "马上整理简历冲一把",
+        "narrative": "你抓住窗口期，简历和面试都有明显提升。",
+        "effects": {
+          "skill": 4,
+          "money": 180,
+          "pressure": 2
+        }
+      },
+      {
+        "text": "先观望，等更稳妥机会",
+        "narrative": "你没有冒进，错过了爆发但保住了节奏。",
+        "effects": {
+          "pressure": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_cram_team",
+    "title": "临时抱团逆袭",
+    "description": "你和几位同学组了应急学习小组，效率意外地高。",
+    "probability": 0.08,
+    "conditions": {
+      "all": [
+        {
+          "stat": "pressure",
+          "gte": 72
+        }
+      ]
+    },
+    "effects": {
+      "social": 3,
+      "pressure": -1
+    },
+    "responses": [
+      {
+        "text": "连续三晚冲刺",
+        "narrative": "你们互相盯进度，硬生生把局势拉回来了。",
+        "effects": {
+          "gpa": 0.12,
+          "skill": 4,
+          "pressure": 5,
+          "health": -2
+        }
+      },
+      {
+        "text": "只跟一轮，防止过载",
+        "narrative": "你保持参与但不过度透支，收益中规中矩。",
+        "effects": {
+          "gpa": 0.05,
+          "pressure": -1,
+          "social": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_scholarship_restore",
+    "title": "奖助补发到账",
+    "description": "之前漏发的补助突然补齐，给了你一次喘息机会。",
+    "probability": 0.06,
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "lte": 300
+        }
+      ]
+    },
+    "effects": {
+      "money": 240,
+      "pressure": -2
+    },
+    "responses": [
+      {
+        "text": "先还账再做预算",
+        "narrative": "你把最紧急的缺口补上，财务压力明显降低。",
+        "effects": {
+          "money": 220,
+          "pressure": -3
+        }
+      },
+      {
+        "text": "先买设备提升效率",
+        "narrative": "你把钱投入学习工具，短期更卷但也更有产出。",
+        "effects": {
+          "money": -120,
+          "skill": 4,
+          "gpa": 0.04,
+          "pressure": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_lucky_mentor",
+    "title": "导师临时夸奖",
+    "description": "一句“这次做得不错”让你续命一周。",
+    "probability": 0.07,
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 55
+        }
+      ]
+    },
+    "effects": {
+      "pressure": -4,
+      "skill": 2,
+      "social": 2
+    }
+  },
+  {
+    "id": "rnd_cafeteria_renovation",
+    "title": "食堂窗口大换血",
+    "description": "承包商突然更换菜单，排队的人比往常多一倍。",
+    "probability": 0.09,
+    "conditions": {
+      "all": []
+    },
+    "effects": {
+      "health": 2,
+      "money": -40,
+      "pressure": 1
+    },
+    "responses": [
+      {
+        "text": "尝鲜排队",
+        "narrative": "你赌到新窗口确实不错，心情和胃口都回暖了一点。",
+        "effects": {
+          "health": 3,
+          "social": 2,
+          "pressure": -1
+        }
+      },
+      {
+        "text": "随便对付一口",
+        "narrative": "你没耐心等，随便吃了点，只能说没亏也没赚。",
+        "effects": {
+          "money": 20
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_rain_day_off",
+    "title": "暴雨停课半天",
+    "description": "教务处发通知：部分课程改为线上或顺延。",
+    "probability": 0.08,
+    "conditions": {
+      "all": [
+        {
+          "stat": "pressure",
+          "gte": 30
+        }
+      ]
+    },
+    "effects": {
+      "pressure": -3,
+      "health": 2
+    },
+    "responses": [
+      {
+        "text": "补觉回血",
+        "narrative": "你把空出来的半天全用来睡觉，整个人松了下来。",
+        "effects": {
+          "health": 5,
+          "pressure": -4,
+          "gpa": -0.02
+        }
+      },
+      {
+        "text": "趁机自学赶进度",
+        "narrative": "你没浪费窗口，把积压任务清掉了一截。",
+        "effects": {
+          "skill": 3,
+          "gpa": 0.04,
+          "pressure": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_lost_campus_card",
+    "title": "校园卡离奇失踪",
+    "description": "刷卡进楼时才发现卡不在，补办流程又臭又长。",
+    "probability": 0.07,
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "gte": 80
+        }
+      ]
+    },
+    "effects": {
+      "money": -60,
+      "pressure": 3
+    },
+    "responses": [
+      {
+        "text": "立刻挂失补办",
+        "narrative": "你认栽交了工本费，总算把生活秩序拉回正轨。",
+        "effects": {
+          "money": -40,
+          "pressure": -1
+        }
+      },
+      {
+        "text": "先借室友卡凑合",
+        "narrative": "你拖了几天，虽然省钱但进出楼都提心吊胆。",
+        "effects": {
+          "pressure": 5,
+          "social": -2
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_pop_up_market",
+    "title": "操场快闪市集",
+    "description": "社团在楼下摆摊，空气里全是奶茶和二手书的味儿。",
+    "probability": 0.08,
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "gte": 25
+        }
+      ]
+    },
+    "effects": {
+      "social": 3,
+      "money": -50
+    },
+    "responses": [
+      {
+        "text": "逛一圈顺便社交",
+        "narrative": "你偶遇几位熟人，聊完心情轻快不少。",
+        "effects": {
+          "social": 5,
+          "pressure": -2
+        }
+      },
+      {
+        "text": "摆摊回血卖闲置",
+        "narrative": "你把压箱底的东西清掉，钱包反而鼓了一点。",
+        "effects": {
+          "money": 180,
+          "skill": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_dorm_wifi_crash",
+    "title": "宿舍宽带集体罢工",
+    "description": "路由器红灯闪了一晚上，群聊里全是哀嚎。",
+    "probability": 0.09,
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 35
+        }
+      ]
+    },
+    "effects": {
+      "pressure": 4,
+      "skill": -1
+    },
+    "responses": [
+      {
+        "text": "去图书馆蹭网",
+        "narrative": "你背着电脑转移阵地，总算把作业交上去了。",
+        "effects": {
+          "gpa": 0.03,
+          "pressure": -1,
+          "health": -2
+        }
+      },
+      {
+        "text": "用手机热点硬撑",
+        "narrative": "流量烧得心疼，但好歹没完全停摆。",
+        "effects": {
+          "money": -90,
+          "skill": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_surprise_quiz",
+    "title": "老师突然随堂测验",
+    "description": "你刚坐下就被点名，讲台上多了一张小测卷。",
+    "probability": 0.08,
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "gte": 2.0
+        }
+      ]
+    },
+    "effects": {
+      "pressure": 4
+    },
+    "responses": [
+      {
+        "text": "硬着头皮写完",
+        "narrative": "你靠最近积累勉强过关，老师还夸了一句有进步。",
+        "effects": {
+          "gpa": 0.05,
+          "skill": 2,
+          "pressure": -2
+        }
+      },
+      {
+        "text": "坦白没复习求宽限",
+        "narrative": "老师没为难你，但扣分警告写进了心里。",
+        "effects": {
+          "gpa": -0.04,
+          "pressure": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_gym_open_day",
+    "title": "体育馆免费开放日",
+    "description": "学校搞健康周，器械区比平时空不少。",
+    "probability": 0.07,
+    "conditions": {
+      "all": [
+        {
+          "stat": "health",
+          "lte": 75
+        }
+      ]
+    },
+    "effects": {
+      "health": 4,
+      "pressure": -2
+    },
+    "responses": [
+      {
+        "text": "认真练一轮",
+        "narrative": "你出了一身汗，晚上睡得格外踏实。",
+        "effects": {
+          "health": 6,
+          "skill": 2,
+          "pressure": -3
+        }
+      },
+      {
+        "text": "拍照打卡就走",
+        "narrative": "你主要来凑热闹，运动量有限但心情不错。",
+        "effects": {
+          "social": 3,
+          "health": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_old_friend_visit",
+    "title": "老同学突然来访",
+    "description": "高中同桌来你所在城市出差，约你晚上吃饭。",
+    "probability": 0.07,
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "gte": 30
+        }
+      ]
+    },
+    "effects": {
+      "social": 4,
+      "money": -80,
+      "pressure": -2
+    },
+    "responses": [
+      {
+        "text": "请客叙旧到很晚",
+        "narrative": "你们聊到闭店，像把旧时光又翻了一遍。",
+        "effects": {
+          "social": 6,
+          "money": -120,
+          "health": -2,
+          "pressure": -4
+        }
+      },
+      {
+        "text": "食堂便饭速聊",
+        "narrative": "时间不长，但足够把近况对齐。",
+        "effects": {
+          "social": 3,
+          "money": -30
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_phishing_link",
+    "title": "钓鱼链接惊魂",
+    "description": "你差点在一个仿冒教务页面里填了学号和密码。",
+    "probability": 0.06,
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "lte": 72
+        }
+      ]
+    },
+    "effects": {
+      "pressure": 5,
+      "money": -100
+    },
+    "responses": [
+      {
+        "text": "立刻改密并报警务",
+        "narrative": "你反应够快，损失被压在可控范围。",
+        "effects": {
+          "money": -50,
+          "pressure": -2,
+          "skill": 2
+        }
+      },
+      {
+        "text": "侥幸觉得没事",
+        "narrative": "你拖延处理，几天后账户出现异常消费。",
+        "effects": {
+          "money": -240,
+          "pressure": 8
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_library_seat_war",
+    "title": "图书馆抢座大战",
+    "description": "期末周座位比演唱会门票还难抢，你六点就到门口排队。",
+    "probability": 0.08,
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "gte": 2.4
+        }
+      ]
+    },
+    "effects": {
+      "pressure": 3,
+      "skill": 1
+    },
+    "responses": [
+      {
+        "text": "死守一整天",
+        "narrative": "你在固定座位扎营，输出效率拉满。",
+        "effects": {
+          "gpa": 0.06,
+          "skill": 3,
+          "health": -3,
+          "pressure": 4
+        }
+      },
+      {
+        "text": "换去空教室",
+        "narrative": "你放弃内卷座位，换地方反而更专注。",
+        "effects": {
+          "gpa": 0.03,
+          "pressure": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "rnd_part_time_call",
+    "title": "临时兼职急单",
+    "description": "学长介绍了个周末短工，时薪不错但要连轴转。",
+    "probability": 0.07,
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "lte": 1600
+        }
+      ]
+    },
+    "effects": {
+      "money": 280,
+      "pressure": 4,
+      "health": -2
+    },
+    "responses": [
+      {
+        "text": "接下连干两天",
+        "narrative": "你累到怀疑人生，但账户终于不那么紧张。",
+        "effects": {
+          "money": 420,
+          "health": -5,
+          "gpa": -0.03
+        }
+      },
+      {
+        "text": "只做一天保底",
+        "narrative": "你没把自己榨干，收入够撑一阵子。",
+        "effects": {
+          "money": 180,
+          "pressure": -1
+        }
+      }
+    ]
+  }
+]

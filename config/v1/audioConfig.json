@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "defaultVolume": 0.6,
+  "scenes": {
+    "menu": { "trackId": "bgm_menu", "remoteUrl": "" },
+    "create_role": { "trackId": "bgm_create_role", "remoteUrl": "" },
+    "school": { "trackId": "bgm_select", "remoteUrl": "" },
+    "major": { "trackId": "bgm_select", "remoteUrl": "" },
+    "play": { "trackId": "bgm_play", "remoteUrl": "" },
+    "ending": { "trackId": "bgm_ending", "remoteUrl": "" },
+    "gallery": { "trackId": "bgm_meta", "remoteUrl": "" },
+    "achievements": { "trackId": "bgm_meta", "remoteUrl": "" }
+  }
+}

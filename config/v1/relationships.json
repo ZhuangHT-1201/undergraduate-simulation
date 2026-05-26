@@ -1,0 +1,6 @@
+[
+  { "id": "roommate", "name": "室友", "base": 50 },
+  { "id": "mentor", "name": "导师", "base": 40 },
+  { "id": "partner", "name": "恋爱对象", "base": 30 },
+  { "id": "senior", "name": "学长学姐", "base": 45 }
+]

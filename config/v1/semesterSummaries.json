@@ -1,0 +1,1252 @@
+[
+  {
+    "id": "sm_auto_1",
+    "tags": [
+      "卷王"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "把这学期当成副本通关 · 1",
+    "body": "{name}这学期几乎都泡在{topAction}里，一共 {topActionCount} 次，像把打卡当成了日常仪式。"
+  },
+  {
+    "id": "sm_auto_2",
+    "tags": [
+      "佛系"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "在图书馆办了长期会员卡 · 2",
+    "body": "{name}在「卷」和「躺」之间来回切换，{topAction} 做了 {topActionCount} 次，是最直观的时间账本。"
+  },
+  {
+    "id": "sm_auto_3",
+    "tags": [
+      "恋爱"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "DDL是第一生产力现场 · 3",
+    "body": "期末周那句老话：DDL 是第一生产力。{name}靠 {topAction} 撑了 {topActionCount} 次，把这学期的电量交足了。"
+  },
+  {
+    "id": "sm_auto_4",
+    "tags": [
+      "创业"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "早八刺客幸存者 · 4",
+    "body": "{name}嘴上佛系、身体却很诚实，{topAction} 做了 {topActionCount} 次，悄悄给「人设」补了补丁。"
+  },
+  {
+    "id": "sm_auto_5",
+    "tags": [
+      "社牛"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "小镇做题家上分路 · 5",
+    "body": "{name}恋爱线和任务线偶尔撞车，{topAction} 做了 {topActionCount} 次，主线进度仍在往前推。"
+  },
+  {
+    "id": "sm_auto_6",
+    "tags": [
+      "学业上行"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "佛系但有期末 · 6",
+    "body": "{name}人脉圈像路由器，{topAction} 做了 {topActionCount} 次，是最稳的连接信道。"
+  },
+  {
+    "id": "sm_auto_7",
+    "tags": [
+      "熬夜"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "恋爱与任务撞车了 · 7",
+    "body": "{name}把复习做成仪式，{topAction} 做了 {topActionCount} 次，像一直循环的背景音乐。"
+  },
+  {
+    "id": "sm_auto_8",
+    "tags": [
+      "干饭"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "搞钱搞到钱包见底 · 8",
+    "body": "{name}在教室和食堂之间来回折返，{topAction} 做了 {topActionCount} 次，写满通勤日常。"
+  },
+  {
+    "id": "sm_auto_9",
+    "tags": [
+      "考公"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "人脉像路由器 · 9",
+    "body": "{name}花钱讲究刀刃，一半奶茶一半刚需，{topAction} 做了 {topActionCount} 次，算刀刃上的选择。"
+  },
+  {
+    "id": "sm_auto_10",
+    "tags": [
+      "科研"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "寝室新闻联播 · 10",
+    "body": "{name}本学期人设悄悄更新，{topAction} 做了 {topActionCount} 次，像补丁说明一样具体。"
+  },
+  {
+    "id": "sm_auto_11",
+    "tags": [
+      "实习"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "操场夜跑夜跑常客 · 11",
+    "body": "{name}健康状态像过山车，{topAction} 做了 {topActionCount} 次，像系上的安全带。"
+  },
+  {
+    "id": "sm_auto_12",
+    "tags": [
+      "拖延"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "食堂阿姨认得我 · 12",
+    "body": "{name}像在做田野调查一样上学，{topAction} 做了 {topActionCount} 次，都是采样次数。"
+  },
+  {
+    "id": "sm_auto_13",
+    "tags": [
+      "卷王"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "考证路越走越远 · 13",
+    "body": "{name}拖延症也在进化，{topAction} 做了 {topActionCount} 次，至少还能准时交差。"
+  },
+  {
+    "id": "sm_auto_14",
+    "tags": [
+      "佛系"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "科研民工试用期 · 14",
+    "body": "{name}把焦虑调成了静音，{topAction} 做了 {topActionCount} 次，提醒仍会偶尔弹出。"
+  },
+  {
+    "id": "sm_auto_15",
+    "tags": [
+      "恋爱"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "实习投递像许愿 · 15",
+    "body": "{name}实习邮箱像许愿池，{topAction} 做了 {topActionCount} 次，像保底掉落一样踏实。"
+  },
+  {
+    "id": "sm_auto_16",
+    "tags": [
+      "创业"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "考公申论气氛组 · 16",
+    "body": "{name}恋爱线还在慢加载，{topAction} 做了 {topActionCount} 次，先把日常刷稳。"
+  },
+  {
+    "id": "sm_auto_17",
+    "tags": [
+      "社牛"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "拖延症自救中 · 17",
+    "body": "{name}熬夜像追剧式补课，{topAction} 做了 {topActionCount} 次，在笔记里写下脚注。"
+  },
+  {
+    "id": "sm_auto_18",
+    "tags": [
+      "学业上行"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "社交点亮地图 · 18",
+    "body": "{name}寝室像热播剧现场，{topAction} 做了 {topActionCount} 次，都是花絮素材。"
+  },
+  {
+    "id": "sm_auto_19",
+    "tags": [
+      "熬夜"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "躺平大师微调 · 19",
+    "body": "{name}成了体育场常客，{topAction} 做了 {topActionCount} 次，状态慢慢巩固。"
+  },
+  {
+    "id": "sm_auto_20",
+    "tags": [
+      "干饭"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "高压锅焖熟上学期 · 20",
+    "body": "{name}在考证路上打卡，{topAction} 做了 {topActionCount} 次，像路上的补给站。"
+  },
+  {
+    "id": "sm_auto_21",
+    "tags": [
+      "考公"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "奖学金擦边过 · 21",
+    "body": "{name}科研进度曲线很陡，{topAction} 做了 {topActionCount} 次，标出了坡度。"
+  },
+  {
+    "id": "sm_auto_22",
+    "tags": [
+      "科研"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "挂科边缘大鹏展翅 · 22",
+    "body": "{name}副业像开盲盒，{topAction} 做了 {topActionCount} 次，结果还算过得去。"
+  },
+  {
+    "id": "sm_auto_23",
+    "tags": [
+      "实习"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "跨专业补丁 · 23",
+    "body": "{name}金钱观很朴素：先活下去再谈优雅；{topAction} 做了 {topActionCount} 次，负责把日子撑住。"
+  },
+  {
+    "id": "sm_auto_24",
+    "tags": [
+      "拖延"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "副业脑觉醒 · 24",
+    "body": "{name}社交能量起起伏伏，{topAction} 做了 {topActionCount} 次，输出还算稳定。"
+  },
+  {
+    "id": "sm_auto_25",
+    "tags": [
+      "卷王"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "睡眠负债续费 · 25",
+    "body": "{name}复盘时关键词很稳：细节、{topAction}，一共 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_26",
+    "tags": [
+      "佛系"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "运动人设波动 · 26",
+    "body": "{name}早八像刺客一样命中膝盖，{topAction} 做了 {topActionCount} 次，算给伤口包扎。"
+  },
+  {
+    "id": "sm_auto_27",
+    "tags": [
+      "恋爱"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "焦虑贩卖机停更 · 27",
+    "body": "{name}做题家血脉还在，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_28",
+    "tags": [
+      "创业"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "绩点过山车 · 28",
+    "body": "{name}心态像钟摆来回晃，{topAction} 做了 {topActionCount} 次，记下每一次摆动。"
+  },
+  {
+    "id": "sm_auto_29",
+    "tags": [
+      "社牛"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "论文裁缝上线 · 29",
+    "body": "{name}前排座位不多，故事却不少：{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_30",
+    "tags": [
+      "学业上行"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "期末像春运 · 30",
+    "body": "{name}把玩笑揉进生活，{topAction} 做了 {topActionCount} 次，都像伏笔。"
+  },
+  {
+    "id": "sm_auto_31",
+    "tags": [
+      "熬夜"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "选课像炒股 · 31",
+    "body": "{name}这学期有赛季结算的感觉，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_32",
+    "tags": [
+      "干饭"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "社团打卡王 · 32",
+    "body": "{name}睡眠像随机播放，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_33",
+    "tags": [
+      "考公"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "实验室点灯人 · 33",
+    "body": "{name}像论文裁缝一样缝缝补补，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_34",
+    "tags": [
+      "科研"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "图书馆VIP · 34",
+    "body": "{name}在宿舍搞起了外交，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_35",
+    "tags": [
+      "实习"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "小组作业幸存 · 35",
+    "body": "{name}把健康放在首位，偶尔也会翻车；{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_36",
+    "tags": [
+      "拖延"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "熬夜冠军候补 · 36",
+    "body": "{name}搞钱念头间歇发作，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_37",
+    "tags": [
+      "卷王"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "咖啡一级选手 · 37",
+    "body": "{name}恋爱支线在推进，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_38",
+    "tags": [
+      "佛系"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "外卖十级学者 · 38",
+    "body": "{name}主线仍是好好活着，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_39",
+    "tags": [
+      "恋爱"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "快递站脸熟 · 39",
+    "body": "{name}这学期像一部长篇小说，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_40",
+    "tags": [
+      "创业"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "打印店挚友 · 40",
+    "body": "{name}听过不少闭馆音乐，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_41",
+    "tags": [
+      "社牛"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "宿舍关灯办 · 41",
+    "body": "{name}周末像附赠的小憩，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_42",
+    "tags": [
+      "学业上行"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "阳台花没活 · 42",
+    "body": "{name}慢慢把自己养成想要的样子，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_43",
+    "tags": [
+      "熬夜"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "峡谷时差党 · 43",
+    "body": "{name}这学期几乎都泡在{topAction}里，一共 {topActionCount} 次，像把打卡当成了日常仪式。"
+  },
+  {
+    "id": "sm_auto_44",
+    "tags": [
+      "干饭"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "谷子收割机 · 44",
+    "body": "{name}在「卷」和「躺」之间来回切换，{topAction} 做了 {topActionCount} 次，是最直观的时间账本。"
+  },
+  {
+    "id": "sm_auto_45",
+    "tags": [
+      "考公"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "志愿时长KPI · 45",
+    "body": "期末周那句老话：DDL 是第一生产力。{name}靠 {topAction} 撑了 {topActionCount} 次，把这学期的电量交足了。"
+  },
+  {
+    "id": "sm_auto_46",
+    "tags": [
+      "科研"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "音乐节特种兵 · 46",
+    "body": "{name}嘴上佛系、身体却很诚实，{topAction} 做了 {topActionCount} 次，悄悄给「人设」补了补丁。"
+  },
+  {
+    "id": "sm_auto_47",
+    "tags": [
+      "实习"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "支教滤镜 · 47",
+    "body": "{name}恋爱线和任务线偶尔撞车，{topAction} 做了 {topActionCount} 次，主线进度仍在往前推。"
+  },
+  {
+    "id": "sm_auto_48",
+    "tags": [
+      "拖延"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "情绪稳定装 · 48",
+    "body": "{name}人脉圈像路由器，{topAction} 做了 {topActionCount} 次，是最稳的连接信道。"
+  },
+  {
+    "id": "sm_auto_49",
+    "tags": [
+      "卷王"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "金钱观朴素 · 49",
+    "body": "{name}把复习做成仪式，{topAction} 做了 {topActionCount} 次，像一直循环的背景音乐。"
+  },
+  {
+    "id": "sm_auto_50",
+    "tags": [
+      "佛系"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "运动塌了又立 · 50",
+    "body": "{name}在教室和食堂之间来回折返，{topAction} 做了 {topActionCount} 次，写满通勤日常。"
+  },
+  {
+    "id": "sm_auto_51",
+    "tags": [
+      "恋爱"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "硬扛一学期 · 51",
+    "body": "{name}花钱讲究刀刃，一半奶茶一半刚需，{topAction} 做了 {topActionCount} 次，算刀刃上的选择。"
+  },
+  {
+    "id": "sm_auto_52",
+    "tags": [
+      "创业"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "嘴硬身软 · 52",
+    "body": "{name}本学期人设悄悄更新，{topAction} 做了 {topActionCount} 次，像补丁说明一样具体。"
+  },
+  {
+    "id": "sm_auto_53",
+    "tags": [
+      "社牛"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "故事翻篇 · 53",
+    "body": "{name}健康状态像过山车，{topAction} 做了 {topActionCount} 次，像系上的安全带。"
+  },
+  {
+    "id": "sm_auto_54",
+    "tags": [
+      "学业上行"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "普通但不平庸 · 54",
+    "body": "{name}像在做田野调查一样上学，{topAction} 做了 {topActionCount} 次，都是采样次数。"
+  },
+  {
+    "id": "sm_auto_55",
+    "tags": [
+      "熬夜"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "累并记录 · 55",
+    "body": "{name}拖延症也在进化，{topAction} 做了 {topActionCount} 次，至少还能准时交差。"
+  },
+  {
+    "id": "sm_auto_56",
+    "tags": [
+      "干饭"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "接话王预备役 · 56",
+    "body": "{name}把焦虑调成了静音，{topAction} 做了 {topActionCount} 次，提醒仍会偶尔弹出。"
+  },
+  {
+    "id": "sm_auto_57",
+    "tags": [
+      "考公"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "反卷失败样例 · 57",
+    "body": "{name}实习邮箱像许愿池，{topAction} 做了 {topActionCount} 次，像保底掉落一样踏实。"
+  },
+  {
+    "id": "sm_auto_58",
+    "tags": [
+      "科研"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "反卷成功样例 · 58",
+    "body": "{name}恋爱线还在慢加载，{topAction} 做了 {topActionCount} 次，先把日常刷稳。"
+  },
+  {
+    "id": "sm_auto_59",
+    "tags": [
+      "实习"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "课表像心电图 · 59",
+    "body": "{name}熬夜像追剧式补课，{topAction} 做了 {topActionCount} 次，在笔记里写下脚注。"
+  },
+  {
+    "id": "sm_auto_60",
+    "tags": [
+      "拖延"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "绩点像盲盒 · 60",
+    "body": "{name}寝室像热播剧现场，{topAction} 做了 {topActionCount} 次，都是花絮素材。"
+  },
+  {
+    "id": "sm_auto_61",
+    "tags": [
+      "卷王"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "秋招气氛组 · 61",
+    "body": "{name}成了体育场常客，{topAction} 做了 {topActionCount} 次，状态慢慢巩固。"
+  },
+  {
+    "id": "sm_auto_62",
+    "tags": [
+      "佛系"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "健康优先翻车 · 62",
+    "body": "{name}在考证路上打卡，{topAction} 做了 {topActionCount} 次，像路上的补给站。"
+  },
+  {
+    "id": "sm_auto_63",
+    "tags": [
+      "恋爱"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "搞钱脑发作 · 63",
+    "body": "{name}科研进度曲线很陡，{topAction} 做了 {topActionCount} 次，标出了坡度。"
+  },
+  {
+    "id": "sm_auto_64",
+    "tags": [
+      "创业"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "恋爱支线load · 64",
+    "body": "{name}副业像开盲盒，{topAction} 做了 {topActionCount} 次，结果还算过得去。"
+  },
+  {
+    "id": "sm_auto_65",
+    "tags": [
+      "社牛"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "主线是活下去 · 65",
+    "body": "{name}金钱观很朴素：先活下去再谈优雅；{topAction} 做了 {topActionCount} 次，负责把日子撑住。"
+  },
+  {
+    "id": "sm_auto_66",
+    "tags": [
+      "学业上行"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "闭馆音乐听众 · 66",
+    "body": "{name}社交能量起起伏伏，{topAction} 做了 {topActionCount} 次，输出还算稳定。"
+  },
+  {
+    "id": "sm_auto_67",
+    "tags": [
+      "熬夜"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "咖啡续命 · 67",
+    "body": "{name}复盘时关键词很稳：细节、{topAction}，一共 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_68",
+    "tags": [
+      "干饭"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "校园walk · 68",
+    "body": "{name}早八像刺客一样命中膝盖，{topAction} 做了 {topActionCount} 次，算给伤口包扎。"
+  },
+  {
+    "id": "sm_auto_69",
+    "tags": [
+      "考公"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "同学不明觉厉 · 69",
+    "body": "{name}做题家血脉还在，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_70",
+    "tags": [
+      "科研"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "老师还可以 · 70",
+    "body": "{name}心态像钟摆来回晃，{topAction} 做了 {topActionCount} 次，记下每一次摆动。"
+  },
+  {
+    "id": "sm_auto_71",
+    "tags": [
+      "实习"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "把自己养成号 · 71",
+    "body": "{name}前排座位不多，故事却不少：{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_72",
+    "tags": [
+      "拖延"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "自我对话变多 · 72",
+    "body": "{name}把玩笑揉进生活，{topAction} 做了 {topActionCount} 次，都像伏笔。"
+  },
+  {
+    "id": "sm_auto_73",
+    "tags": [
+      "卷王"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "父母电话好好的 · 73",
+    "body": "{name}这学期有赛季结算的感觉，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_74",
+    "tags": [
+      "佛系"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "下一季预告 · 74",
+    "body": "{name}睡眠像随机播放，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_75",
+    "tags": [
+      "恋爱"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "把这学期当成副本通关 · 75",
+    "body": "{name}像论文裁缝一样缝缝补补，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_76",
+    "tags": [
+      "创业"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "在图书馆办了长期会员卡 · 76",
+    "body": "{name}在宿舍搞起了外交，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_77",
+    "tags": [
+      "社牛"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "DDL是第一生产力现场 · 77",
+    "body": "{name}把健康放在首位，偶尔也会翻车；{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_78",
+    "tags": [
+      "学业上行"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "早八刺客幸存者 · 78",
+    "body": "{name}搞钱念头间歇发作，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_79",
+    "tags": [
+      "熬夜"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "小镇做题家上分路 · 79",
+    "body": "{name}恋爱支线在推进，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_80",
+    "tags": [
+      "干饭"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "佛系但有期末 · 80",
+    "body": "{name}主线仍是好好活着，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_81",
+    "tags": [
+      "考公"
+    ],
+    "minSemester": 2,
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "恋爱与任务撞车了 · 81",
+    "body": "{name}这学期像一部长篇小说，{topAction} 做了 {topActionCount} 次。"
+  },
+  {
+    "id": "sm_auto_82",
+    "tags": [
+      "科研"
+    ],
+    "minSemester": 1,
+    "conditions": {
+      "phaseCounts": {
+        "week_action": 1
+      }
+    },
+    "title": "搞钱搞到钱包见底 · 82",
+    "body": "{name}听过不少闭馆音乐，{topAction} 做了 {topActionCount} 次。"
+  }
+]

@@ -1,0 +1,2542 @@
+[
+  {
+    "id": "end_dropout_health",
+    "priority": 200,
+    "title": "休学调整",
+    "description": "身体频频亮红灯，你决定先休学一年，把状态找回来。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "health",
+          "lte": 15
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_burnout",
+    "priority": 195,
+    "title": "情绪崩溃",
+    "description": "长期高压后你决定先停下来，和自己和解。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "pressure",
+          "gte": 96
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_dropout_gpa",
+    "priority": 190,
+    "title": "学业预警",
+    "description": "挂科接连触发学业预警，学分压力把你狠狠拉回现实。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "lte": 1.6
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_teacher_staff",
+    "priority": 58,
+    "title": "考编上岸",
+    "description": "你把稳定路线走到底，最终拿到编制岗位。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "publicInstitutionTrack"
+        },
+        {
+          "stat": "gpa",
+          "gte": 3
+        },
+        {
+          "stat": "pressure",
+          "lte": 72
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_civil_pass",
+    "priority": 56,
+    "title": "考公上岸",
+    "description": "行测申论刷到手抽筋，终于在公告里看到自己的名字。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "civilTrack"
+        },
+        {
+          "stat": "gpa",
+          "gte": 3
+        },
+        {
+          "stat": "pressure",
+          "lte": 70
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_civil_fail_try_again",
+    "priority": 55,
+    "title": "考公再战",
+    "description": "差一点上岸，但你已经摸清门道，决定来年再冲。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "civilTrack"
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.5
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_postgrad",
+    "priority": 52,
+    "title": "保研路线",
+    "description": "成绩和科研都在线，你走上继续深造的路径。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "postgradLockedIn"
+        },
+        {
+          "stat": "gpa",
+          "gte": 3.5
+        },
+        {
+          "stat": "skill",
+          "gte": 62
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_bigtech",
+    "priority": 39,
+    "title": "大厂 offer",
+    "description": "项目和实习都够硬，秋招时你拿到了心仪 offer。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 78
+        },
+        {
+          "stat": "gpa",
+          "gte": 3.4
+        },
+        {
+          "flag": "careerBigTech"
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_grad_honors",
+    "priority": 48,
+    "title": "优秀毕业生",
+    "description": "绩点和综合能力都稳定输出，你拿到一份漂亮毕业总结。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "gte": 3.7
+        },
+        {
+          "stat": "skill",
+          "gte": 58
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_startup",
+    "priority": 45,
+    "title": "小队创业",
+    "description": "你和同伴把点子做成了 MVP，决定先边做边活下去。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "gte": 60
+        },
+        {
+          "stat": "skill",
+          "gte": 54
+        },
+        {
+          "flag": "startupIntent"
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_romance_stable",
+    "priority": 42,
+    "title": "恋爱毕业双线通关",
+    "description": "你没有把恋爱谈成消耗战，反而学会了边界与支持。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "romanceCommitted"
+        },
+        {
+          "stat": "health",
+          "gte": 45
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.6
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_cert_master",
+    "priority": 40,
+    "title": "证书收割机",
+    "description": "你在证书赛道一路清图，简历像贴满了勋章。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "certProgress",
+          "gte": 2
+        },
+        {
+          "stat": "pressure",
+          "lte": 84
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_grad_normal",
+    "priority": 10,
+    "title": "普通毕业",
+    "description": "你把大学这关稳稳打完，没神话也没崩盘，已经很厉害。",
+    "conditions": {
+      "all": []
+    }
+  },
+  {
+    "id": "end_finance_freedom",
+    "priority": 49,
+    "title": "财务自由预备役",
+    "description": "你在毕业前完成了稳定现金流，钱包先毕业。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "gte": 5200
+        },
+        {
+          "stat": "pressure",
+          "lte": 68
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_research_graduate",
+    "priority": 47,
+    "title": "科研直博候选",
+    "description": "科研轨迹清晰，导师愿意继续带你走更长的路。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "researchTrack"
+        },
+        {
+          "flag": "researchProgress",
+          "gte": 2
+        },
+        {
+          "stat": "skill",
+          "gte": 72
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_city_civil",
+    "priority": 46,
+    "title": "城市治理新兵",
+    "description": "你以稳定心态通过选拔，进入公共治理岗位。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "civilTrack"
+        },
+        {
+          "stat": "gpa",
+          "gte": 3.2
+        },
+        {
+          "stat": "social",
+          "gte": 55
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_teacher_grow",
+    "priority": 44,
+    "title": "青年教师路线",
+    "description": "你找到与人同行的节奏，走上教育行业。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "publicInstitutionTrack"
+        },
+        {
+          "stat": "social",
+          "gte": 60
+        },
+        {
+          "stat": "health",
+          "gte": 50
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_contest_star",
+    "priority": 43,
+    "title": "竞赛金牌线",
+    "description": "比赛与项目沉淀成硬实力，简历含金量拉满。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "contestProgress",
+          "gte": 2
+        },
+        {
+          "stat": "skill",
+          "gte": 68
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_cross_major_success",
+    "priority": 41,
+    "title": "跨学科逆袭",
+    "description": "你在不熟悉的专业语境里打出自己的路径。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "crossMajorChallenge"
+        },
+        {
+          "stat": "gpa",
+          "gte": 3
+        },
+        {
+          "stat": "skill",
+          "gte": 60
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_medical_path",
+    "priority": 40,
+    "title": "临床继续深造",
+    "description": "你走过高压训练，决定继续在医学道路深耕。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 66
+        },
+        {
+          "stat": "pressure",
+          "lte": 88
+        },
+        {
+          "stat": "health",
+          "gte": 40
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_media_operator",
+    "priority": 39,
+    "title": "内容运营主理人",
+    "description": "你把表达与执行能力组合成职业竞争力。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "gte": 72
+        },
+        {
+          "stat": "skill",
+          "gte": 58
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.8
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_law_practice",
+    "priority": 38,
+    "title": "法律实务入门",
+    "description": "你在规则和现实之间找到了自己的站位。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "gte": 3.3
+        },
+        {
+          "stat": "social",
+          "gte": 58
+        },
+        {
+          "stat": "pressure",
+          "lte": 78
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_small_business",
+    "priority": 37,
+    "title": "副业经营者",
+    "description": "你把校园资源变成了稳定副业，先活得漂亮。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "gte": 4200
+        },
+        {
+          "stat": "social",
+          "gte": 62
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_healthy_graduate",
+    "priority": 36,
+    "title": "健康优先毕业",
+    "description": "你没有在内卷里透支自己，而是稳稳抵达毕业线。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "health",
+          "gte": 78
+        },
+        {
+          "stat": "pressure",
+          "lte": 52
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_lonely_high_score",
+    "priority": 35,
+    "title": "高分孤岛",
+    "description": "成绩很漂亮，但你也付出了社交与生活的代价。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "gte": 3.8
+        },
+        {
+          "stat": "social",
+          "lte": 35
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_social_connector",
+    "priority": 34,
+    "title": "人脉连接者",
+    "description": "你成为同学和机会之间的桥梁，路越走越宽。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "gte": 82
+        },
+        {
+          "stat": "pressure",
+          "lte": 72
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_gap_year",
+    "priority": 33,
+    "title": "间隔年探索",
+    "description": "你决定暂缓标准答案，先去看更大的世界。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "health",
+          "gte": 55
+        },
+        {
+          "stat": "money",
+          "gte": 2600
+        },
+        {
+          "stat": "gpa",
+          "lte": 2.9
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_startup_fail_but_grow",
+    "priority": 32,
+    "title": "创业受挫但成长",
+    "description": "项目没跑通，但你收获了真正的实战能力。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "startupIntent"
+        },
+        {
+          "stat": "skill",
+          "gte": 62
+        },
+        {
+          "stat": "money",
+          "lte": 1800
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_relationship_break",
+    "priority": 31,
+    "title": "关系失衡",
+    "description": "你在关系与节奏间失去平衡，最终选择分开整理自己。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "romanceCommitted"
+        },
+        {
+          "stat": "pressure",
+          "gte": 88
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_high_pressure_job",
+    "priority": 30,
+    "title": "高压入职",
+    "description": "你顺利入行，但也把自己推到了极限边缘。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "careerBigTech"
+        },
+        {
+          "stat": "skill",
+          "gte": 64
+        },
+        {
+          "stat": "pressure",
+          "gte": 82
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_cashflow_crisis",
+    "priority": 29,
+    "title": "现金流危机",
+    "description": "资金链持续紧绷，你不得不优先处理生存问题。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "lte": 150
+        },
+        {
+          "stat": "pressure",
+          "gte": 70
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_balanced_allrounder",
+    "priority": 28,
+    "title": "均衡全能型",
+    "description": "你在学业、能力、健康和社交之间维持了漂亮的平衡。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "gte": 3.3
+        },
+        {
+          "stat": "skill",
+          "gte": 63
+        },
+        {
+          "stat": "health",
+          "gte": 65
+        },
+        {
+          "stat": "social",
+          "gte": 65
+        },
+        {
+          "stat": "pressure",
+          "lte": 70
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_mentor_postdoc_track",
+    "priority": 61,
+    "title": "导师盖章的深造线",
+    "description": "主导师把你的周报读得像论文摘要，推荐信里写着「抗压与自驱在线」——大厂面试官说你流程感很好，翻译过来就是还行但不是顶尖；而你心里清楚，这条线的门票是无数个凌晨四点的食堂只剩你和打印机的回音。你把寝室夜聊、组会沉默与城市路灯下的自我怀疑都攒成了燃料，终于承认松弛感也需要备案。",
+    "epilogue": "五年后你在师兄姐群里转发招聘贴，配文「坑位不多，简历带作品」。点赞里有导师、前任室友与当年的心动对象；你忽然明白成长就是把嘴上的玩笑收成段子，再把段子收成简历里一行「可加班但别把我当耗材」。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "primaryMentor"
+        },
+        {
+          "flag": "researchTrack"
+        },
+        {
+          "stat": "skill",
+          "gte": 73
+        },
+        {
+          "stat": "gpa",
+          "gte": 3.35
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_lovers_dual_city_job",
+    "priority": 60,
+    "title": "异地恋副本毕业结算",
+    "description": "你们把「DDL是第一生产力」这句话异化成「高铁票是第一生产力」：一个在实习楼里写周报，一个在图书馆里刷行测；恋爱没有变成全程消耗战，反而练出了同步日程表与吵架后的复盘会议。小镇做题家在这一刻学会了把浪漫写得像甘特图——难看但管用。",
+    "epilogue": "五年后你们在同一个城市合租，冰箱里贴着「本周家务轮值」；朋友说你们像创业公司合伙人，你说合伙人也要写周报，只是周报结尾从「下周计划」改成了「下周约会」。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "romanceCommitted"
+        },
+        {
+          "stat": "skill",
+          "gte": 68
+        },
+        {
+          "stat": "social",
+          "gte": 58
+        },
+        {
+          "stat": "pressure",
+          "lte": 76
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_startup_couple_mvp",
+    "priority": 59,
+    "title": "情侣档创业 MVP",
+    "description": "路演失败那天你们坐在食堂互相甩锅，第二天又一起改需求文档；「早八刺客」没刺到你们，因为你们把早八献给了产品评审。你们把校园资源、比赛奖金与情绪价值熬成一锅，像同时开恋爱线与公司线，终于理解合伙人的真正含义是「一起背锅也一起分锅」。",
+    "epilogue": "五年后公司没上市，但你们学会把生活也当产品迭代；朋友圈发的是小团队团建，评论区有人刷「还招不招对象岗」。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "romanceCommitted"
+        },
+        {
+          "flag": "startupIntent"
+        },
+        {
+          "stat": "social",
+          "gte": 60
+        },
+        {
+          "stat": "skill",
+          "gte": 56
+        },
+        {
+          "stat": "money",
+          "gte": 1200
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_dorm_treaty_grad",
+    "priority": 58,
+    "title": "宿舍条约存活者",
+    "description": "值日表、熄灯时间、带饭群与「谁再外放谁请全寝奶茶」的君子协定，把寝室从战场升级成能开黑也能开周会的小公司。你在这间十几平米里提前体验了协作、撕逼、和解与团建，毕业照里你们像一支战队——只是装备是插排和收纳箱。",
+    "epilogue": "五年后群名还叫「404 宿舍联网成功」，谁结婚谁随份子，谁加班谁发阴阳表情包；你终于相信大学最珍贵的是能一起把日子过成段子的那几个人。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "dormProgress",
+          "gte": 2
+        },
+        {
+          "stat": "health",
+          "gte": 52
+        },
+        {
+          "stat": "pressure",
+          "lte": 75
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_mentor_civil_branch",
+    "priority": 57,
+    "title": "导师课题与考公并行线",
+    "description": "组会你讲 PPT，晚上你背申论；导师问「你确定不做科研了吗」，你答「我想把城市治理也当系统问题』。像同时开两个存档，压力条经常飘红，但你终于把「稳定」与「被看见」都写进同一条时间线，早八刺客只刺到一次，因为你会用咖啡和错题本反杀。",
+    "epilogue": "五年后你在基层写材料，偶尔想起组会上的沉默，觉得那也是一种训练：把复杂问题讲成可执行清单。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "primaryMentor"
+        },
+        {
+          "flag": "civilTrack"
+        },
+        {
+          "stat": "gpa",
+          "gte": 3
+        },
+        {
+          "stat": "pressure",
+          "lte": 80
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_lovers_postgrad_pair",
+    "priority": 56,
+    "title": "双推免失败但双成长",
+    "description": "推免不是唯一答案，但一起准备推免绝对是最像婚姻预演的事：共享焦虑、共享信息差、共享「我完了」和「又活了」。你们没都进梦校，却都进成了更能扛的人；恋爱线没有抢跑绩点，而是把彼此写进同一份未来版本说明里。",
+    "epilogue": "五年后一个在读博一个在上班，群聊里仍互丢论文链接与摸鱼转的截图；你们终于懂：势均力敌不是分数一样，是都能把对方从情绪垃圾场里捞回来。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "romanceCommitted"
+        },
+        {
+          "flag": "postgradLockedIn"
+        },
+        {
+          "stat": "gpa",
+          "gte": 3.45
+        },
+        {
+          "stat": "health",
+          "gte": 48
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_off_campus_solo",
+    "priority": 55,
+    "title": "外宿孤独成长线",
+    "description": "你付房租买安静，也买来了独处的全部后果：没有人帮你占座，也没有人在你崩溃时递纸巾。你学会和中介、外卖与凌晨的冰箱对话，把「社恐」活成一种高效。城市路灯下你终于承认，独立不是酷，是贵，但你付得起，因为你要的是能自己掌控的作息与情绪。",
+    "epilogue": "五年后你仍喜欢独居，但会主动约饭；你明白孤独是技能树前置，不是终局装备。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "offCampus"
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.9
+        },
+        {
+          "stat": "skill",
+          "gte": 64
+        },
+        {
+          "stat": "health",
+          "gte": 50
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_cross_major_pivot",
+    "priority": 54,
+    "title": "转专业之后真香了",
+    "description": "冷门课表、陌生同学与「你原来学啥的」社交开场白，让你像穿越进二周目。跨学科逆袭不是说笑，是你真的把不适翻译成了好奇，把补课夜熬成了肌肉记忆。小镇做题家血脉换地图继续刷，只是这次 BOSS 叫自我怀疑。",
+    "epilogue": "五年后你在团队里负责「翻译」：把业务语言译成技术语言，把焦虑译成排期；你感谢那次转专业，让你提前适应永远当新手的感觉。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "crossMajorChallenge"
+        },
+        {
+          "stat": "gpa",
+          "gte": 3.05
+        },
+        {
+          "stat": "skill",
+          "gte": 63
+        },
+        {
+          "stat": "social",
+          "gte": 50
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_senior_angel_project",
+    "priority": 53,
+    "title": "学长姐天使轮（精神版）",
+    "description": "请你喝咖啡的不是暧昧，是行业地图；帮你改简历的不是义务，是传承。你把谢谢说得像打卡，把请教学得像复盘，终于理解「人脉」不是跪出来的，是一起把题做出来后自然结算的掉落物。",
+    "epilogue": "五年后你也开始请后辈喝咖啡，发现话术和当年一模一样；你笑着当了一次 NPC。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "internshipReady"
+        },
+        {
+          "stat": "social",
+          "gte": 66
+        },
+        {
+          "stat": "skill",
+          "gte": 65
+        },
+        {
+          "stat": "money",
+          "gte": 2000
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_romance_skip_academic",
+    "priority": 52,
+    "title": "跳过恋爱的大四奇迹",
+    "description": "你在心动副本点了跳过，把时间梭哈给绩点、证书与实验室；别人在情人节晒花，你在晒合并请求。单身像一种极端专注模式，副作用是偶尔孤独到给路由器改名，但收益是简历终于像样——你把恋爱额度留给毕业后的另一个赛季。",
+    "epilogue": "五年后有人问你怎么还不谈，你说「我在等版本更新」；其实你在等自己不再把恋爱当 KPI。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "romanceSkipped"
+        },
+        {
+          "stat": "gpa",
+          "gte": 3.5
+        },
+        {
+          "stat": "skill",
+          "gte": 70
+        },
+        {
+          "stat": "pressure",
+          "lte": 78
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_midtier_internet",
+    "priority": 51,
+    "title": "互联网中厂上岸",
+    "description": "你没进头部神话组，但进了能写进体检与公积金的那一类；面试官说「我们节奏快但不卷死」，你听出了「会卷但发夜宵」的潜台词。带着恋爱线里练出的情绪管理，你在需求变更里像打太极，把「流程感很好」活成一种生存智慧。",
+    "epilogue": "五年后你升了带人，工位上贴着的仍是当年宿舍门牌；你终于懂中厂不是退路，是大多数人真实的生活分辨率。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "careerBigTech"
+        },
+        {
+          "stat": "skill",
+          "gte": 70
+        },
+        {
+          "stat": "gpa",
+          "gte": 3.1
+        },
+        {
+          "stat": "pressure",
+          "lte": 85
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_bank_teller_pipeline",
+    "priority": 50,
+    "title": "柜员流水线与体面",
+    "description": "你考进系统内基层岗位，穿着制服站在玻璃后面点钞、微笑、忍气吞声；这不是爽文，却是家里饭桌最安心的答案。你把大学练出的「重复劳动耐受」与「微笑营业」全用上，终于理解稳定为什么让人上瘾——因为它让你敢计划下周。",
+    "epilogue": "五年后你轮岗到后台，偶尔想起社团路演时的野心；你给自己订了小目标：先把生活过成不失眠再说。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "publicInstitutionTrack"
+        },
+        {
+          "stat": "social",
+          "gte": 54
+        },
+        {
+          "stat": "pressure",
+          "lte": 72
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.85
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_give_up_civil_retry",
+    "priority": 49,
+    "title": "弃考一年再战的决心",
+    "description": "你在公告前停笔，不是逃，是把自己从「为考而活」里拔出来一年；你去做兼职、去谈一场不功利的恋爱、去把身体从咖啡与焦虑里赎回来。二次进场时你像换了一个存档：题还是那些题，但你不是那个只会刷题的人。",
+    "epilogue": "五年后你终于上榜，朋友圈发的是体检合格与食堂第一餐；你评论自己：「弃考不是失败，是重开。」",
+    "conditions": {
+      "all": [
+        {
+          "flag": "civilTrack"
+        },
+        {
+          "stat": "health",
+          "gte": 60
+        },
+        {
+          "stat": "pressure",
+          "lte": 65
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.7
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_residency_romance",
+    "priority": 48,
+    "title": "规培压力下的心动残血过关",
+    "description": "白大褂、夜班与背不完的重点把生活压成一条细线，而你们还在线里互发「活着吗」；医学规培里那些只有圈内人懂的苦笑，你比谁都熟。你靠睡眠债与彼此提醒撑到毕业，像在高难本里组了固定队，奶与输出都要会。",
+    "epilogue": "五年后值夜班的间隙你回消息：「今天也活着」；那是最短的情话，也是最真的战友证词。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "romanceCommitted"
+        },
+        {
+          "stat": "skill",
+          "gte": 65
+        },
+        {
+          "stat": "pressure",
+          "lte": 90
+        },
+        {
+          "stat": "health",
+          "gte": 40
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_phd_bait",
+    "priority": 47,
+    "title": "直博诱惑与自我怀疑",
+    "description": "导师说「读博吧，平台好」，你看见的是五年后的自己还在改论文。你最终选择先工作再决定，把读博从人生必选项改成可下载 DLC。你学会对光环说「我回去想想」，对焦虑说「先交这周周报」。",
+    "epilogue": "五年后你申了在职或再次考研，发现选择没有迟到，只有更清醒的你。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "researchTrack"
+        },
+        {
+          "flag": "researchProgress",
+          "gte": 2
+        },
+        {
+          "stat": "skill",
+          "gte": 75
+        },
+        {
+          "stat": "pressure",
+          "gte": 68
+        },
+        {
+          "stat": "gpa",
+          "gte": 3.2
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_home_stay_figuring",
+    "priority": 46,
+    "title": "家里蹲复习年",
+    "description": "你搬回家，把卧室当自习室，把父母关心当环境噪音；你刷题、刷机、刷简历，也在刷自尊。外面世界在前进，你在原地蹲出茧子——但茧子里也长出了规划与边界：你知道什么让你耻辱，什么只是暂时的。",
+    "epilogue": "五年后你重新出门，行李少，目标清；你感谢那段蹲，让你学会把面子从进度条里卸载。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "lte": 2200
+        },
+        {
+          "stat": "pressure",
+          "lte": 62
+        },
+        {
+          "stat": "skill",
+          "gte": 58
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.5
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_gap_year_visa",
+    "priority": 45,
+    "title": "出国 Gap 与钱包谈判",
+    "description": "你把毕业推迟成一张机票与一堆表格：语言成绩、存款证明与对未来天真的相信。Gap 不是躺，是你主动按下暂停键去换地图；你在异国便利店打工时学会谦卑，也学会把「我语言不好」说得很溜。",
+    "epilogue": "五年后你偶尔发旧照片，定位在另一座城；你明白 Gap 年买的不止时间，是重新选择叙事权。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "gte": 4000
+        },
+        {
+          "stat": "health",
+          "gte": 58
+        },
+        {
+          "stat": "gpa",
+          "lte": 3.2
+        },
+        {
+          "stat": "social",
+          "gte": 48
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_mentor_letter_item",
+    "priority": 44,
+    "title": "推荐信与人生道具",
+    "description": "你在背包里用过那封推荐信，像用过一次复活币；导师的签名比任何鸡汤都硬。你后来明白道具不是终点，是有人愿意为你背书的证据。你带着它去面试、去申请、去在自我怀疑的夜里翻出来看一遍。",
+    "epilogue": "五年后你也开始给后辈写「你很好」的邮件，字少，但重。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "mentorUnlocked"
+        },
+        {
+          "stat": "skill",
+          "gte": 66
+        },
+        {
+          "stat": "gpa",
+          "gte": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_event_chain_master",
+    "priority": 43,
+    "title": "关系网高密玩家",
+    "description": "专属事件像赛季任务一样被你清图：npcEventHits 的计数不是数字，是你在别人故事里刷出的存在感。你终于从「背景板同学」升级成「有台词的 NPC」，也学会在关系里留一点冷却时间给自己。",
+    "epilogue": "五年后你仍爱组局，但会提前说「我本周能量低」；边界感是成年人最贵的社交货币。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "npcEventHits",
+          "gte": 9
+        },
+        {
+          "stat": "social",
+          "gte": 60
+        },
+        {
+          "stat": "health",
+          "gte": 45
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_roommate_break",
+    "priority": 42,
+    "title": "舍友决裂后的独自强大",
+    "description": "最后一次争吵之后你们礼貌地拉黑，像卸载一款占内存太大的软件。你在空下来的寝室里听见自己的心跳，学会自己消化委屈与不公；后来才知道决裂不是失败，是边界毕业的成人礼。",
+    "epilogue": "五年后同学聚会你们点头寒暄，像读了一本烂尾小说；你不遗憾，因为你知道自己终于能睡好觉。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "dormProgress",
+          "gte": 1
+        },
+        {
+          "stat": "pressure",
+          "gte": 78
+        },
+        {
+          "stat": "social",
+          "lte": 48
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.4
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_lovers_break_clean",
+    "priority": 41,
+    "title": "体面分手与论文致谢",
+    "description": "你们在毕业季把关系卸载得像卸载实验环境：备份回忆，清空权限，祝对方答辩顺利。痛是真的，但你们没有互相写小作文挂树洞；你把这段写进致谢倒数第二段，像给青春一个闭合括号。",
+    "epilogue": "五年后你在婚礼请柬名单上犹豫三秒，最后只点赞；成熟是把遗憾折叠成一句「都挺好」。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "romanceCommitted"
+        },
+        {
+          "stat": "pressure",
+          "gte": 80
+        },
+        {
+          "stat": "pressure",
+          "lte": 87
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.8
+        },
+        {
+          "stat": "health",
+          "gte": 42
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_intern_bigcity_rent",
+    "priority": 40,
+    "title": "大城实习租房渡劫",
+    "description": "押一付三、地铁通勤与合租房里的陌生呼吸，让你提前体验「社会人」的物理意义。你在实习与生存之间走钢丝，把「流程感」练成「生活感」；工资一半给房东，一半给未来，剩一点给周末的火锅自愈。",
+    "epilogue": "五年后你买房仍远，但敢谈「我想留下」；这一步你已经赢了当年的自己。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "internshipReady"
+        },
+        {
+          "stat": "money",
+          "lte": 3200
+        },
+        {
+          "stat": "skill",
+          "gte": 66
+        },
+        {
+          "stat": "pressure",
+          "lte": 82
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_contest_to_job",
+    "priority": 39,
+    "title": "竞赛奖状换门票",
+    "description": "奖牌不是终点，是面试官愿意多听你说两句的理由；你在答辩场上讲算法像在讲青春。你把队友处成战友，把熬夜处成共同遗产，终于明白赢一次不是为了炫耀，是为了相信自己还能赢下一次。",
+    "epilogue": "五年后奖项落了灰，但「我们能做出来」的底气还在工位上发光。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "contestProgress",
+          "gte": 2
+        },
+        {
+          "stat": "skill",
+          "gte": 72
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.9
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_cert_wall",
+    "priority": 38,
+    "title": "证书墙就业通道",
+    "description": "你把墙面贴得像违章建筑，但 HR 认其中几张；考证不是爱好，是小镇做题家切换到大城市货币体系的汇率兑换。你在格子间与考场之间复制粘贴耐心，终于换到一张「你可以进来」的纸条。",
+    "epilogue": "五年后你劝后辈少考两张没用的，但心里偷偷骄傲：当年那张最难考。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "certProgress",
+          "gte": 2
+        },
+        {
+          "stat": "pressure",
+          "lte": 86
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.85
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_finance_side_hustle",
+    "priority": 37,
+    "title": "理财与小生意并行",
+    "description": "基金曲线像心电图，副业订单像随机掉落；你在风险与收益之间练习成年人的算术。没有暴富神话，只有每月对账时的踏实；你终于理解自由不是潇洒，是多一点选择的余地。",
+    "epilogue": "五年后你仍定投，但标的换成健康与家人；回报不以百分比写，以睡得着写。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "financeProgress",
+          "gte": 2
+        },
+        {
+          "stat": "money",
+          "gte": 3600
+        },
+        {
+          "stat": "pressure",
+          "lte": 74
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_volunteer_teacher_path",
+    "priority": 36,
+    "title": "支教志愿者转教师梦",
+    "description": "讲台上的十分钟像一辈子那么长，孩子们的笑声却一秒把你治愈。你把公益实践读成职业预言书，把「我能改变什么」从宏大叙事缩小到一张作业本上的红勾。",
+    "epilogue": "五年后你在山区或城里都在讲课，身份不同，心跳一样。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "studentWork",
+          "gte": 2
+        },
+        {
+          "stat": "social",
+          "gte": 62
+        },
+        {
+          "stat": "health",
+          "gte": 50
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_study_abroad_wait",
+    "priority": 35,
+    "title": "先工作再留学的折中",
+    "description": "你把留学从直线改成折线：先攒经验与存款，再换地图。别人问你怎么不干脆点，你说「我想带着问题去读」，而不是带着空白去接受答案。",
+    "epilogue": "五年后你起飞那天行李超重，心里不重；你知道这笔 Gap 自己买单，也更值得。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "gte": 4800
+        },
+        {
+          "stat": "skill",
+          "gte": 68
+        },
+        {
+          "stat": "gpa",
+          "gte": 3.05
+        },
+        {
+          "stat": "pressure",
+          "lte": 75
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_health_first_runner",
+    "priority": 34,
+    "title": "健康优先的慢跑哲学家",
+    "description": "你把跑步写进课表比把课写进课表还真；体检指标回升的那天，你比拿奖学金还激动。内卷里你选择保命流打法，用睡眠与有氧对抗虚无；别人说你不拼，你说你只是不想拼进急诊。",
+    "epilogue": "五年后你仍跑步，配速慢了，但人生长了；这才是持久战的姿势。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "health",
+          "gte": 80
+        },
+        {
+          "stat": "pressure",
+          "lte": 48
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.75
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_night_owl_redemption",
+    "priority": 33,
+    "title": "夜猫子改作息成功",
+    "description": "你曾经把凌晨当成生产力，后来把凌晨还给睡眠；过程像戒断，梦里全是未提交的作业。你终于承认身体不是可透支额度，早八刺客其实是生物钟在报复。",
+    "epilogue": "五年后你仍会熬夜，但是有意识地熬；可控的堕落才算浪漫。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "health",
+          "gte": 62
+        },
+        {
+          "stat": "pressure",
+          "lte": 58
+        },
+        {
+          "stat": "skill",
+          "gte": 60
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_item_pack_rat",
+    "priority": 32,
+    "title": "背包道具流通关",
+    "description": "你用物品与道具把随机事件变成可控增益：咖啡、眼罩、推荐信与不知名的提神糖，像 RPG 里叠 buff。别人笑你装备党，你笑他们裸奔进期末。",
+    "epilogue": "五年后你办公桌抽屉仍像百宝箱；人生啊，有时候就是叠满 buff 再上场。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "itemUsage",
+          "gte": 3
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.8
+        },
+        {
+          "stat": "money",
+          "gte": 1500
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_social_butterfly_engineer",
+    "priority": 31,
+    "title": "社牛工程师上岸",
+    "description": "你能同时在五个群里活跃并且把项目推进——社交不是分散注意力，是你独特的并行架构。你把人脉编译成机会，把段子编译成信任，终于理解「会做人」也是硬核技能。",
+    "epilogue": "五年后带团队才发现，最难的不是技术，是让每个人都觉得自己被看见。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "gte": 78
+        },
+        {
+          "stat": "skill",
+          "gte": 66
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.95
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_lonely_grinder_love_late",
+    "priority": 30,
+    "title": "高分孤岛后来信",
+    "description": "绩点像城墙，你在上面看风景也看别人牵手；后来心动来时你已学会慢热，像把自己从孤岛上摆渡回人间。你不再用分数证明 worth，改用真诚练习亲密。",
+    "epilogue": "五年后你仍会加班，但有人留灯；那盏灯比任何排名更让你想哭。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "gte": 3.75
+        },
+        {
+          "stat": "social",
+          "lte": 42
+        },
+        {
+          "stat": "skill",
+          "gte": 72
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_civil_progress_carry",
+    "priority": 29,
+    "title": "考公里程碑堆积",
+    "description": "你把错题与申论段落堆成一座小山，像在游戏里刷日常；公告推迟你推迟焦虑，成绩公布你学会把希望调低一格再接受结果。稳定路线不是浪漫，是耐力赛。",
+    "epilogue": "五年后你路过考点仍会心悸；那不是创伤，是青春的回响。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "civilTrack"
+        },
+        {
+          "flag": "civilProgress",
+          "gte": 2
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.65
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_research_quit_industry",
+    "priority": 28,
+    "title": "科研退坑转工程",
+    "description": "你在实验室耗尽了浪漫，决定把浪漫换成工资；不是背叛，是认清自己更爱交付而不是假设。你带着读论文练出的耐心去写需求文档，居然如鱼得水。",
+    "epilogue": "五年后带项目你仍会引用论文一句结论；那是你与科研线的和解脚注。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "researchTrack"
+        },
+        {
+          "stat": "skill",
+          "gte": 69
+        },
+        {
+          "stat": "pressure",
+          "gte": 72
+        },
+        {
+          "flag": "internshipReady"
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_startup_mentor_bridge",
+    "priority": 27,
+    "title": "导师资源嫁接创业",
+    "description": "导师一句「可以试着落地」比一百节创业课有用；你把课题组边角料课题做成小产品，像把论文翻译成人民币。学术与商业之间不是悬崖，是窄桥，你扶着栏杆过去了。",
+    "epilogue": "五年后公司半死不活，但你学会了把失败写成下一版的更新日志。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "primaryMentor"
+        },
+        {
+          "flag": "startupIntent"
+        },
+        {
+          "stat": "social",
+          "gte": 57
+        },
+        {
+          "stat": "skill",
+          "gte": 58
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_npc_romance_library_endgame",
+    "priority": 26,
+    "title": "图书馆牵手线完结篇",
+    "description": "你们在闭馆音乐里收拾书包，像收拾四年；情侣座位从不张扬，却在索引里写下彼此的偏好。毕业不是剧终，是你们终于敢把「以后」说成「下周见」。",
+    "epilogue": "五年后你们仍抢自习座位，只是抢的是家里的书桌；闭馆音乐换成了电饭煲提示音，也一样温柔。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "romanceCommitted"
+        },
+        {
+          "stat": "gpa",
+          "gte": 3.15
+        },
+        {
+          "stat": "pressure",
+          "lte": 72
+        },
+        {
+          "stat": "social",
+          "gte": 55
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_love_grad_together",
+    "priority": 27,
+    "title": "恋人与毕业证同一批到货",
+    "description": "毕业照里你们站得很近，像把四年里没说完的甜都压进一帧。朋友调侃你们像「官方周边」，你笑着把话头接住，心里却认真：能一起把恋爱谈过论文与租房合同，比任何校园剧都难演。招聘季你们互相改简历、互相撑过面试凉经，把「我们」写进了各自的城市选择里。随手截图可以丢进相册，但一起扛过的焦虑与期待，只可能写进人生。",
+    "epilogue": "五年后你们仍习惯共享日历与番茄钟，偶尔吵到想分房，最后分的是谁去扔垃圾。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "romanceCommitted"
+        },
+        {
+          "stat": "social",
+          "gte": 58
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.7
+        },
+        {
+          "stat": "health",
+          "gte": 40
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_mentor_recommend",
+    "priority": 27,
+    "title": "导师递来的那张纸",
+    "description": "主导师在组会散场后叫住你，把推荐信封好递过来，像把一条隐形的线系在你和下一程之间。你想起那些熬夜补的图、被批注到体无完肤的摘要，以及某次组会后他请你喝的那杯并不好喝的速溶。秋招或保研材料的文件夹里，这封信比别人家的段子更早把你送进下一轮；别人说贵人相助，你更愿意相信是长期交付换到的「流程感很好」之外的那一点真。「导师是第一生产力」终于从一句口头禅，变成了可执行文件。",
+    "epilogue": "五年后你在行业群里看到导师转发顶会链接，顺手点了个赞，彼此都没说话。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "primaryMentor"
+        },
+        {
+          "stat": "skill",
+          "gte": 68
+        },
+        {
+          "stat": "gpa",
+          "gte": 3.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_roommate_founders",
+    "priority": 26,
+    "title": "寝室三人组创业试水",
+    "description": "你们把宿舍夜谈里的点子搬进了工商注册表，股权比例吵得像分锅包肉。路演被怼、合同踩坑、供应链翻车，你们一边互损一边改需求；DDL是第一生产力，凌晨四点的食堂只剩你们和阿姨的拖把。第一笔到账不大，但足够请客吃完那一顿「还没倒闭」的火锅。后来你们明白：合伙人不一定要志同道合，至少要一起扛过甲方与期末。",
+    "epilogue": "五年后公司还在，名字土但活着；群名仍是「再改需求就退群」。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "startupIntent"
+        },
+        {
+          "stat": "social",
+          "gte": 55
+        },
+        {
+          "stat": "skill",
+          "gte": 56
+        },
+        {
+          "stat": "money",
+          "gte": 1200
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_transfer_hero",
+    "priority": 26,
+    "title": "转专业后的窄门",
+    "description": "跨专业像把操作系统重装：课表、黑话、社交圈全换。你补修到怀疑人生，却在某次大作业里突然「编译通过」——原来不熟悉的坐标系里也能跑通自己的路。绩点起起落落像心电图，但你知道自己在对的赛道上加杠杆；小镇做题家在此刻升级成「小镇迁移工程师」。别人问你怎么敢转，你说再不转就要把一辈子卖给不喜欢的主角脚本。",
+    "epilogue": "五年后你在新领域里带实习生，第一句话永远是：先别慌，补修我也挂过。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "crossMajorChallenge"
+        },
+        {
+          "stat": "gpa",
+          "gte": 3
+        },
+        {
+          "stat": "skill",
+          "gte": 58
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_gap_world",
+    "priority": 25,
+    "title": "Gap 一年去看海与报错",
+    "description": "你暂缓「标准答案」，用间隔年换护照上的章与简历上的空白。打工、义工、穷游与自学搅在一起，像同时开十个线程；父母电话里的沉默比唠叨更响，你却学会了把焦虑写成待办而不是愧疚。你意识到人生不是秋招列表，允许一条分支编译失败再重跑。早八刺客暂时失联，但你对时间的体感反而更锋利。",
+    "epilogue": "五年后你仍会在加班夜想起那段没钱却阔的日子，像想起一段开源项目的狂热期。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "health",
+          "gte": 52
+        },
+        {
+          "stat": "money",
+          "gte": 2200
+        },
+        {
+          "stat": "gpa",
+          "lte": 3.05
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.3
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_neet_soft",
+    "priority": 24,
+    "title": "家里蹲备案中",
+    "description": "毕业后你先把自己关机重启：投递断断续续，出门需要心理建设，外卖软件比你更懂你的作息。爸妈把关心伪装成唠叨，你把自嘲伪装成松弛感，夜里刷到同龄人高光时仍会心绞痛。你知道这不是终局，只是存档点；先把睡眠与肠胃修好，也是一种硬核运维。表情包救不了房租，但能让你明天还能点开招聘软件。",
+    "epilogue": "五年后你终于对别人轻描淡写提起那段「空白」，像提起一次漫长的系统维护。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "lte": 900
+        },
+        {
+          "stat": "gpa",
+          "lte": 2.5
+        },
+        {
+          "stat": "pressure",
+          "lte": 62
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_mid_internet",
+    "priority": 25,
+    "title": "互联网中厂合格证",
+    "description": "你没有拿到传说中年包百万的「顶配岗」，但中厂的作息与需求变更把你打磨成可上线版本。面试官说你有流程感，你翻译：知道怎么在评审里活着把需求做完。团建像大型破冰 DLC，工位像第二个寝室；你学会了用周报把琐碎包装成资产。小镇做题家在此进化成「小镇交付工程师」。",
+    "epilogue": "五年后你跳槽时才发现，那年学会的甩锅与对齐才是硬通货。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "internshipReady"
+        },
+        {
+          "stat": "skill",
+          "gte": 64
+        },
+        {
+          "stat": "skill",
+          "lte": 76
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.9
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_bank_counter",
+    "priority": 24,
+    "title": "玻璃后面的柜员线",
+    "description": "你考上编制边缘岗位，穿上制服坐在防弹玻璃后，点钞与微笑都有 KPI。客户把焦虑砸在你脸上，你把流程背成肌肉记忆；钞箱沉重，午休很短，但公积金按时到账像温柔补丁。同学说埋没才华，你说先把生活编译通过。早八刺客在此变为晨会刺客，迟到一分钟全网点都知道。",
+    "epilogue": "五年后你轮岗到后台风控，终于不用微笑面对无理取闹，只需面对 Excel。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "publicInstitutionTrack"
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.6
+        },
+        {
+          "stat": "gpa",
+          "lte": 3.2
+        },
+        {
+          "stat": "social",
+          "gte": 45
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_med_intern_crash",
+    "priority": 26,
+    "title": "规培夜班崩溃文学",
+    "description": "医学路径把你送进医院迷宫：查房、病程、夜班与情绪劳动无限循环。你在值班室写过检讨也写过遗书草稿，最后只发出一条「还活着」给家人。带教骂你与鼓励你同一套声带；你学会在崩溃边缘写交接班，像把人生切成可交接的班次。DDL 在此变成「生命体征要先稳住」。",
+    "epilogue": "五年后你仍会做噩梦梦见医嘱签晚了一分钟，醒来发现自己已经能边噩梦边入睡。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 62
+        },
+        {
+          "stat": "pressure",
+          "gte": 78
+        },
+        {
+          "stat": "health",
+          "lte": 48
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_phd_slow_track",
+    "priority": 25,
+    "title": "读博慢车道入口",
+    "description": "导师与你长谈三次，终于在你简历与论文间隙里敲下「建议深造」。你知道博士不是光环，是更长线的延迟满足；实验失败像无限 while，只有你改的 bug 能看见出口。恋爱对象问你还要读几年，你只能说「取决于审稿人心情」。卷王在此升级为「卷五年预览版」。",
+    "epilogue": "五年后你发际线后移但眼神更稳，终于敢自嘲「实验室常住人口」。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "researchTrack"
+        },
+        {
+          "flag": "researchProgress",
+          "gte": 2
+        },
+        {
+          "stat": "gpa",
+          "gte": 3.2
+        },
+        {
+          "stat": "skill",
+          "gte": 70
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_senior_startup_pair",
+    "priority": 25,
+    "title": "学姐合伙练摊",
+    "description": "学长学姐不是传说，是把你拉进小项目的真实甲方兼合伙人。你们分摊焦虑与发票，校门口摆摊与线上测评双线并行，熬夜做出第一份用户反馈表。失败很快，迭代更快；你们互相吐槽「小镇做题家只会做题」，转头却把表格做成护城河。那些合伙人口嗨在此落地成报销单与合伙人协议。",
+    "epilogue": "五年后公司未必还在，但你们的微信群仍是彼此的避险资产。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "startupIntent"
+        },
+        {
+          "stat": "social",
+          "gte": 62
+        },
+        {
+          "stat": "money",
+          "lte": 3200
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_romance_split_city",
+    "priority": 24,
+    "title": "恋人分隔两座城",
+    "description": "你们把毕业做成选择题 rather than 判断题：offer 在不同经纬度，爱与前途互相拉扯。视频里说的「马上见」越来越像接口超时重试。结局未必狗血，可能只是在车站抱着哭完，然后各自去安检口排队。你学会把想念写成周报式的碎碎念，截图存进相册，现实写进离别教程。",
+    "epilogue": "五年后偶然同城出差约饭，彼此客气得像外包对接。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "romanceCommitted"
+        },
+        {
+          "stat": "pressure",
+          "gte": 72
+        },
+        {
+          "stat": "social",
+          "lte": 52
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_dorm_rift",
+    "priority": 24,
+    "title": "舍友决裂冷却期",
+    "description": "最后一次争吵不是因为卫生，是因为彼此的未来想象互相刺痛。群聊沉默，值日表失效，耳机成为外交边界；你在走廊听见他们笑，像你从未加入过的副本。你学会把情绪卸载到跑步与日记里，而不是卸载到学业上。寝室政治教会你的不是心机，是何时该搬出去。",
+    "epilogue": "五年后同学聚会你们礼貌点头，像承认一段旧版本兼容失败。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "pressure",
+          "gte": 82
+        },
+        {
+          "stat": "social",
+          "lte": 42
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.4
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_overseas_language",
+    "priority": 25,
+    "title": "出国预备役口语班",
+    "description": "你把雅思托福与 GRE 当成新一卡通：打卡、模考、复议与崩溃循环。签证材料厚得像毕设，面试官问你「为什么出国」，你说想换个服务器跑人生。父母赞助与你的倔强混合成保证金；朋友圈晒 offer 那天，你也晒了一碗泡面。Gap 在此不是躺平，是排队读语言的漫长前置。",
+    "epilogue": "五年后你在时区另一头熬夜加班，终于懂得什么叫「换了服务器延迟还在」。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 72
+        },
+        {
+          "stat": "money",
+          "gte": 3500
+        },
+        {
+          "stat": "gpa",
+          "gte": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_civil_retry_parent",
+    "priority": 23,
+    "title": "考编弃考再战协定",
+    "description": "报名费和沉没成本在桌面开会：这次没去考场，因为你知道只是逃避型到场。父母叹气又给你盛饭，你把羞愧嚼碎咽下，改成来年再战的学习计划。申论素材库里多了「与现实和解」这一章。别人说你是逃兵，你对自己说这是战术撤退。",
+    "epilogue": "五年后你上岸那天，最先想到的是那年弃考的午后阳光。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "civilTrack"
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.4
+        },
+        {
+          "stat": "pressure",
+          "gte": 65
+        },
+        {
+          "stat": "pressure",
+          "lte": 88
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_teach_rural",
+    "priority": 24,
+    "title": "支教合同上的签名",
+    "description": "你去乡镇学校报到那天，行李箱轮子卡在雨后泥里。孩子们喊你老师，你把大城市焦虑暂时静音；教案写到深夜，蚊子比学生更难缠。工资不高，但某种意义感像补贴一样按月打到心里。小镇做题家回流小镇当老师，像故事线自己画了一个圈。",
+    "epilogue": "五年后你考回城里编制，仍会给新生讲那段晒脱皮的日子。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "publicInstitutionTrack"
+        },
+        {
+          "stat": "social",
+          "gte": 52
+        },
+        {
+          "stat": "health",
+          "gte": 48
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_offcampus_lonely",
+    "priority": 23,
+    "title": "外宿独居噪声",
+    "description": "租房合同是你的第一份「完整独立 DLC」：水电、隔音与通勤成本教你做人。夜里路灯像延迟加载的贴图，外卖骑手是你见得最多的熟人。社交变少，专注变多；孤独像白噪声，习惯后反而好睡。你说自由很贵，但闹钟终于只属于自己。",
+    "epilogue": "五年后你买房首付仍远，但早已不怕一个人吃火锅。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "offCampus"
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.8
+        },
+        {
+          "stat": "social",
+          "lte": 48
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_family_business",
+    "priority": 23,
+    "title": "回家接班试探版",
+    "description": "家里的小生意在饭桌上摊开：叫你回去帮忙、考证、接班。你在 spreadsheet 与亲情之间走钢丝，既不想辜负也不想轻易投降。周末蹲店里学会了把面子换成现金流。聊天里那张「继承家业」的截图，落地成扫码枪与进货单。",
+    "epilogue": "五年后店还在，你头发少了，但爸妈语气软了。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "lte": 2000
+        },
+        {
+          "stat": "social",
+          "gte": 48
+        },
+        {
+          "stat": "gpa",
+          "lte": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_freelance_creator",
+    "priority": 24,
+    "title": "自由职业试水号",
+    "description": "你接单、拖稿、改稿、追款，把简历写成作品集又把作品集拆成单篇报价。客户说「预算不多但要高级感」，你微笑打开模板文件夹。收入起伏像比特币表情包，但时间主权是真的。父母问你五险一金，你只好转发一篇科普。",
+    "epilogue": "五年后你有了固定客户与房贷，仍保留离职冲动的备份存档。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "gte": 60
+        },
+        {
+          "stat": "skill",
+          "gte": 60
+        },
+        {
+          "stat": "money",
+          "gte": 2800
+        },
+        {
+          "stat": "money",
+          "lte": 5000
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_public_inspector",
+    "priority": 23,
+    "title": "基层巡查笔录员",
+    "description": "你穿着工装走过片区：表格、整改、复查与群众投诉构成日常。雨靴比球鞋更常穿，微信步数是你唯一能卷的排行榜。稳定不是躺平，是把琐碎砌成秩序。考公路线在此分叉成街道办事处的另一种亮度。",
+    "epilogue": "五年后你升科长那天，仍记得第一次被居民骂哭的雨夜。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "civilTrack"
+        },
+        {
+          "stat": "social",
+          "gte": 50
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.7
+        },
+        {
+          "stat": "gpa",
+          "lte": 3.3
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_design_studio",
+    "priority": 23,
+    "title": "乙方美工求生",
+    "description": "你在工作室里改第 N 版「还是要第一版」，色域与血压同步飙升。甲方说「大气」，你翻译：再大一点再空一点再便宜一点。作品集越来越厚，头发越来越薄。DDL 是第一生产力，你更像第一生产力的耗材。",
+    "epilogue": "五年后你跳槽甲方第一件事就是善待乙方，像善待当年的自己。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 58
+        },
+        {
+          "stat": "pressure",
+          "gte": 68
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.6
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_data_analyst",
+    "priority": 24,
+    "title": "表格战士初级职称",
+    "description": "SQL 与 Excel 成为你的左右护法；汇报会上你把图表做成故事线，老板点头像稀有掉落。你不知道算不算热爱，但至少周五晚上不用睡机房。「流程感很好」在此翻译成：指标能对齐。小镇做题家升级成小镇透视表工程师。",
+    "epilogue": "五年后你带新人第一句：先别炫技，把口径对齐。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 66
+        },
+        {
+          "stat": "gpa",
+          "gte": 3
+        },
+        {
+          "stat": "pressure",
+          "lte": 75
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_sales_engineer",
+    "priority": 23,
+    "title": "售前工程师嘴炮岗",
+    "description": "你一半时间在客户现场画架构，一半时间在内部撕资源；PPT 与 demo 环境是你的左右互搏。懂技术又懂画饼的人，在饭局与复盘会之间反复横跳。社交拉满不是天赋，是工单。",
+    "epilogue": "五年后你说话变慢了，因为知道每句都可能进会议纪要。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "gte": 70
+        },
+        {
+          "stat": "skill",
+          "gte": 60
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.5
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_journalism_intern",
+    "priority": 22,
+    "title": "媒体实习跑现场",
+    "description": "你扛着脚架跑突发，也写过没人看的转载稿；前辈说新闻理想很贵，你先把饭票挣到手。凌晨热线像随机事件池，你在稿库里练习把残酷写得克制。早八刺客换成了凌晨三点的突发推送。",
+    "epilogue": "五年后你转行公关，仍会对热搜条件反射。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "gte": 56
+        },
+        {
+          "stat": "pressure",
+          "gte": 62
+        },
+        {
+          "stat": "health",
+          "gte": 42
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_nonprofit_ops",
+    "priority": 22,
+    "title": "公益机构项目官",
+    "description": "筹款、审计、活动与志愿者管理填满日程；工资不高，会议纪要很长。你在琐碎里看见具体的人，而不是宏大叙事。成就感来自项目结项那天家长的短信，而不是转发量。佛系在此不是躺，是把力气用在对的地方。",
+    "epilogue": "五年后你跳槽企业 CSR，工资翻倍但偶尔想念前线。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "gte": 54
+        },
+        {
+          "stat": "skill",
+          "gte": 52
+        },
+        {
+          "stat": "money",
+          "lte": 3800
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_game_industry",
+    "priority": 23,
+    "title": "策划案与氪金逻辑",
+    "description": "你进了游戏公司做系统策划，天天与数值、活动表与玩家骂声共处。策划会上老板要「既有深度又要轻度」，你沉默打开竞品拆解。热爱变工单仍值得庆幸：至少夜班能报销打车。你在游戏里藏彩蛋，在现实里藏睡眠。",
+    "epilogue": "五年后你玩自家游戏会跳过氪金点，像避开年轻时的坑。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 64
+        },
+        {
+          "stat": "social",
+          "gte": 50
+        },
+        {
+          "stat": "pressure",
+          "gte": 60
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_supply_chain",
+    "priority": 22,
+    "title": "供应链跟单员长途",
+    "description": "电话、合同、船期与报关单是你微信置顶；时差让你学会把失眠卖给咖啡机。你在车间与港口之间学会谦卑：世界很大，表格很小。搞钱在此不是暴富，是回款准时。",
+    "epilogue": "五年后你升职经理，仍会对延误有 PTSD。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "gte": 3600
+        },
+        {
+          "stat": "skill",
+          "gte": 54
+        },
+        {
+          "stat": "social",
+          "gte": 46
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_critic_reader",
+    "priority": 21,
+    "title": "出版业板凳队员",
+    "description": "你在出版社做编辑助理，拆快递、对清样、追作者拖稿；书的油墨味比 KPI 好闻。理想主义被印厂工期磨薄，但你仍会在某本书的首印夜偷偷发朋友圈。小镇做题家在此变成小镇校对员。",
+    "epilogue": "五年后你笔名出书，扉页致谢写了那段板凳年份。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "gte": 3
+        },
+        {
+          "stat": "pressure",
+          "lte": 58
+        },
+        {
+          "stat": "skill",
+          "gte": 55
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_gym_coach",
+    "priority": 21,
+    "title": "健身房储备教练",
+    "description": "考证、试课、卖课与维持体脂构成你的三角循环；镜子里的你与会员眼里的你是两份 KPI。你把自律当成职业，也当成枷锁；汗水是真的，鸡汤也是真的。养生在此等于肌肉酸痛管理。",
+    "epilogue": "五年后你开小店当老板，终于可以对推销话术免疫。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "health",
+          "gte": 72
+        },
+        {
+          "stat": "social",
+          "gte": 58
+        },
+        {
+          "stat": "skill",
+          "gte": 50
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_logistics_hub",
+    "priority": 21,
+    "title": "仓储夜班调度",
+    "description": "扫码枪是你的魔杖，干线晚点是你的随机事件；你与骑手、司机、客服共建微信群宇宙。身体疲惫，但现金流真实；你说先攒钱再谈职业规划这种老实话。早八刺客输给了凌晨三点的分拣线。",
+    "epilogue": "五年后你转行产品经理，因为受够了「系统里明明不是这么写的」。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "gte": 3200
+        },
+        {
+          "stat": "health",
+          "lte": 62
+        },
+        {
+          "stat": "pressure",
+          "gte": 58
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_coffee_chain",
+    "priority": 21,
+    "title": "连锁咖啡储备店长",
+    "description": "配方表、盘点与客诉把你训练成微笑机器；高峰期像黑客松，你在奶泡与订单号之间修行。学历像闲置技能点，但你不瞧不起此刻——先把房租稳住。搞钱线的烟火气在此等于蒸汽棒嘶嘶声。",
+    "epilogue": "五年后你自己开店，菜单仍写着当年练手的隐藏款。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "gte": 52
+        },
+        {
+          "stat": "money",
+          "gte": 2600
+        },
+        {
+          "stat": "gpa",
+          "lte": 2.9
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_realty_agent",
+    "priority": 21,
+    "title": "房产中介带看王者",
+    "description": "你记住片区每一套采光与房东脾气；客户说要再看看，你笑着预约下一套。嘴皮子与脚程是你的复合技能；签约那刻的快感堪比答辩通过。社交在此等于合法骚扰与真诚并存。",
+    "epilogue": "五年后你只做豪宅渠道，仍会对雨伞常备两件。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "gte": 68
+        },
+        {
+          "stat": "money",
+          "gte": 3000
+        },
+        {
+          "stat": "skill",
+          "gte": 48
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_farm_tech",
+    "priority": 22,
+    "title": "农技推广员下乡记",
+    "description": "你把传感器与无人机介绍给合作社；老乡问你英语六级能不能防虫害，你只能苦笑科普。科研在此接地：泥土与数据表同样沉重。农业创新不是嘴上热搜，是耐心比键盘长。",
+    "epilogue": "五年后试点扩大，你却在ppt里放了一张第一年失败的苗。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 58
+        },
+        {
+          "stat": "health",
+          "gte": 55
+        },
+        {
+          "stat": "social",
+          "gte": 48
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_secret_crush",
+    "priority": 22,
+    "title": "暗恋停在致谢里",
+    "description": "你没有把喜欢说出口，只在毕业典礼合影里站得离 TA 近一点。后来朋友圈点赞成为你唯一的交互协议。遗憾是真的，自由也是真的：你把心动兑换成一场不被打分的关系。暧昧三连击一场都没触发，但你学会了克制也算成长。",
+    "epilogue": "五年后同学会你们寒暄，像彼此早已卸载的客户端。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "romanceSkipped"
+        },
+        {
+          "stat": "gpa",
+          "gte": 3
+        },
+        {
+          "stat": "social",
+          "lte": 45
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_parent_expect",
+    "priority": 22,
+    "title": "父母的默认路径",
+    "description": "你沿着家人期待的公式投递：本地、稳定、可相亲。内心的小反抗只在深夜耳机里播放。你知道这不是史诗，只是中国式温情与控制的混合包。你在表格里填「服从调剂」，像对自己人生也按下默认安装。",
+    "epilogue": "五年后你开始偷偷接副业，像给默认路径打补丁。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "pressure",
+          "gte": 60
+        },
+        {
+          "stat": "social",
+          "lte": 50
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.7
+        },
+        {
+          "stat": "gpa",
+          "lte": 3.2
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_double_degree",
+    "priority": 23,
+    "title": "双学位缝合怪",
+    "description": "你同时啃两套培养方案，考试周像叠 debuff；室友以为你分身，其实你只是咖啡耐受提高。简历多一行，头发少一撮；但跨界想象力从此合法。卷王在此表现为「双倍培养方案生存实验」。",
+    "epilogue": "五年后你做交叉岗位反而吃香，因为早就习惯翻译两种黑话。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "gte": 3.1
+        },
+        {
+          "stat": "pressure",
+          "gte": 70
+        },
+        {
+          "stat": "skill",
+          "gte": 62
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_volunteer_legacy",
+    "priority": 21,
+    "title": "大型赛会志愿者遗产",
+    "description": "你攒下一沓志愿者证书与晒黑的皮肤；见过凌晨四点的场馆与媒体村的泡面。志愿时长换不了首付，却换来一群同类朋友与可控的热血。社牛在此是被 workflow 训练出来的。",
+    "epilogue": "五年后城市办赛你第一反应仍是：我去不去守门？",
+    "conditions": {
+      "all": [
+        {
+          "stat": "social",
+          "gte": 60
+        },
+        {
+          "stat": "health",
+          "gte": 50
+        },
+        {
+          "stat": "skill",
+          "gte": 50
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_debt_student",
+    "priority": 22,
+    "title": "助学贷款偿还长跑",
+    "description": "毕业第一件事是把还款日历钉在桌面；工资到手先拆成几份，像拆解炸弹。你羡慕别人的松弛感，却也尊敬自己的信用记录。搞钱在此不是欲望，是义务函数最小化。",
+    "epilogue": "五年后你还清那天请自己吃了顿贵的，发票撕得比毕业证还爽。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "money",
+          "lte": 2200
+        },
+        {
+          "stat": "skill",
+          "gte": 55
+        },
+        {
+          "stat": "pressure",
+          "gte": 55
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_night_school",
+    "priority": 20,
+    "title": "夜校证书叠 Buff",
+    "description": "白天上班晚上上课，你在地铁里背单词像挂机刷怪；困到在最后一排点头，但仍抢到前排插座。你知道证书不是魔法，但能给简历多一行确定性。DDL 是第一生产力，夜校就像给这条定律办分期。",
+    "epilogue": "五年后证堆满抽屉，你最珍惜的是那段不肯躺平的劲儿。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "certProgress",
+          "gte": 1
+        },
+        {
+          "stat": "pressure",
+          "gte": 62
+        },
+        {
+          "stat": "money",
+          "lte": 4000
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_clinic_admin",
+    "priority": 21,
+    "title": "医院行政岗稳稳幸福",
+    "description": "你不拿手术刀，却负责让手术排期不乱；投诉电话像随机事件，你用流程表接住情绪。稳定、体面、偶尔心累；你在「幕后运维」里找到位置。考编 wins 的一种低温版本。",
+    "epilogue": "五年后临床同学羡慕你不值班，你羡慕他们不被投诉。",
+    "conditions": {
+      "all": [
+        {
+          "flag": "publicInstitutionTrack"
+        },
+        {
+          "stat": "pressure",
+          "lte": 68
+        },
+        {
+          "stat": "gpa",
+          "gte": 2.5
+        },
+        {
+          "stat": "gpa",
+          "lte": 3.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_tech_support",
+    "priority": 20,
+    "title": "IT 运维值班魂",
+    "description": "7x24 热线是你的人生节拍器；故障单像无限刷新的支线。你学会在骂声中保持 ping 通。技能点偏硬，脾气被迫变软；凌晨告警比闹钟更懂你的作息。高压入职的低温对照组。",
+    "epilogue": "五年后你转架构岗，终于能把电话转给下一班兄弟。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "skill",
+          "gte": 60
+        },
+        {
+          "stat": "pressure",
+          "gte": 72
+        },
+        {
+          "stat": "health",
+          "gte": 45
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_cultural_heritage",
+    "priority": 20,
+    "title": "文博策展助理",
+    "description": "你在展馆与库房之间搬运时间与灰尘；讲解词背到梦里。游客自拍比你想象的更重要，你也学会与流量共存。专业在此落地成灯光角度与展线逻辑。佛系不是懒，是对文物轻声说话。",
+    "epilogue": "五年后你独立策展，序言里藏了大四时拖场的自己。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "gte": 2.8
+        },
+        {
+          "stat": "social",
+          "gte": 48
+        },
+        {
+          "stat": "pressure",
+          "lte": 65
+        }
+      ]
+    }
+  },
+  {
+    "id": "end_ws_mock",
+    "priority": 19,
+    "title": "平行日常 · 留白的你",
+    "description": "你没有触发宏大叙事，却把每一天过得可复盘：食堂、教室、寝室三点循环里仍有细小骄傲。朋友说你不像主角，你反驳主角也要有人演路人甲的自我修养。普通毕业在此前的万千分支之后，仍值得一杯奶茶庆祝。",
+    "epilogue": "五年后你把这段岁月当成默认皮肤，偶尔换上野心主题试试。",
+    "conditions": {
+      "all": [
+        {
+          "stat": "gpa",
+          "gte": 2.5
+        },
+        {
+          "stat": "social",
+          "gte": 38
+        },
+        {
+          "stat": "social",
+          "lte": 62
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,1700 @@
+[
+  {
+    "id": "ach_first_run",
+    "title": "先活过大一再说",
+    "description": "你第一次把四年跑完结算——未必完美，但学籍终于盖上了「存活确认章」。",
+    "hint": "通关次数达到 1",
+    "conditions": {
+      "always": true
+    }
+  },
+  {
+    "id": "ach_hardcore",
+    "title": "凌晨三点的图书馆幽灵",
+    "description": "闭馆音乐响起时你还在，压力表与能力条同时飙红，像给图书馆交了通宵租金。",
+    "hint": "压力 >= 75 且能力 >= 70",
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 75
+        },
+        {
+          "key": "skill",
+          "gte": 70
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_romance_route",
+    "title": "恋爱脑但有边界感",
+    "description": "恋爱线没有拖垮学业：你把心动写进日常，也把毕业证写进现实。",
+    "hint": "romanceCommitted 且非退学",
+    "conditions": {
+      "flags": [
+        {
+          "key": "romanceCommitted",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_intern_ready",
+    "title": "简历投递机",
+    "description": "简历从空白页变成可投递版本，HR 邮箱在你眼里比表白墙更值得刷新。",
+    "hint": "internshipReady 为 true",
+    "conditions": {
+      "flags": [
+        {
+          "key": "internshipReady",
+          "truthy": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_civil_track",
+    "title": "申论素材库收藏家",
+    "description": "申论素材、面试礼仪与编制结局在同一条时间线上汇合，你终于把「上岸」从梗变成存档。",
+    "hint": "结局为 end_civil_pass 或 end_teacher_staff",
+    "conditions": {
+      "endingIn": [
+        "end_civil_pass",
+        "end_teacher_staff"
+      ]
+    }
+  },
+  {
+    "id": "ach_student_work",
+    "title": "消息秒回的班委",
+    "description": "班委群消息你总能第一个回「收到」，活动台账厚得像第二本培养方案。",
+    "hint": "studentWork >= 2",
+    "conditions": {
+      "flags": [
+        {
+          "key": "studentWork",
+          "gte": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_cert_grind",
+    "title": "证书收割机",
+    "description": "考场门口的风、准考证上的汗，被你叠成两张证——别人晒旅游，你晒及格截图。",
+    "hint": "certProgress >= 2",
+    "conditions": {
+      "flags": [
+        {
+          "key": "certProgress",
+          "gte": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_research_path",
+    "title": "实验室常驻人口",
+    "description": "组会、补实验、改图到凌晨——实验室的灯比你寝室的更早下班。",
+    "hint": "researchProgress >= 2",
+    "conditions": {
+      "flags": [
+        {
+          "key": "researchProgress",
+          "gte": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_contest_path",
+    "title": "比赛周末全勤",
+    "description": "周末赛程表比课表还密，你在答辩 PPT 与奖状边框之间反复横跳。",
+    "hint": "contestProgress >= 2",
+    "conditions": {
+      "flags": [
+        {
+          "key": "contestProgress",
+          "gte": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_dorm_survivor",
+    "title": "宿舍生存大师",
+    "description": "熄灯后的寝室政治、卫生轮值与夜谈你都扛过来了，体检单仍写得过去。",
+    "hint": "dormProgress >= 2 且健康 >= 50",
+    "conditions": {
+      "flags": [
+        {
+          "key": "dormProgress",
+          "gte": 2
+        }
+      ],
+      "stats": [
+        {
+          "key": "health",
+          "gte": 50
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_finance_rookie",
+    "title": "理财新手",
+    "description": "第一次认真记账、定投或研究基金条款——钱包开始听你的，而不是只听促销。",
+    "hint": "financeProgress >= 1",
+    "conditions": {
+      "flags": [
+        {
+          "key": "financeProgress",
+          "gte": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_finance_pro",
+    "title": "现金流掌控者",
+    "description": "毕业时账户余额让人安心，你终于能在「吃土」与「下馆子」之间按下暂停键。",
+    "hint": "金钱 >= 4500",
+    "conditions": {
+      "stats": [
+        {
+          "key": "money",
+          "gte": 4500
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_budget_master",
+    "title": "精打细算",
+    "description": "花钱克制、心态松弛：你把日子过成低压力高结余的可持续版本。",
+    "hint": "金钱 >= 2800 且压力 <= 45",
+    "conditions": {
+      "stats": [
+        {
+          "key": "money",
+          "gte": 2800
+        },
+        {
+          "key": "pressure",
+          "lte": 45
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_iron_body",
+    "title": "铁人状态",
+    "description": "熬夜、外卖与焦虑都没把你击倒，健康条亮得像体测满分的彩蛋。",
+    "hint": "健康 >= 88",
+    "conditions": {
+      "stats": [
+        {
+          "key": "health",
+          "gte": 88
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_social_star",
+    "title": "社交发光体",
+    "description": "聚会、社团、饭局与协作里你都是发光体——人脉不是 KPI，却真的在涨。",
+    "hint": "社交 >= 85",
+    "conditions": {
+      "stats": [
+        {
+          "key": "social",
+          "gte": 85
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_skill_peak",
+    "title": "硬核能力派",
+    "description": "硬技能拉满，简历上的项目与作品会说话，比「我很努力」更有说服力。",
+    "hint": "能力 >= 85",
+    "conditions": {
+      "stats": [
+        {
+          "key": "skill",
+          "gte": 85
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_gpa_top",
+    "title": "绩点怪物",
+    "description": "绩点高到让同学怀疑你偷偷开了倍速，你知道那只是长期交付的回执。",
+    "hint": "绩点 >= 3.85",
+    "conditions": {
+      "stats": [
+        {
+          "key": "gpa",
+          "gte": 3.85
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_low_stress_grad",
+    "title": "松弛毕业",
+    "description": "别人卷到耳鸣，你仍保持松弛感通关——不是躺平，是节奏感拿捏住了。",
+    "hint": "压力 <= 35 且非退学",
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "lte": 35
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_cross_major_survive",
+    "title": "跨专业破局者",
+    "description": "跨专业像重装系统：课表、黑话、社交圈全换，你仍把毕业协议签了下来。",
+    "hint": "isCrossMajor 为 true 且非退学",
+    "conditions": {
+      "flags": [
+        {
+          "key": "crossMajorChallenge",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_research_grit",
+    "title": "科研耐受度",
+    "description": "科研线没因为高压而断档，你在实验失败与 deadline 之间练出耐受度。",
+    "hint": "researchTrack=true 且压力 >= 70",
+    "conditions": {
+      "flags": [
+        {
+          "key": "researchTrack",
+          "truthy": true
+        }
+      ],
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 70
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_intern_balance",
+    "title": "实习平衡术",
+    "description": "实习打卡、通勤与加班没有掏空身体，你还留得出力给期末与睡眠。",
+    "hint": "internshipReady=true 且健康 >= 60",
+    "conditions": {
+      "flags": [
+        {
+          "key": "internshipReady",
+          "truthy": true
+        }
+      ],
+      "stats": [
+        {
+          "key": "health",
+          "gte": 60
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_public_service",
+    "title": "公共服务路径",
+    "description": "考公或考编的旗标被点亮，稳定路线从幻想变成可执行的投递清单。",
+    "hint": "civilTrack 或 publicInstitutionTrack",
+    "conditions": {
+      "flagsAny": [
+        {
+          "key": "civilTrack",
+          "truthy": true
+        },
+        {
+          "key": "publicInstitutionTrack",
+          "truthy": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_romance_and_career",
+    "title": "爱情事业双修",
+    "description": "约会与刷题、牵手与面试被你排进同一张日历，爱情与能力都在线。",
+    "hint": "romanceCommitted 且技能 >= 70",
+    "conditions": {
+      "flags": [
+        {
+          "key": "romanceCommitted",
+          "truthy": true
+        }
+      ],
+      "stats": [
+        {
+          "key": "skill",
+          "gte": 70
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_item_collector",
+    "title": "背包收藏家",
+    "description": "道具、补给与生活向选择被你玩出收益，背包像第二套技能树。",
+    "hint": "背包相关行为计数 >= 3",
+    "conditions": {
+      "flags": [
+        {
+          "key": "itemUsage",
+          "gte": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_resilience",
+    "title": "逆风翻盘",
+    "description": "压力爆表仍没退学——你把「扛住」写进结局，比鸡汤更硬。",
+    "hint": "压力 >= 90 且非退学",
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 90
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_story_explorer",
+    "title": "剧情探索者",
+    "description": "考证、竞赛、科研你都沾过边，像刻意把校园 DLC 全图点亮了一角。",
+    "hint": "certProgress>=1、contestProgress>=1、researchProgress>=1",
+    "conditions": {
+      "flags": [
+        {
+          "key": "certProgress",
+          "gte": 1
+        },
+        {
+          "key": "contestProgress",
+          "gte": 1
+        },
+        {
+          "key": "researchProgress",
+          "gte": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "ach_discipline",
+    "title": "纪律严明",
+    "description": "军校式的节奏压在身上，你却用纪律换到高健康毕业——硬骨头也是骨头。",
+    "hint": "压力 >= 70 且健康 >= 75",
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 70
+        },
+        {
+          "key": "health",
+          "gte": 75
+        }
+      ],
+      "school": "military_academy"
+    }
+  },
+  {
+    "id": "ach_global_vision",
+    "title": "国际视野",
+    "description": "外语院校的语境里，你把口语、社交与专业能力练成一套出口套餐。",
+    "hint": "社交 >= 80 且技能 >= 75",
+    "conditions": {
+      "stats": [
+        {
+          "key": "social",
+          "gte": 80
+        },
+        {
+          "key": "skill",
+          "gte": 75
+        }
+      ],
+      "school": "foreign_language"
+    }
+  },
+  {
+    "id": "ach_artistic_soul",
+    "title": "艺术灵魂",
+    "description": "美院空气里压力不高、作品很硬，你用创作而不是焦虑证明自己。",
+    "hint": "压力 <= 40 且技能 >= 80",
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "lte": 40
+        },
+        {
+          "key": "skill",
+          "gte": 80
+        }
+      ],
+      "school": "art_academy"
+    }
+  },
+  {
+    "id": "ach_practical_expert",
+    "title": "实践专家",
+    "description": "职校路线里技能与现金流双高，动手比画饼更早兑现成工资条。",
+    "hint": "技能 >= 85 且金钱 >= 4000",
+    "conditions": {
+      "stats": [
+        {
+          "key": "skill",
+          "gte": 85
+        },
+        {
+          "key": "money",
+          "gte": 4000
+        }
+      ],
+      "school": "vocational"
+    }
+  },
+  {
+    "id": "ach_agricultural_innovator",
+    "title": "农业创新者",
+    "description": "农林院校的田野与课题同行，科研进度与健康一起撑过了长线季节。",
+    "hint": "researchProgress >= 2 且健康 >= 70",
+    "conditions": {
+      "flags": [
+        {
+          "key": "researchProgress",
+          "gte": 2
+        }
+      ],
+      "stats": [
+        {
+          "key": "health",
+          "gte": 70
+        }
+      ],
+      "school": "agricultural"
+    }
+  },
+  {
+    "id": "ach_justice_guardian",
+    "title": "正义守护者",
+    "description": "政法院校里你把考公意向走到底，社交与法治素养像一套制服内外兼修。",
+    "hint": "civilTrack = true 且社交 >= 75",
+    "conditions": {
+      "flags": [
+        {
+          "key": "civilTrack",
+          "truthy": true
+        }
+      ],
+      "stats": [
+        {
+          "key": "social",
+          "gte": 75
+        }
+      ],
+      "school": "police_academy"
+    }
+  },
+  {
+    "id": "ach_roommate_trio",
+    "title": "室友三人组",
+    "description": "宿舍线推进两轮以上，闹过别扭也讲过夜话，最后还能笑着拍毕业照。",
+    "hint": "dormProgress >= 2 且健康 >= 55",
+    "conditions": {
+      "flags": [
+        {
+          "key": "dormProgress",
+          "gte": 2
+        }
+      ],
+      "stats": [
+        {
+          "key": "health",
+          "gte": 55
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_mentor_chosen",
+    "title": "导师亲选",
+    "description": "主导师在本局被写进名册，从此组会、推荐信与方向感都有了具体名字。",
+    "hint": "flags.primaryMentor 已设置",
+    "conditions": {
+      "flags": [
+        {
+          "key": "primaryMentor",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_crush_line_open",
+    "title": "心动副本已加载",
+    "description": "恋爱承诺线正式加载：心动不再是随机事件，而是会分叉的主线任务。",
+    "hint": "romanceCommitted",
+    "conditions": {
+      "flags": [
+        {
+          "key": "romanceCommitted",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_crush_skipped",
+    "title": "暗恋未遂（自愿跳过）",
+    "description": "你主动跳过恋情开局，仍顺利毕业——把精力留给绩点、实习或自我升级。",
+    "hint": "romanceSkipped 且非退学",
+    "conditions": {
+      "flags": [
+        {
+          "key": "romanceSkipped",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_npc_events_light",
+    "title": "关系网浅尝",
+    "description": "校园里几个 NPC 的专属剧情被你轻轻触发，关系网从陌生变成有回声。",
+    "hint": "npcEventHits 汇总 >= 2",
+    "conditions": {
+      "flags": [
+        {
+          "key": "npcEventHits",
+          "gte": 2
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_npc_events_dense",
+    "title": "关系网深潜",
+    "description": "人际支线被你频繁点开，对话、抉择与后续像连续剧一样连载。",
+    "hint": "npcEventHits 汇总 >= 6",
+    "conditions": {
+      "flags": [
+        {
+          "key": "npcEventHits",
+          "gte": 6
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_npc_events_whale",
+    "title": "NPC 剧情收割机",
+    "description": "NPC 互动计数爆表，你几乎把可遇见的人都聊成了「熟脸模组」。",
+    "hint": "npcEventHits 汇总 >= 12",
+    "conditions": {
+      "flags": [
+        {
+          "key": "npcEventHits",
+          "gte": 12
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_canteen_regular",
+    "title": "食堂阿姨认得我",
+    "description": "食堂、道具与生活消费被你玩成循环——胃和钱包都记得你的口味。",
+    "hint": "itemUsage>=2 且 money>=3200",
+    "conditions": {
+      "flags": [
+        {
+          "key": "itemUsage",
+          "gte": 2
+        }
+      ],
+      "stats": [
+        {
+          "key": "money",
+          "gte": 3200
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_library_streak",
+    "title": "图书馆抢座七连胜（心里版）",
+    "description": "高压之下绩点仍稳在高位，像连续七天抢到靠窗座位的精神胜利版。",
+    "hint": "压力 >= 65 且绩点 >= 3.4",
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 65
+        },
+        {
+          "key": "gpa",
+          "gte": 3.4
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_four_am_canteen",
+    "title": "凌晨四点的食堂只剩你",
+    "description": "极端夜猫作息把压力推到红线，身体却勉强撑过毕业线——食堂阿姨见过你最后一碗面。",
+    "hint": "压力 >= 85 且健康 >= 40 且非退学",
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 85
+        },
+        {
+          "key": "health",
+          "gte": 40
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_ambiguous_three",
+    "title": "暧昧三连击",
+    "description": "恋爱、社交与健康没有互相拆台，暧昧与自律被你调成可并存的音量。",
+    "hint": "romanceCommitted + 社交>=60 + 健康>=50",
+    "conditions": {
+      "flags": [
+        {
+          "key": "romanceCommitted",
+          "truthy": true
+        }
+      ],
+      "stats": [
+        {
+          "key": "social",
+          "gte": 60
+        },
+        {
+          "key": "health",
+          "gte": 50
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_startup_dual",
+    "title": "情侣档创业预备",
+    "description": "创业脑洞与恋爱线同时成立，你们讨论股权比例时也不忘讨论晚饭吃啥。",
+    "hint": "romanceCommitted + startupIntent",
+    "conditions": {
+      "flags": [
+        {
+          "key": "romanceCommitted",
+          "truthy": true
+        },
+        {
+          "key": "startupIntent",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_mentor_research_combo",
+    "title": "课题组常住人口",
+    "description": "导师旗标叠上科研轨，课题组从此把你登记为「常驻人口」。",
+    "hint": "primaryMentor + researchTrack",
+    "conditions": {
+      "flags": [
+        {
+          "key": "primaryMentor",
+          "truthy": true
+        },
+        {
+          "key": "researchTrack",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_off_campus_adult",
+    "title": "外宿早熟玩家",
+    "description": "外宿生活教会你水电、通勤与独处，压力却没失控——早熟但不脆皮。",
+    "hint": "offCampus + 压力<=70",
+    "conditions": {
+      "flags": [
+        {
+          "key": "offCampus",
+          "truthy": true
+        }
+      ],
+      "stats": [
+        {
+          "key": "pressure",
+          "lte": 70
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_cross_major_hero",
+    "title": "转专业逆行者",
+    "description": "转专业后绩点仍过线，像在新赛道跑完一场补考马拉松。",
+    "hint": "crossMajorChallenge + gpa>=3.0",
+    "conditions": {
+      "flags": [
+        {
+          "key": "crossMajorChallenge",
+          "truthy": true
+        }
+      ],
+      "stats": [
+        {
+          "key": "gpa",
+          "gte": 3
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_finance_literate",
+    "title": "理财课代表",
+    "description": "理财进度拉满，你分得清复利、风险与冲动消费，钱包有了说明书。",
+    "hint": "financeProgress >= 3",
+    "conditions": {
+      "flags": [
+        {
+          "key": "financeProgress",
+          "gte": 3
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_civil_marathon",
+    "title": "考公里程碑 marathon",
+    "description": "考公路线走长程，刷题、模考与材料准备像赛季一样一季季推进。",
+    "hint": "civilTrack + civilProgress>=2",
+    "conditions": {
+      "flags": [
+        {
+          "key": "civilTrack",
+          "truthy": true
+        },
+        {
+          "key": "civilProgress",
+          "gte": 2
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_teach_track_shadow",
+    "title": "站上讲台预演",
+    "description": "学生工作与考编意向并行，你已经在讲台上预演过「老师」这个皮肤。",
+    "hint": "studentWork>=2 且 publicInstitutionTrack",
+    "conditions": {
+      "flags": [
+        {
+          "key": "studentWork",
+          "gte": 2
+        },
+        {
+          "key": "publicInstitutionTrack",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_intern_coffee_life",
+    "title": "实习咖啡续命局",
+    "description": "实习就绪且存款尚可，咖啡续命的日子至少不用为房租失眠。",
+    "hint": "internshipReady + money>=3500",
+    "conditions": {
+      "flags": [
+        {
+          "key": "internshipReady",
+          "truthy": true
+        }
+      ],
+      "stats": [
+        {
+          "key": "money",
+          "gte": 3500
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_contest_resume_king",
+    "title": "奖状裱框预备役",
+    "description": "竞赛履历与硬技能双高，奖状还没裱框，简历已经先亮了一格。",
+    "hint": "contestProgress>=2 且 skill>=75",
+    "conditions": {
+      "flags": [
+        {
+          "key": "contestProgress",
+          "gte": 2
+        }
+      ],
+      "stats": [
+        {
+          "key": "skill",
+          "gte": 75
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_cert_wall_planner",
+    "title": "考证墙规划师",
+    "description": "考证墙规划到位，压力虽大却可控——你知道哪张证下一季该上场。",
+    "hint": "certProgress>=3 且 pressure<=80",
+    "conditions": {
+      "flags": [
+        {
+          "key": "certProgress",
+          "gte": 3
+        }
+      ],
+      "stats": [
+        {
+          "key": "pressure",
+          "lte": 80
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_mentor_letter_runner",
+    "title": "推荐信集邮",
+    "description": "导师信件类互动被解锁，推荐信从传说变成可以追的进度条。",
+    "hint": "mentorUnlocked",
+    "conditions": {
+      "flags": [
+        {
+          "key": "mentorUnlocked",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_bigtech_relaxed",
+    "title": "大厂预备·心态松弛版",
+    "description": "大厂意向有了，心态却没被卷碎——高压 OFF，投递 ON。",
+    "hint": "careerBigTech + pressure<=68",
+    "conditions": {
+      "flags": [
+        {
+          "key": "careerBigTech",
+          "truthy": true
+        }
+      ],
+      "stats": [
+        {
+          "key": "pressure",
+          "lte": 68
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_bigtech_stress",
+    "title": "大厂预备·燃烧版",
+    "description": "大厂路线与燃烧版作息绑定，你用健康条换面试轮次，像最后一季的排位赛。",
+    "hint": "careerBigTech + pressure>=78",
+    "conditions": {
+      "flags": [
+        {
+          "key": "careerBigTech",
+          "truthy": true
+        }
+      ],
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 78
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_postgrad_lock_in",
+    "title": "推免锁档成功",
+    "description": "推免锁档成功且绩点漂亮，深造副本从「可能」变成系统通知里的确定项。",
+    "hint": "postgradLockedIn + gpa>=3.5",
+    "conditions": {
+      "flags": [
+        {
+          "key": "postgradLockedIn",
+          "truthy": true
+        }
+      ],
+      "stats": [
+        {
+          "key": "gpa",
+          "gte": 3.5
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_research_stack",
+    "title": "实验室千层饼",
+    "description": "科研进度叠满三层，实验记录比日记还厚，组会 PPT 可以当枕头垫。",
+    "hint": "researchProgress>=3",
+    "conditions": {
+      "flags": [
+        {
+          "key": "researchProgress",
+          "gte": 3
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_balanced_human",
+    "title": "五边形战士（省略一角）",
+    "description": "绩点、能力、社交、健康都在中高位，像五边形战士故意留了一角给睡觉。",
+    "hint": "gpa>=3.2 skill>=65 social>=60 health>=60",
+    "conditions": {
+      "stats": [
+        {
+          "key": "gpa",
+          "gte": 3.2
+        },
+        {
+          "key": "skill",
+          "gte": 65
+        },
+        {
+          "key": "social",
+          "gte": 60
+        },
+        {
+          "key": "health",
+          "gte": 60
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_money_saver_soul",
+    "title": "抠门学艺术家",
+    "description": "低开支心态配上高存款收官，抠门不是吝啬，是给未来留缓冲条。",
+    "hint": "pressure<=40 且 money>=4000",
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "lte": 40
+        },
+        {
+          "key": "money",
+          "gte": 4000
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_end_npc_mentor_postdoc_track",
+    "title": "结局：导师盖章的深造线",
+    "description": "你打出了导师盖章的深造向结局——实验室的门没关，只是换了一条更长的走廊。",
+    "hint": "结局 end_npc_mentor_postdoc_track",
+    "conditions": {
+      "endingIn": [
+        "end_npc_mentor_postdoc_track"
+      ]
+    }
+  },
+  {
+    "id": "ach_end_npc_startup_couple_mvp",
+    "title": "结局：情侣档 MVP",
+    "description": "情侣档创业双线结局解锁：合伙协议与牵手照出现在同一份文件夹里。",
+    "hint": "结局 end_npc_startup_couple_mvp",
+    "conditions": {
+      "endingIn": [
+        "end_npc_startup_couple_mvp"
+      ]
+    }
+  },
+  {
+    "id": "ach_end_npc_event_chain_master",
+    "title": "结局：关系网高密玩家",
+    "description": "高密 NPC 互动结局落地，校园像开放世界，而你几乎清完了人际支线。",
+    "hint": "结局 end_npc_event_chain_master",
+    "conditions": {
+      "endingIn": [
+        "end_npc_event_chain_master"
+      ]
+    }
+  },
+  {
+    "id": "ach_hidden_low_key_legend",
+    "title": "隐藏：低调传说",
+    "description": "社交曝光极低，绩点却极高——低调传说不需要朋友圈，只需要成绩单。",
+    "hint": "社交<=38 且 gpa>=3.6 且非退学",
+    "conditions": {
+      "stats": [
+        {
+          "key": "social",
+          "lte": 38
+        },
+        {
+          "key": "gpa",
+          "gte": 3.6
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_hidden_full_pack",
+    "title": "隐藏：背包党之神",
+    "description": "道具用得多，考证与竞赛也各有一脚，你把生活与卷塞进同一只背包还能拉上拉链。",
+    "hint": "itemUsage>=4 且 certProgress>=1 且 contestProgress>=1",
+    "conditions": {
+      "flags": [
+        {
+          "key": "itemUsage",
+          "gte": 4
+        },
+        {
+          "key": "certProgress",
+          "gte": 1
+        },
+        {
+          "key": "contestProgress",
+          "gte": 1
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_mentor_pick",
+    "title": "导师亲选",
+    "description": "双选或意向流程走完，主导师从「待定」变成名册上的确定 ID。",
+    "hint": "完成导师双选/意向",
+    "conditions": {
+      "rosterPrimaryMentor": true,
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_partner_lock",
+    "title": "心动对象锁定",
+    "description": "恋爱候选里你锁定了唯一心动对象，暧昧池从此只剩一条可攻略线。",
+    "hint": "npcRoster.partner 非空",
+    "conditions": {
+      "rosterPartner": true,
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_npc_events_1",
+    "title": "关系网触电",
+    "description": "第一次触发 NPC 专属事件，像关系网里亮了一盏小灯：原来路人也有剧本。",
+    "hint": "npcEventHits >= 1",
+    "conditions": {
+      "flags": [
+        {
+          "key": "npcEventHits",
+          "gte": 1
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_npc_events_3",
+    "title": "关系网加厚",
+    "description": "三次 NPC 专属互动后，校园地图开始对你显示隐藏对话选项。",
+    "hint": "npcEventHits >= 3",
+    "conditions": {
+      "flags": [
+        {
+          "key": "npcEventHits",
+          "gte": 3
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_npc_events_5",
+    "title": "关系网主线",
+    "description": "五条人际支线被你串联，剧情密度从「偶遇」升级成「连载」。",
+    "hint": "npcEventHits >= 5",
+    "conditions": {
+      "flags": [
+        {
+          "key": "npcEventHits",
+          "gte": 5
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_roommate_night",
+    "title": "室友夜谈备份",
+    "description": "宿舍向周行动累计到位，夜谈、值日或寝室副本都成了可复盘记忆。",
+    "hint": "dormProgress >= 1 且用了室友夜谈",
+    "conditions": {
+      "flags": [
+        {
+          "key": "dormProgress",
+          "gte": 1
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_startup_intent",
+    "title": "创业脑洞实名",
+    "description": "创业意向旗标被实名点亮，商业计划书还粗糙，但脑洞已经注册成立。",
+    "hint": "startupIntent",
+    "conditions": {
+      "flags": [
+        {
+          "key": "startupIntent",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_off_campus",
+    "title": "外宿通勤勇士",
+    "description": "外宿路线通关：通勤、房租与独居噪声都被你写进毕业存档的备注栏。",
+    "hint": "offCampus",
+    "conditions": {
+      "flags": [
+        {
+          "key": "offCampus",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_romance_skip",
+    "title": "单身主线通关",
+    "description": "单身主线照样毕业，你把「暂不恋爱」当成策略而不是遗憾。",
+    "hint": "romanceSkipped",
+    "conditions": {
+      "flags": [
+        {
+          "key": "romanceSkipped",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_bigtech_flag",
+    "title": "大厂直通车票",
+    "description": "大厂职业旗标触发，秋招列表里多了几个让人失眠又兴奋的名字。",
+    "hint": "careerBigTech",
+    "conditions": {
+      "flags": [
+        {
+          "key": "careerBigTech",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_postgrad_flag",
+    "title": "保研副本通关",
+    "description": "保研/推免相关旗标锁定，深造副本进入「待启动」而不是「待许愿」。",
+    "hint": "postgradLockedIn",
+    "conditions": {
+      "flags": [
+        {
+          "key": "postgradLockedIn",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_civil_double",
+    "title": "编制双修预备",
+    "description": "考公与考编意向同时触及，编制宇宙在你眼里像可切换的双开窗口。",
+    "hint": "civilTrack 与 publicInstitutionTrack",
+    "conditions": {
+      "flags": [
+        {
+          "key": "civilTrack",
+          "truthy": true
+        },
+        {
+          "key": "publicInstitutionTrack",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_money_grind",
+    "title": "搞钱系练习生",
+    "description": "存款很高，压力也不低——搞钱系练习生用焦虑换余额，至少账单好看。",
+    "hint": "金钱>=4800 压力>=60",
+    "conditions": {
+      "stats": [
+        {
+          "key": "money",
+          "gte": 4800
+        },
+        {
+          "key": "pressure",
+          "gte": 60
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_social_butterfly_end",
+    "title": "毕业仍社牛",
+    "description": "毕业时社交条仍爆表，典礼合影里你总在 C 位边缘发着人缘光。",
+    "hint": "社交>=80",
+    "conditions": {
+      "stats": [
+        {
+          "key": "social",
+          "gte": 80
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_chill_still_pass",
+    "title": "低压掠过终点线",
+    "description": "低压掠过终点线：绩点够毕业、心态够松，像慢跑冲线而非冲刺。",
+    "hint": "压力<=40 且绩点>=2.5",
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "lte": 40
+        },
+        {
+          "key": "gpa",
+          "gte": 2.5
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_auntie_regular",
+    "title": "食堂阿姨认得我",
+    "description": "生活向周行动高频发生，食堂阿姨认得你的脸，记账本认得你的笔迹。",
+    "hint": "try_new_food 或 cook 多次 — 用 itemUsage>=2 近似",
+    "conditions": {
+      "flags": [
+        {
+          "key": "itemUsage",
+          "gte": 2
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_dawn_canteen",
+    "title": "凌晨四点的食堂",
+    "description": "凌晨四点食堂只剩你，压力与健康对赌仍通关——夜猫子的毕业证带油烟味。",
+    "hint": "压力>=85 健康>=40",
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 85
+        },
+        {
+          "key": "health",
+          "gte": 40
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_contest_one_shot",
+    "title": "比赛一单通关",
+    "description": "竞赛进度停在恰好一场，像只打了一单就收手的「比赛体验版」通关者。",
+    "hint": "contestProgress==1",
+    "conditions": {
+      "flags": [
+        {
+          "key": "contestProgress",
+          "eq": 1
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_cert_only",
+    "title": "考证单项战士",
+    "description": "考证线突出、竞赛线为零，你把精力押在证书墙而不是赛场横幅。",
+    "hint": "certProgress>=1 contest=0",
+    "conditions": {
+      "flags": [
+        {
+          "key": "certProgress",
+          "gte": 1
+        },
+        {
+          "key": "contestProgress",
+          "eq": 0
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_intern_no_lab",
+    "title": "不进实验室的 offer",
+    "description": "实习 offer 到手却远离实验室，职业路线清晰：写字楼比通风橱更适合你。",
+    "hint": "internshipReady 且未 researchTrack",
+    "conditions": {
+      "flags": [
+        {
+          "key": "internshipReady",
+          "truthy": true
+        },
+        {
+          "key": "researchTrack",
+          "truthy": false
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_work_life_meme",
+    "title": "周会潜水员",
+    "description": "学生工作与社会能力双高，周会里你是潜水员，活动外你是发光体。",
+    "hint": "studentWork>=1 社交>=75",
+    "conditions": {
+      "flags": [
+        {
+          "key": "studentWork",
+          "gte": 1
+        }
+      ],
+      "stats": [
+        {
+          "key": "social",
+          "gte": 75
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_finance_roller",
+    "title": "基金心态大师",
+    "description": "理财与高压并存仍毕业，基金涨跌教会你心态管理，比课堂更刺激。",
+    "hint": "financeProgress 且压力高",
+    "conditions": {
+      "flags": [
+        {
+          "key": "financeProgress",
+          "gte": 1
+        }
+      ],
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 55
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_low_money_high_skill",
+    "title": "穷但硬气",
+    "description": "钱包瘪、技能硬——穷没有削弱你的底气，反而把能力磨成显眼包。",
+    "hint": "金钱<=2500 能力>=75",
+    "conditions": {
+      "stats": [
+        {
+          "key": "money",
+          "lte": 2500
+        },
+        {
+          "key": "skill",
+          "gte": 75
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_gpa_mid_social_high",
+    "title": "绩点普通社交发光",
+    "description": "绩点中等、人缘顶尖，你用聚会与协作补上了成绩单没写满的那一格。",
+    "hint": "2.6-3.2 社交>=78",
+    "conditions": {
+      "stats": [
+        {
+          "key": "gpa",
+          "gte": 2.6
+        },
+        {
+          "key": "gpa",
+          "lte": 3.2
+        },
+        {
+          "key": "social",
+          "gte": 78
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_hidden_walk",
+    "title": "操场遛弯哲学家",
+    "description": "操场遛弯哲学家：健康与低压双赢，你把焦虑卸载给晚风和步数。",
+    "hint": "健康>=80 压力<=42",
+    "conditions": {
+      "stats": [
+        {
+          "key": "health",
+          "gte": 80
+        },
+        {
+          "key": "pressure",
+          "lte": 42
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_polyglot_end",
+    "title": "外语院校气氛组",
+    "description": "外语院校气氛组毕业，社交条高到像自带翻译器与派对入场券。",
+    "school": "foreign_language",
+    "conditions": {
+      "stats": [
+        {
+          "key": "social",
+          "gte": 72
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_art_laid_back",
+    "title": "美院松弛战士",
+    "description": "美院松弛战士：低压通关，技能仍在线，创作节奏比焦虑跑得稳。",
+    "school": "art_academy",
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "lte": 48
+        },
+        {
+          "key": "skill",
+          "gte": 62
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_vocational_hands",
+    "title": "职校动手能力王",
+    "description": "职校动手能力王：实训与作品堆出技能条，手上功夫比口号先兑现。",
+    "school": "vocational",
+    "conditions": {
+      "stats": [
+        {
+          "key": "skill",
+          "gte": 78
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_ai_major_cs",
+    "title": "炼丹专业幸存者",
+    "description": "人工智能专业高压通关，炼丹炉与 deadline 并存，你仍把模型与绩点一起训出来了。",
+    "major": "ai",
+    "conditions": {
+      "stats": [
+        {
+          "key": "pressure",
+          "gte": 70
+        },
+        {
+          "key": "skill",
+          "gte": 65
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_law_civil",
+    "title": "政法考公双押",
+    "description": "警察学院里考公双押落地，法治素养与上岸意向写进同一份毕业叙事。",
+    "school": "police_academy",
+    "conditions": {
+      "flags": [
+        {
+          "key": "civilTrack",
+          "truthy": true
+        }
+      ],
+      "stats": [
+        {
+          "key": "gpa",
+          "gte": 2.8
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_med_grind",
+    "title": "医学长线苦行",
+    "description": "医学式长线苦行：技能硬、压力高、健康偏低，像用身体换一张迟到的通关证。",
+    "hint": "技能>=68 压力>=75",
+    "conditions": {
+      "stats": [
+        {
+          "key": "skill",
+          "gte": 68
+        },
+        {
+          "key": "pressure",
+          "gte": 75
+        },
+        {
+          "key": "health",
+          "lte": 55
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_cross_and_love",
+    "title": "跨学科也要谈恋爱",
+    "description": "跨专业挑战与恋爱线同时成立，课业重装系统时仍有人陪你熬夜改简历。",
+    "conditions": {
+      "flags": [
+        {
+          "key": "crossMajorChallenge",
+          "truthy": true
+        },
+        {
+          "key": "romanceCommitted",
+          "truthy": true
+        }
+      ],
+      "notDropout": true
+    }
+  },
+  {
+    "id": "ach_full_flags_triple",
+    "title": "三线打卡狂魔",
+    "description": "实习、科研、竞赛三线各至少打卡一次，校园主线被你玩成全景收藏模式。",
+    "hint": "三 flag",
+    "conditions": {
+      "flags": [
+        {
+          "key": "internshipReady",
+          "truthy": true
+        },
+        {
+          "key": "researchTrack",
+          "truthy": true
+        },
+        {
+          "key": "contestProgress",
+          "gte": 1
+        }
+      ],
+      "notDropout": true
+    }
+  }
+]
