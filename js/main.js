@@ -50,6 +50,13 @@ import * as save from './core/save';
 import { showRewardedVideo, AD_CONFIG } from './ads/adAdapter';
 import { evaluateAchievements } from './core/achievements';
 import BgmManager from './audio/bgmManager';
+import {
+  initShare,
+  shareToFriend,
+  getShareTimelineHint,
+  getShareTimelineHintShort,
+  getLaunchShareInfo,
+} from './core/share';
 
 const ctx = canvas.getContext('2d');
 /** 本周行动列表单行高度与可视行数（须与 renderPlay / 触摸滚动一致） */
@@ -108,175 +115,175 @@ const CG_CATALOG = [
     id: 'cg_freshman_arrival_day',
     title: '入学报到日',
     description: '第一学期，你拖着行李第一次走进校门。',
-    assetPath: 'images/cg/cg_freshman_arrival_day.png',
+    assetPath: 'images/cg/cg_freshman_arrival_day.jpg',
     unlock: { semesterGte: 1, semesterLte: 1 },
   },
   {
     id: 'cg_first_dorm_night',
     title: '宿舍第一夜',
     description: '大一上学期，宿舍灯火与陌生室友的闲聊。',
-    assetPath: 'images/cg/cg_first_dorm_night.png',
+    assetPath: 'images/cg/cg_first_dorm_night.jpg',
     unlock: { semesterGte: 1, semesterLte: 2, flags: [{ key: 'dormProgress', gte: 1 }] },
   },
   {
     id: 'cg_rain_walk_to_class',
     title: '雨天去上课',
     description: '压力偏高的一周，你在雨里赶往教室。',
-    assetPath: 'images/cg/cg_rain_walk_to_class.png',
+    assetPath: 'images/cg/cg_rain_walk_to_class.jpg',
     unlock: { stats: [{ key: 'pressure', gte: 50 }] },
   },
   {
     id: 'cg_canteen_peak_hour',
     title: '食堂饭点',
     description: '社交活跃时，食堂成了最热闹的据点。',
-    assetPath: 'images/cg/cg_canteen_peak_hour.png',
+    assetPath: 'images/cg/cg_canteen_peak_hour.jpg',
     unlock: { stats: [{ key: 'social', gte: 52 }] },
   },
   {
     id: 'cg_midterm_cram',
     title: '期中冲刺',
     description: '绩点与压力同时拉高，你在考前硬扛。',
-    assetPath: 'images/cg/cg_midterm_cram.png',
+    assetPath: 'images/cg/cg_midterm_cram.jpg',
     unlock: { stats: [{ key: 'pressure', gte: 62 }, { key: 'gpa', gte: 2.4 }] },
   },
   {
     id: 'cg_group_project_night',
     title: '小组项目夜战',
     description: '能力与人脉都在线，你们通宵把项目推进。',
-    assetPath: 'images/cg/cg_group_project_night.png',
+    assetPath: 'images/cg/cg_group_project_night.jpg',
     unlock: { stats: [{ key: 'skill', gte: 55 }, { key: 'social', gte: 48 }] },
   },
   {
     id: 'cg_hackathon_overnight',
     title: '黑客松通宵',
     description: '竞赛线推进后，屏幕前的夜晚格外漫长。',
-    assetPath: 'images/cg/cg_hackathon_overnight.png',
+    assetPath: 'images/cg/cg_hackathon_overnight.jpg',
     unlock: { flags: [{ key: 'contestProgress', gte: 2 }] },
   },
   {
     id: 'cg_lab_mistake_recovery',
     title: '实验失误复盘',
     description: '科研受挫但没有放弃，你和同伴一起排查问题。',
-    assetPath: 'images/cg/cg_lab_mistake_recovery.png',
+    assetPath: 'images/cg/cg_lab_mistake_recovery.jpg',
     unlock: { flags: [{ key: 'researchProgress', gte: 1 }], stats: [{ key: 'pressure', gte: 52 }] },
   },
   {
     id: 'cg_lab_breakthrough',
     title: '实验室突破',
     description: '科研线推进后，你在实验室迎来阶段性成果。',
-    assetPath: 'images/cg/cg_lab_breakthrough.png',
+    assetPath: 'images/cg/cg_lab_breakthrough.jpg',
     unlock: { flags: [{ key: 'researchProgress', gte: 3 }] },
   },
   {
     id: 'cg_debate_stage',
     title: '辩论台',
     description: '学生工作或高社交状态下，你站上了讲台。',
-    assetPath: 'images/cg/cg_debate_stage.png',
+    assetPath: 'images/cg/cg_debate_stage.jpg',
     unlock: { flagsAny: [{ key: 'studentWork', gte: 1 }, { key: 'contestProgress', gte: 1 }] },
   },
   {
     id: 'cg_music_club_rehearsal',
     title: '社团排练',
     description: '社交与心态都不错的一周，排练室里很热闹。',
-    assetPath: 'images/cg/cg_music_club_rehearsal.png',
+    assetPath: 'images/cg/cg_music_club_rehearsal.jpg',
     unlock: { stats: [{ key: 'social', gte: 58 }, { key: 'pressure', lte: 72 }] },
   },
   {
     id: 'cg_basketball_night_game',
     title: '夜场篮球',
     description: '健康状态良好，你在球场释放压力。',
-    assetPath: 'images/cg/cg_basketball_night_game.png',
+    assetPath: 'images/cg/cg_basketball_night_game.jpg',
     unlock: { stats: [{ key: 'health', gte: 68 }] },
   },
   {
     id: 'cg_volunteer_teaching',
     title: '志愿支教',
     description: '参与志愿或学生工作后，你走进了一间明亮的教室。',
-    assetPath: 'images/cg/cg_volunteer_teaching.png',
+    assetPath: 'images/cg/cg_volunteer_teaching.jpg',
     unlock: { flags: [{ key: 'studentWork', gte: 1 }], stats: [{ key: 'social', gte: 55 }] },
   },
   {
     id: 'cg_library_midnight',
     title: '凌晨图书馆',
     description: '绩点与压力都维持高位，你在深夜灯光下独自冲刺。',
-    assetPath: 'images/cg/cg_library_midnight.png',
+    assetPath: 'images/cg/cg_library_midnight.jpg',
     unlock: { stats: [{ key: 'gpa', gte: 3.5 }, { key: 'pressure', gte: 68 }] },
   },
   {
     id: 'cg_library_snow_evening',
     title: '雪夜图书馆',
     description: '学业稳定、心态平和，窗外是安静的雪。',
-    assetPath: 'images/cg/cg_library_snow_evening.png',
+    assetPath: 'images/cg/cg_library_snow_evening.jpg',
     unlock: { stats: [{ key: 'gpa', gte: 3.1 }, { key: 'pressure', lte: 58 }] },
   },
   {
     id: 'cg_track_sunrise',
     title: '清晨操场',
     description: '健康与自律达标，你在日出前完成晨跑。',
-    assetPath: 'images/cg/cg_track_sunrise.png',
+    assetPath: 'images/cg/cg_track_sunrise.jpg',
     unlock: { stats: [{ key: 'health', gte: 82 }, { key: 'pressure', lte: 52 }] },
   },
   {
     id: 'cg_internship_interview',
     title: '实习面试',
     description: '进入实习/求职节奏后，你穿上正装走进会议室。',
-    assetPath: 'images/cg/cg_internship_interview.png',
+    assetPath: 'images/cg/cg_internship_interview.jpg',
     unlock: { flagsAny: [{ key: 'internshipReady', truthy: true }, { key: 'civilTrack', truthy: true }] },
   },
   {
     id: 'cg_offer_rejection_moment',
     title: '拒信时刻',
     description: '高压阶段收到坏消息，你在宿舍沉默了很久。',
-    assetPath: 'images/cg/cg_offer_rejection_moment.png',
+    assetPath: 'images/cg/cg_offer_rejection_moment.jpg',
     unlock: { stats: [{ key: 'pressure', gte: 72 }, { key: 'skill', gte: 45 }] },
   },
   {
     id: 'cg_offer_arrival',
     title: 'Offer 邮件',
     description: '实习准备充分且能力达标，关键邮件终于落地。',
-    assetPath: 'images/cg/cg_offer_arrival.png',
+    assetPath: 'images/cg/cg_offer_arrival.jpg',
     unlock: { flags: [{ key: 'internshipReady', truthy: true }], stats: [{ key: 'skill', gte: 68 }] },
   },
   {
     id: 'cg_offer_success_call',
     title: '录取电话',
     description: '实习线跑通后，你在校园里接通了那通电话。',
-    assetPath: 'images/cg/cg_offer_success_call.png',
+    assetPath: 'images/cg/cg_offer_success_call.jpg',
     unlock: { flags: [{ key: 'internshipReady', truthy: true }], stats: [{ key: 'social', gte: 50 }] },
   },
   {
     id: 'cg_exam_failure_low_point',
     title: '成绩低谷',
     description: '绩点或心态跌到谷底，屏幕上的数字很冷。',
-    assetPath: 'images/cg/cg_exam_failure_low_point.png',
+    assetPath: 'images/cg/cg_exam_failure_low_point.jpg',
     unlock: { statsAny: [{ key: 'gpa', lte: 2.2 }, { key: 'pressure', gte: 82 }] },
   },
   {
     id: 'cg_comeback_study_plan',
     title: '逆袭计划',
     description: '你从低谷拉回节奏，重新写下周计划。',
-    assetPath: 'images/cg/cg_comeback_study_plan.png',
+    assetPath: 'images/cg/cg_comeback_study_plan.jpg',
     unlock: { stats: [{ key: 'gpa', gte: 2.6 }, { key: 'skill', gte: 52 }, { key: 'pressure', gte: 48 }] },
   },
   {
     id: 'cg_thesis_defense_day',
     title: '论文答辩',
     description: '大四学年，你站在答辩教室的投影前。',
-    assetPath: 'images/cg/cg_thesis_defense_day.png',
+    assetPath: 'images/cg/cg_thesis_defense_day.jpg',
     unlock: { semesterGte: 7 },
   },
   {
     id: 'cg_graduation_day',
     title: '毕业典礼',
     description: '顺利毕业结局时解锁的纪念画面。',
-    assetPath: 'images/cg/cg_graduation_day.png',
+    assetPath: 'images/cg/cg_graduation_day.jpg',
     unlock: { endingNotPrefix: 'end_dropout' },
   },
   {
     id: 'cg_commencement_throw_cap',
     title: '抛帽瞬间',
     description: '非退学结局通关时，草坪上的高光一刻。',
-    assetPath: 'images/cg/cg_commencement_throw_cap.png',
+    assetPath: 'images/cg/cg_commencement_throw_cap.jpg',
     unlock: { endingNotPrefix: 'end_dropout' },
   },
 ];
@@ -394,6 +401,7 @@ export default class SimulationMain {
   achievementScroll = 0;
   cgScroll = 0;
   creditsScroll = 0;
+  menuScroll = 0;
   runSnapshotSchoolId = '';
   runSnapshotMajorId = '';
   pendingTransition = null;
@@ -472,6 +480,8 @@ export default class SimulationMain {
     wx.onTouchStart(this.onTouchStart.bind(this));
     wx.onTouchMove(this.onTouchMove.bind(this));
     wx.onTouchEnd(this.onTouchEnd.bind(this));
+    initShare(() => this.getShareContext());
+    this.bindShareLaunchWelcome();
     requestAnimationFrame(this.loop.bind(this));
     this.galleryScroll = 0;
     this.achievementScroll = 0;
@@ -483,11 +493,11 @@ export default class SimulationMain {
     if (!wx.createImage) return;
     
     // 加载UI资源
-    this.loadImageAsset('ui_panel_bg', 'images/generated/ui_panel_bg.png');
-    this.loadImageAsset('ui_button_primary', 'images/generated/ui_button_primary.png');
+    this.loadImageAsset('ui_panel_bg', 'images/generated/ui_panel_bg.jpg');
+    this.loadImageAsset('ui_button_primary', 'images/generated/ui_button_primary.jpg');
     
     // 加载游戏头像
-    this.loadImageAsset('game_avatar', 'images/generated/game_avatar.png');
+    this.loadImageAsset('game_avatar', 'images/generated/game_avatar.jpg');
     
     // 加载学校背景图片
     this.loadSchoolBackgrounds();
@@ -495,7 +505,7 @@ export default class SimulationMain {
     // 加载个人房间背景（用于宿舍场景）
     this.loadPersonalRoomBackgrounds();
     
-    // 预设头像：images/generated/avatars/male/*.jpg、female/*.png（不走 assetExists，避免小游戏包内路径误判）
+    // 预设头像：images/generated/avatars/male|female/*.jpg（不走 assetExists，避免小游戏包内路径误判）
     this.assets.avatars = { male: [], female: [] };
     for (let i = 1; i <= 4; i++) {
       const maleImg = this.loadImageAssetUnchecked(
@@ -505,7 +515,7 @@ export default class SimulationMain {
       if (maleImg) this.assets.avatars.male[i - 1] = maleImg;
       const femaleImg = this.loadImageAssetUnchecked(
         `avatar_female_${i}`,
-        `images/generated/avatars/female/female_${i}.png`,
+        `images/generated/avatars/female/female_${i}.jpg`,
       );
       if (femaleImg) this.assets.avatars.female[i - 1] = femaleImg;
     }
@@ -538,20 +548,20 @@ export default class SimulationMain {
   loadSchoolBackgrounds() {
     // 加载不同场景的学校背景
     const backgrounds = [
-      'Library Day.png',
-      'Classroom Day.png', 
-      'Gym Day.png',
-      'Corridor Day.png',
-      'Refectory Day.png',
-      'Courtyard1 Day.png',
-      'Athletics Track Day.png',
-      'Music Room Day.png',
-      'Science Laboratory Room Day.png',
-      'Student Council Room Day.png'
+      'Library Day.jpg',
+      'Classroom Day.jpg', 
+      'Gym Day.jpg',
+      'Corridor Day.jpg',
+      'Refectory Day.jpg',
+      'Courtyard1 Day.jpg',
+      'Athletics Track Day.jpg',
+      'Music Room Day.jpg',
+      'Science Laboratory Room Day.jpg',
+      'Student Council Room Day.jpg'
     ];
     
     backgrounds.forEach(bg => {
-      const assetId = bg.replace('.png', '').replace(' ', '_');
+      const assetId = bg.replace(/\.(png|jpe?g)$/i, '').replace(' ', '_');
       this.loadImageAsset(assetId, `images/School/${bg}`);
     });
     
@@ -583,16 +593,16 @@ export default class SimulationMain {
     
     // 加载装饰性图片
     const decorativeImages = [
-      'star_yellow.png',
-      'star_blue.png',
-      'star_pink.png',
-      'button_green.png',
-      'button_red.png',
-      'button_blue.png'
+      'star_yellow.jpg',
+      'star_blue.jpg',
+      'star_pink.jpg',
+      'button_green.jpg',
+      'button_red.jpg',
+      'button_blue.jpg'
     ];
     
     decorativeImages.forEach(img => {
-      const assetId = img.replace('.png', '');
+      const assetId = img.replace(/\.(png|jpe?g)$/i, '');
       this.loadImageAsset(assetId, `images/kenney_ui-pack/PNG/${img}`);
     });
   }
@@ -600,13 +610,13 @@ export default class SimulationMain {
   loadUIButtons() {
     // 加载不同样式的按钮
     const buttonStyles = [
-      'button_round_gradient.png',
-      'button_rectangle_gradient.png',
-      'button_square_gradient.png'
+      'button_round_gradient.jpg',
+      'button_rectangle_gradient.jpg',
+      'button_square_gradient.jpg'
     ];
     
     buttonStyles.forEach(btn => {
-      const assetId = btn.replace('.png', '');
+      const assetId = btn.replace(/\.(png|jpe?g)$/i, '');
       this.loadImageAsset(assetId, `images/kenney_ui-pack/PNG/Grey/Default/${btn}`);
     });
   }
@@ -975,6 +985,10 @@ export default class SimulationMain {
         const maxScroll = typeof this._pickListScrollMax === 'number' ? this._pickListScrollMax : 0;
         this.majorScroll += deltaY;
         this.majorScroll = Math.max(0, Math.min(maxScroll, this.majorScroll));
+      } else if (this.scene === 'menu') {
+        this.menuScroll += deltaY;
+        const mcap = this._menuScrollMax != null ? this._menuScrollMax : 0;
+        this.menuScroll = Math.max(0, Math.min(mcap, this.menuScroll));
       } else if (this.scene === 'ending') {
         this.endingScroll += deltaY;
         const cap = this._endingScrollMax != null ? this._endingScrollMax : 0;
@@ -1594,10 +1608,49 @@ export default class SimulationMain {
     return s || 'play';
   }
 
+  /** 供分享模块读取当前场景与结局信息 */
+  getShareContext() {
+    const ctx = { scene: this.scene };
+    const name = this.run?.profile?.name || this.tempProfile?.name;
+    if (name) ctx.playerName = name;
+    if (this.currentEnding) {
+      ctx.endingTitle = this.currentEnding.title;
+      ctx.endingId = this.currentEnding.id;
+    }
+    const schoolId = this.run?.schoolId || this.pendingSchoolId;
+    const school = schoolId && SCHOOLS[schoolId];
+    if (school?.name) ctx.schoolName = school.name;
+    return ctx;
+  }
+
+  bindShareLaunchWelcome() {
+    const info = getLaunchShareInfo();
+    if (!info?.query?.from) return;
+    this._pendingShareWelcome = true;
+    if (wx.onShow) {
+      wx.onShow((res) => {
+        const q = res?.query;
+        if (q && (q.from === 'share' || q.scene)) {
+          this.maybeShowShareWelcome();
+        }
+      });
+    }
+  }
+
+  maybeShowShareWelcome() {
+    if (!this._pendingShareWelcome) return;
+    this._pendingShareWelcome = false;
+    this.showToast('欢迎通过分享来体验！');
+  }
+
   goScene(scene, opts = {}) {
     const options = { clearPending: true, ...opts };
     if (options.clearPending) this.pendingTransition = null;
-    if (scene === 'menu') this.returnScene = null;
+    if (scene === 'menu') {
+      this.returnScene = null;
+      this.menuScroll = 0;
+      this.maybeShowShareWelcome();
+    }
     this.buttons = [];
     this.scene = scene;
     this.syncBgmUnlockByScene(scene);
@@ -3707,19 +3760,57 @@ export default class SimulationMain {
     const pad = 16;
     const w = SCREEN_WIDTH - pad * 2;
     const h = 42;
-    let y = 202 + oy;
-    const add = (label, disabled, onClick) => {
-      this.buttons.push({ x: pad, y, w, h, label, disabled, onClick });
+    const listTop = 202 + oy;
+    const listBottom = SCREEN_HEIGHT - 8;
+    const scroll = this.menuScroll || 0;
+    const menuItems = [
+      { label: '新游戏', disabled: false, onClick: () => { this.goScene('create_role', { initCreateRole: true }); } },
+      { label: '继续', disabled: !canContinue, onClick: () => { if (canContinue) this.continueRun(); } },
+      { label: '结局图鉴', disabled: false, onClick: () => { this.goScene('gallery'); } },
+      { label: '成就系统', disabled: false, onClick: () => { this.goScene('achievements'); } },
+      { label: 'CG 图鉴', disabled: false, onClick: () => { this.goScene('cg_gallery'); } },
+      { label: 'BGM 图鉴', disabled: false, onClick: () => { this.goScene('bgm_gallery'); } },
+      { label: '致谢', disabled: false, onClick: () => { this.creditsScroll = 0; this.goScene('credits'); } },
+      {
+        label: '分享给好友',
+        disabled: false,
+        onClick: () => {
+          if (!shareToFriend()) {
+            this.showToast('请在微信小游戏中使用分享');
+          }
+        },
+      },
+      {
+        label: '分享到朋友圈',
+        disabled: false,
+        onClick: () => {
+          this.showToast(getShareTimelineHintShort(), 2800);
+        },
+      },
+      { label: '设置', disabled: false, onClick: () => { this.goScene('settings'); } },
+    ];
+    const totalH = menuItems.length * (h + 8) - 8;
+    const maxScroll = Math.max(0, totalH - (listBottom - listTop));
+    this._menuScrollMax = maxScroll;
+    this.menuScroll = Math.min(scroll, maxScroll);
+    let y = listTop - this.menuScroll;
+    menuItems.forEach((item) => {
+      if (y + h >= listTop && y <= listBottom) {
+        this.buttons.push({
+          x: pad,
+          y,
+          w,
+          h,
+          label: item.label,
+          disabled: item.disabled,
+          onClick: item.onClick,
+        });
+      }
       y += h + 8;
-    };
-    add('新游戏', false, () => { this.goScene('create_role', { initCreateRole: true }); });
-    add('继续', !canContinue, () => { if (canContinue) this.continueRun(); });
-    add('结局图鉴', false, () => { this.goScene('gallery'); });
-    add('成就系统', false, () => { this.goScene('achievements'); });
-    add('CG 图鉴', false, () => { this.goScene('cg_gallery'); });
-    add('BGM 图鉴', false, () => { this.goScene('bgm_gallery'); });
-    add('致谢', false, () => { this.creditsScroll = 0; this.goScene('credits'); });
-    add('设置', false, () => { this.goScene('settings'); });
+    });
+    if (maxScroll > 0) {
+      this.drawScrollIndicator(listTop, listBottom - listTop, this.menuScroll, maxScroll);
+    }
   }
 
   getStatName(stat) {
@@ -5029,7 +5120,7 @@ export default class SimulationMain {
     const pad = 20;
     const textW = SCREEN_WIDTH - 40;
     const listTop = 80;
-    const listBottom = SCREEN_HEIGHT - 128;
+    const listBottom = SCREEN_HEIGHT - 180;
     ctx.save();
     ctx.beginPath();
     ctx.rect(pad - 4, listTop - 4, textW + 8, listBottom - listTop + 8);
@@ -5063,7 +5154,20 @@ export default class SimulationMain {
     this.buttons = [];
     const w = SCREEN_WIDTH - pad * 2;
     this.buttons.push({
-      x: pad, y: SCREEN_HEIGHT - 120, w, h: 44, label: '返回主菜单', disabled: false, onClick: () => {
+      x: pad,
+      y: SCREEN_HEIGHT - 176,
+      w,
+      h: 40,
+      label: '分享本结局',
+      disabled: false,
+      onClick: () => {
+        if (!shareToFriend()) {
+          this.showToast('请在微信小游戏中使用分享');
+        }
+      },
+    });
+    this.buttons.push({
+      x: pad, y: SCREEN_HEIGHT - 128, w, h: 44, label: '返回主菜单', disabled: false, onClick: () => {
         this.currentEnding = null;
         this.runSettlement = null;
         this.endingScroll = 0;
@@ -5605,11 +5709,15 @@ export default class SimulationMain {
     ctx.font = `${uiTheme.font.body}px sans-serif`;
     ctx.fillStyle = uiTheme.colors.textSub;
     ctx.fillText(`BGM 音量：${Math.round(this.bgm.volume * 100)}%`, SCREEN_WIDTH / 2, 114);
+    ctx.font = `${uiTheme.font.small}px sans-serif`;
+    ctx.fillStyle = uiTheme.colors.textSub;
+    const hint = getShareTimelineHint();
+    this.wrapText(hint, 20, 138, SCREEN_WIDTH - 40, 16, 36);
 
     this.buttons = [];
     const pad = 16;
     const w = SCREEN_WIDTH - 32;
-    let y = 152;
+    let y = 198;
     y += 8;
     this.buttons.push({
       id: 'settings_volume_down',
