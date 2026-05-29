@@ -52,9 +52,7 @@ import { evaluateAchievements } from './core/achievements';
 import BgmManager from './audio/bgmManager';
 import {
   initShare,
-  shareToFriend,
   getShareTimelineHint,
-  getShareTimelineHintShort,
   getLaunchShareInfo,
 } from './core/share';
 
@@ -401,7 +399,6 @@ export default class SimulationMain {
   achievementScroll = 0;
   cgScroll = 0;
   creditsScroll = 0;
-  menuScroll = 0;
   runSnapshotSchoolId = '';
   runSnapshotMajorId = '';
   pendingTransition = null;
@@ -480,7 +477,7 @@ export default class SimulationMain {
     wx.onTouchStart(this.onTouchStart.bind(this));
     wx.onTouchMove(this.onTouchMove.bind(this));
     wx.onTouchEnd(this.onTouchEnd.bind(this));
-    initShare(() => this.getShareContext());
+    requestAnimationFrame(() => initShare());
     this.bindShareLaunchWelcome();
     requestAnimationFrame(this.loop.bind(this));
     this.galleryScroll = 0;
@@ -985,10 +982,6 @@ export default class SimulationMain {
         const maxScroll = typeof this._pickListScrollMax === 'number' ? this._pickListScrollMax : 0;
         this.majorScroll += deltaY;
         this.majorScroll = Math.max(0, Math.min(maxScroll, this.majorScroll));
-      } else if (this.scene === 'menu') {
-        this.menuScroll += deltaY;
-        const mcap = this._menuScrollMax != null ? this._menuScrollMax : 0;
-        this.menuScroll = Math.max(0, Math.min(mcap, this.menuScroll));
       } else if (this.scene === 'ending') {
         this.endingScroll += deltaY;
         const cap = this._endingScrollMax != null ? this._endingScrollMax : 0;
@@ -1608,21 +1601,6 @@ export default class SimulationMain {
     return s || 'play';
   }
 
-  /** 供分享模块读取当前场景与结局信息 */
-  getShareContext() {
-    const ctx = { scene: this.scene };
-    const name = this.run?.profile?.name || this.tempProfile?.name;
-    if (name) ctx.playerName = name;
-    if (this.currentEnding) {
-      ctx.endingTitle = this.currentEnding.title;
-      ctx.endingId = this.currentEnding.id;
-    }
-    const schoolId = this.run?.schoolId || this.pendingSchoolId;
-    const school = schoolId && SCHOOLS[schoolId];
-    if (school?.name) ctx.schoolName = school.name;
-    return ctx;
-  }
-
   bindShareLaunchWelcome() {
     const info = getLaunchShareInfo();
     if (!info?.query?.from) return;
@@ -1648,7 +1626,6 @@ export default class SimulationMain {
     if (options.clearPending) this.pendingTransition = null;
     if (scene === 'menu') {
       this.returnScene = null;
-      this.menuScroll = 0;
       this.maybeShowShareWelcome();
     }
     this.buttons = [];
@@ -3760,57 +3737,19 @@ export default class SimulationMain {
     const pad = 16;
     const w = SCREEN_WIDTH - pad * 2;
     const h = 42;
-    const listTop = 202 + oy;
-    const listBottom = SCREEN_HEIGHT - 8;
-    const scroll = this.menuScroll || 0;
-    const menuItems = [
-      { label: '新游戏', disabled: false, onClick: () => { this.goScene('create_role', { initCreateRole: true }); } },
-      { label: '继续', disabled: !canContinue, onClick: () => { if (canContinue) this.continueRun(); } },
-      { label: '结局图鉴', disabled: false, onClick: () => { this.goScene('gallery'); } },
-      { label: '成就系统', disabled: false, onClick: () => { this.goScene('achievements'); } },
-      { label: 'CG 图鉴', disabled: false, onClick: () => { this.goScene('cg_gallery'); } },
-      { label: 'BGM 图鉴', disabled: false, onClick: () => { this.goScene('bgm_gallery'); } },
-      { label: '致谢', disabled: false, onClick: () => { this.creditsScroll = 0; this.goScene('credits'); } },
-      {
-        label: '分享给好友',
-        disabled: false,
-        onClick: () => {
-          if (!shareToFriend()) {
-            this.showToast('请在微信小游戏中使用分享');
-          }
-        },
-      },
-      {
-        label: '分享到朋友圈',
-        disabled: false,
-        onClick: () => {
-          this.showToast(getShareTimelineHintShort(), 2800);
-        },
-      },
-      { label: '设置', disabled: false, onClick: () => { this.goScene('settings'); } },
-    ];
-    const totalH = menuItems.length * (h + 8) - 8;
-    const maxScroll = Math.max(0, totalH - (listBottom - listTop));
-    this._menuScrollMax = maxScroll;
-    this.menuScroll = Math.min(scroll, maxScroll);
-    let y = listTop - this.menuScroll;
-    menuItems.forEach((item) => {
-      if (y + h >= listTop && y <= listBottom) {
-        this.buttons.push({
-          x: pad,
-          y,
-          w,
-          h,
-          label: item.label,
-          disabled: item.disabled,
-          onClick: item.onClick,
-        });
-      }
+    let y = 202 + oy;
+    const add = (label, disabled, onClick) => {
+      this.buttons.push({ x: pad, y, w, h, label, disabled, onClick });
       y += h + 8;
-    });
-    if (maxScroll > 0) {
-      this.drawScrollIndicator(listTop, listBottom - listTop, this.menuScroll, maxScroll);
-    }
+    };
+    add('新游戏', false, () => { this.goScene('create_role', { initCreateRole: true }); });
+    add('继续', !canContinue, () => { if (canContinue) this.continueRun(); });
+    add('结局图鉴', false, () => { this.goScene('gallery'); });
+    add('成就系统', false, () => { this.goScene('achievements'); });
+    add('CG 图鉴', false, () => { this.goScene('cg_gallery'); });
+    add('BGM 图鉴', false, () => { this.goScene('bgm_gallery'); });
+    add('致谢', false, () => { this.creditsScroll = 0; this.goScene('credits'); });
+    add('设置', false, () => { this.goScene('settings'); });
   }
 
   getStatName(stat) {
@@ -5120,7 +5059,7 @@ export default class SimulationMain {
     const pad = 20;
     const textW = SCREEN_WIDTH - 40;
     const listTop = 80;
-    const listBottom = SCREEN_HEIGHT - 180;
+    const listBottom = SCREEN_HEIGHT - 120;
     ctx.save();
     ctx.beginPath();
     ctx.rect(pad - 4, listTop - 4, textW + 8, listBottom - listTop + 8);
@@ -5154,20 +5093,7 @@ export default class SimulationMain {
     this.buttons = [];
     const w = SCREEN_WIDTH - pad * 2;
     this.buttons.push({
-      x: pad,
-      y: SCREEN_HEIGHT - 176,
-      w,
-      h: 40,
-      label: '分享本结局',
-      disabled: false,
-      onClick: () => {
-        if (!shareToFriend()) {
-          this.showToast('请在微信小游戏中使用分享');
-        }
-      },
-    });
-    this.buttons.push({
-      x: pad, y: SCREEN_HEIGHT - 128, w, h: 44, label: '返回主菜单', disabled: false, onClick: () => {
+      x: pad, y: SCREEN_HEIGHT - 68, w, h: 44, label: '返回主菜单', disabled: false, onClick: () => {
         this.currentEnding = null;
         this.runSettlement = null;
         this.endingScroll = 0;
@@ -5712,13 +5638,12 @@ export default class SimulationMain {
     ctx.font = `${uiTheme.font.small}px sans-serif`;
     ctx.fillStyle = uiTheme.colors.textSub;
     const hint = getShareTimelineHint();
-    this.wrapText(hint, 20, 138, SCREEN_WIDTH - 40, 16, 36);
+    this.wrapText(hint, 20, 138, SCREEN_WIDTH - 40, 16, 48);
 
     this.buttons = [];
     const pad = 16;
     const w = SCREEN_WIDTH - 32;
-    let y = 198;
-    y += 8;
+    let y = 228;
     this.buttons.push({
       id: 'settings_volume_down',
       x: pad,
