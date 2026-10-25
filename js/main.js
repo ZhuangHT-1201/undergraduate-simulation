@@ -1,5 +1,23 @@
 import './render';
-import { SCREEN_WIDTH, SCREEN_HEIGHT, SAFE_TOP } from './render';
+import { SCREEN_WIDTH, SCREEN_HEIGHT, SAFE_TOP, SAFE_BOTTOM, DEVICE_PIXEL_RATIO } from './render';
+import {
+  TYPE,
+  COLORS,
+  font,
+  alpha,
+  clamp,
+  easeOutCubic,
+  roundRectPath,
+  fillRoundRect,
+  strokeRoundRect,
+  drawGlassPanel,
+  drawPaperPanel,
+  drawSceneKicker,
+  drawChevron,
+  drawIcon,
+  renderBackdrop,
+  drawAmbientMotes,
+} from './ui/designSystem';
 import {
   createInitialRunState,
   SCHOOLS,
@@ -7,7 +25,6 @@ import {
   SCHOOL_MAJOR_MATRIX,
   TOTAL_SEMESTERS,
   WEEKS_PER_SEMESTER,
-  RULES_VERSION,
   UNLOCK_RULES,
   DEFAULT_DIFFICULTY,
   GOAL_SYSTEM_CONFIG,
@@ -35,7 +52,6 @@ import {
   uiTheme,
   randomEventsCatalog,
   itemsCatalog,
-  relationshipsCatalog,
   audioConfig,
   talentsCatalog,
   npcsCatalog,
@@ -47,20 +63,18 @@ import {
   semesterSummaryTemplates,
 } from './core/semesterSummary';
 import * as save from './core/save';
-import { showRewardedVideo, AD_CONFIG } from './ads/adAdapter';
+import { showRewardedVideo, showInterstitial, warmUpAds } from './ads/adAdapter';
 import { evaluateAchievements } from './core/achievements';
 import BgmManager from './audio/bgmManager';
 import {
   initShare,
-  getShareTimelineHint,
   getLaunchShareInfo,
 } from './core/share';
 
 const ctx = canvas.getContext('2d');
 /** 本周行动列表单行高度与可视行数（须与 renderPlay / 触摸滚动一致） */
-const WEEK_ACTION_ROW_H = 54;
+const WEEK_ACTION_ROW_H = 62;
 const WEEK_ACTION_MAX_VISIBLE = 5;
-const WEEK_ACTION_SCROLL_STEP = WEEK_ACTION_ROW_H * 2;
 
 const MALE_NAMES = ['林逸', '陆远', '莫辰', '苏辞', '顾北', '沈星', '姜南', '贺景', '萧然', '周航', '庄羽', '季淮'];
 const FEMALE_NAMES = ['宁夏', '沐秋', '浅浅', '予曦', '云汐', '柳晚', '苏晚', '林柚', '梦洁', '诗宜', '若冰', '晚晴'];
@@ -294,7 +308,7 @@ const BGM_CATALOG = [
 
 /** 开发致谢名单 */
 const CREDITS_ACK = {
-  intro: '感谢他们在开发期间的支持',
+  intro: '感谢参与这段校园故事的人',
   names: [
     '桃子棒棒糖',
     '陈可',
@@ -328,17 +342,17 @@ const TALENT_TIER_FILTER_KEYS = ['all', 'positive', 'balanced', 'negative', 'hel
 
 const THEME_FALLBACK = {
   colors: {
-    bg: '#0f1729',
-    panel: '#18233d',
-    panelSoft: '#243352',
-    textMain: '#f5f7ff',
-    textSub: '#b9c4e0',
-    button: '#3a6df0',
-    buttonDisabled: '#4d5673',
-    accent: '#f06292',
-    good: '#43c07a',
-    warn: '#f7b955',
-    danger: '#f06767',
+    bg: '#101827',
+    panel: '#192133',
+    panelSoft: '#263449',
+    textMain: '#f5f1e8',
+    textSub: '#abb3b8',
+    button: '#ff8a6b',
+    buttonDisabled: '#5f6972',
+    accent: '#ebc779',
+    good: '#76cda1',
+    warn: '#f3b55b',
+    danger: '#ed7a76',
   },
   radius: { sm: 8, md: 12 },
   font: { title: 22, h2: 18, body: 14, small: 12 },
@@ -354,6 +368,37 @@ const STAT_LABELS = {
   skill: '能力',
   pressure: '压力',
 };
+
+const PICK_SUBTITLE_OVERRIDES = {
+  top2: '课业密度高，目标感强，压力也更大。',
+  comprehensive: '学科跨度大，通识与社团资源更多。',
+  polytech: '工程训练扎实，课程与作息更紧。',
+  local: '生活成本从容，奖助资源更贴近日常。',
+  normal_key: '基础扎实，关系均衡，适合稳步推进。',
+  finance: '行业信息早，课程与社交节奏更紧。',
+  teacher: '节奏稳定，适合教师、编制或深造。',
+  med: '训练密集，能力与抗压提升很快。',
+  sino_foreign: '双语资源更多，生活成本也更高。',
+  art_academy: '创作与表达是核心，作品更重要。',
+  military_academy: '纪律与体能要求高，节奏更统一。',
+  agricultural: '课程贴近生产，动手机会更多。',
+  foreign_language: '语言训练密集，表达机会更多。',
+  police_academy: '法治课程与体能训练并重。',
+  vocational: '课程面向岗位，就业准备更具体。',
+  cs: '编程、系统与项目训练都很密集。',
+  biz: '管理课程与小组协作占比较大。',
+  liberal: '阅读与写作训练密集，适合打磨表达。',
+  se: '项目实践多，需要适应需求与排期变化。',
+  ee: '硬件与电路实验是每周的重点。',
+  law: '记忆与逻辑训练重，法考路线可并行。',
+  ai: '数学与模型训练并重，成长上限高。',
+  data_science: '统计与编程结合，适合数据分析。',
+  finance_major: '金融理论与实务并重，实习信息更早。',
+  news: '采访、写作与传播实践占比较大。',
+  medicine: '课程周期长，记忆与临床训练密集。',
+  civil_exam: '公共管理与政策分析是核心内容。',
+};
+
 function cloneTheme(t) {
   return JSON.parse(JSON.stringify(t || THEME_FALLBACK));
 }
@@ -409,15 +454,23 @@ export default class SimulationMain {
   /** 当前预设头像槽位 0–3，与 male_/female_ 文件名序号一致 */
   tempAvatarIndex = 0;
   narrative = null;
+  pressedButtonId = '';
+  sceneEnteredAt = 0;
+  backdropCache = null;
+  backdropCacheKey = '';
+  narrativeScroll = 0;
 
   constructor() {
     this.assets = {};
     this.themeCatalog = uiTheme.themes || { dark: cloneTheme(uiTheme), light: cloneTheme(THEME_FALLBACK) };
     const meta = save.loadMeta();
-    this.themeMode = 'dark';
-    this.applyTheme('dark');
+    this.themeMode = meta.themeMode === 'light' ? 'light' : 'dark';
+    this.applyTheme(this.themeMode);
     this.bgm = new BgmManager(audioConfig);
     this.lastRenderedScene = '';
+    this.sceneEnteredAt = Date.now();
+    this.rewardedAssistPending = false;
+    this.lastRewardedAdAt = 0;
     this.tryLoadAssets();
     
     this.pickRandomNameByGender('male');
@@ -457,7 +510,10 @@ export default class SimulationMain {
     /** 游玩场景主内容区（事件选项等）纵向滚动 */
     this.playContentScroll = 0;
     this.endingScroll = 0;
+    this.endingPlaybackScroll = 0;
+    this.achievementPlaybackScroll = 0;
     this.relationsScroll = 0;
+    this.inventoryScroll = 0;
     /** @type {Array<{ npcId: string, source: string }>} */
     this.pendingNpcUnlocks = [];
     /** @type {{ endingId: string, title?: string, fullText: string } | null} */
@@ -477,32 +533,29 @@ export default class SimulationMain {
     wx.onTouchStart(this.onTouchStart.bind(this));
     wx.onTouchMove(this.onTouchMove.bind(this));
     wx.onTouchEnd(this.onTouchEnd.bind(this));
+    if (wx.onTouchCancel) {
+      wx.onTouchCancel(() => {
+        this.pressedButtonId = '';
+        this.isDragging = false;
+        this.weeklyScrollbarDrag = false;
+      });
+    }
     requestAnimationFrame(() => initShare());
+    requestAnimationFrame(() => warmUpAds());
     this.bindShareLaunchWelcome();
-    requestAnimationFrame(this.loop.bind(this));
+    this.boundLoop = this.loop.bind(this);
+    requestAnimationFrame(this.boundLoop);
     this.galleryScroll = 0;
     this.achievementScroll = 0;
     this.touchStartY = 0;
     this.isDragging = false;
+    this.pressedButtonId = '';
   }
 
   tryLoadAssets() {
     if (!wx.createImage) return;
-    
-    // 加载UI资源
-    this.loadImageAsset('ui_panel_bg', 'images/generated/ui_panel_bg.jpg');
-    this.loadImageAsset('ui_button_primary', 'images/generated/ui_button_primary.jpg');
-    
-    // 加载游戏头像
-    this.loadImageAsset('game_avatar', 'images/generated/game_avatar.jpg');
-    
-    // 加载学校背景图片
-    this.loadSchoolBackgrounds();
-    
-    // 加载个人房间背景（用于宿舍场景）
-    this.loadPersonalRoomBackgrounds();
-    
-    // 预设头像：images/generated/avatars/male|female/*.jpg（不走 assetExists，避免小游戏包内路径误判）
+
+    // 头像与 CG 是实际内容资产；界面装饰全部由 Canvas 原生绘制。
     this.assets.avatars = { male: [], female: [] };
     for (let i = 1; i <= 4; i++) {
       const maleImg = this.loadImageAssetUnchecked(
@@ -517,106 +570,11 @@ export default class SimulationMain {
       if (femaleImg) this.assets.avatars.female[i - 1] = femaleImg;
     }
     
-    // 加载UI按钮资源
-    this.loadUIButtons();
     this.loadCgAssets();
   }
 
-  loadPersonalRoomBackgrounds() {
-    // 加载个人房间背景，用于宿舍、休息等场景
-    const roomBackgrounds = [
-      'pra_a1_day1.webp',
-      'pra_a1_evening1.webp',
-      'pra_a1_night1_lights.webp',
-      'prb_a1_day1.webp',
-      'prb_a1_evening1.webp',
-      'prb_a1_night1_lights.webp',
-      'prc_a1_day1.webp',
-      'prc_a1_evening1.webp',
-      'prc_a1_night1_lights.webp'
-    ];
-    
-    roomBackgrounds.forEach(bg => {
-      const assetId = bg.replace('.webp', '');
-      this.loadImageAsset(assetId, `images/generated/PersonalRooms1_1080p_WEBP/${bg}`);
-    });
-  }
 
-  loadSchoolBackgrounds() {
-    // 加载不同场景的学校背景
-    const backgrounds = [
-      'Library Day.jpg',
-      'Classroom Day.jpg', 
-      'Gym Day.jpg',
-      'Corridor Day.jpg',
-      'Refectory Day.jpg',
-      'Courtyard1 Day.jpg',
-      'Athletics Track Day.jpg',
-      'Music Room Day.jpg',
-      'Science Laboratory Room Day.jpg',
-      'Student Council Room Day.jpg'
-    ];
-    
-    backgrounds.forEach(bg => {
-      const assetId = bg.replace(/\.(png|jpe?g)$/i, '').replace(' ', '_');
-      this.loadImageAsset(assetId, `images/School/${bg}`);
-    });
-    
-    // 加载SchoolMiniPack背景图片
-    const schoolMiniBackgrounds = [
-      'smp_classroom1_day1.webp',
-      'smp_classroom2_day1.webp',
-      'smp_classroom3_day1.webp',
-      'smp_classroom4_day1.webp',
-      'smp_club1_day1.webp',
-      'smp_club2_day1.webp',
-      'smp_club3_day1.webp',
-      'smp_club4_day1.webp',
-      'smp_front_day1.webp',
-      'smp_hallway_day1.webp',
-      'smp_hallway11_day1.webp',
-      'smp_hallway21_day1.webp',
-      'smp_hallway31_day1.webp',
-      'smp_noticeboard_day1.webp',
-      'smp_roof_day1.webp',
-      'smp_stairs1_day1.webp',
-      'smp_stairs2_day1.webp'
-    ];
-    
-    schoolMiniBackgrounds.forEach(bg => {
-      const assetId = bg.replace('.webp', '');
-      this.loadImageAsset(assetId, `images/generated/SchoolMiniPack_1080p_WEBP/${bg}`);
-    });
-    
-    // 加载装饰性图片
-    const decorativeImages = [
-      'star_yellow.jpg',
-      'star_blue.jpg',
-      'star_pink.jpg',
-      'button_green.jpg',
-      'button_red.jpg',
-      'button_blue.jpg'
-    ];
-    
-    decorativeImages.forEach(img => {
-      const assetId = img.replace(/\.(png|jpe?g)$/i, '');
-      this.loadImageAsset(assetId, `images/kenney_ui-pack/PNG/${img}`);
-    });
-  }
 
-  loadUIButtons() {
-    // 加载不同样式的按钮
-    const buttonStyles = [
-      'button_round_gradient.jpg',
-      'button_rectangle_gradient.jpg',
-      'button_square_gradient.jpg'
-    ];
-    
-    buttonStyles.forEach(btn => {
-      const assetId = btn.replace(/\.(png|jpe?g)$/i, '');
-      this.loadImageAsset(assetId, `images/kenney_ui-pack/PNG/Grey/Default/${btn}`);
-    });
-  }
 
   loadCgAssets() {
     CG_CATALOG.forEach((cg) => {
@@ -739,46 +697,46 @@ export default class SimulationMain {
   getNpcTonePack(role) {
     if (role === 'mentor') {
       return {
-        preLead: '你隐约感觉，这次见面会决定你未来一段时间的节奏与方向。',
+        preLead: '这次见面可能会影响你接下来一段时间的方向。',
         preNotice: '你注意到',
-        preClose: '你下意识站直了些，想听听他们会怎么定义“成长”。',
-        meetLead: '你们聊了几句后，对方的语气不疾不徐，却句句落在重点上。',
-        meetClose: '你忽然意识到，这段关系也许会影响你接下来很多关键选择。',
+        preClose: '你提前整理了想问的问题，也不想只听漂亮话。',
+        meetLead: '你们聊了方向、时间和能投入的精力，对方没有急着给结论。',
+        meetClose: '你决定先观察这段关系会把哪些选择带到面前。',
       };
     }
     if (role === 'romance') {
       return {
-        preLead: '空气里有点说不清的悸动，你知道这次相遇可能会改写你的校园故事。',
+        preLead: '你原本只是去见一个普通同学，却比预想中多留意了对方几眼。',
         preNotice: '你最先看见',
-        preClose: '你心里轻轻咯噔了一下，像某条故事线在这一刻悄然接上。',
-        meetLead: '你们的对话并不夸张，却莫名顺着同一个频率走了下去。',
-        meetClose: '离开时你回头看了一眼，感觉故事好像已经悄悄翻到下一页。',
+        preClose: '你没有立刻给这份好感下定义。',
+        meetLead: '你们从课程和近况聊起，发现彼此有不少共同话题。',
+        meetClose: '分开以后，你记住了这次见面里几个很具体的细节。',
       };
     }
     if (role === 'roommate') {
       return {
-        preLead: '宿舍生活还没真正开始，但你已经能想象出未来的烟火气。',
+        preLead: '接下来几年，你们会共享同一盏灯和同一间屋子。',
         preNotice: '你先留意到',
-        preClose: '你在心里默默判断：这个人以后很可能会出现在你每个日常片段里。',
-        meetLead: '从聊天到互相吐槽，一切都很自然，像隔壁床位刚好补上了生活里的那一角。',
-        meetClose: '你知道从今天起，校园生活会多一些“有人一起”的时刻。',
+        preClose: '第一次见面未必能看出合不合拍，但生活习惯会很快显出来。',
+        meetLead: '你们聊了作息、家乡和第一周最不习惯的事。',
+        meetClose: '你开始意识到，宿舍关系需要慢慢磨合。',
       };
     }
     if (role === 'senior') {
       return {
-        preLead: '这次碰面更像一次提前的路线指引，你希望听到一些过来人的答案。',
+        preLead: '你希望从对方身上听到一些不走弯路的经验。',
         preNotice: '你在人群中注意到',
-        preClose: '你暗暗记下了对方的神情，像在读一份真实版本的“未来参考”。',
-        meetLead: '几句话下来，对方把很多弯路讲得很轻，但你听得很认真。',
-        meetClose: '这段关系不像热闹开场，更像一盏能在关键时刻为你照路的灯。',
+        preClose: '答案可能不只一个，但对方的选择会是一份参考。',
+        meetLead: '对方没有把经历讲成成功故事，更多是在说每一步的真实成本。',
+        meetClose: '你记下了几个可以继续追问的问题。',
       };
     }
     return {
-      preLead: '你感觉这次相遇会给这学期带来一些新的可能。',
+      preLead: '这次见面也许会带来一些新的可能。',
       preNotice: '你先注意到',
-      preClose: '你心里有了一个模糊判断：也许这就是接下来要并行的新故事线。',
-      meetLead: '你们很快熟络起来，彼此都留了个不错的印象。',
-      meetClose: '你知道这段关系之后还会有后续。',
+      preClose: '你打算先聊几句，再决定要不要继续了解。',
+      meetLead: '你们聊得还算顺利，彼此都留了个不错的印象。',
+      meetClose: '这段关系之后也许还会有新的交集。',
     };
   }
 
@@ -887,7 +845,7 @@ export default class SimulationMain {
     });
     const introText = introLines.length
       ? `${tone.preNotice}${introLines.join('；')}。`
-      : '你在人群里看见了几个让你下意识想多聊两句的人。';
+      : '你在人群里看见了几张想再认识一下的面孔。';
     const body = [
       `这一周，你会在${source}遇到一些关键人物。`,
       '',
@@ -908,10 +866,20 @@ export default class SimulationMain {
 
   onTouchStart(e) {
     const t = e.touches[0];
+    if (!t) return;
     this.touchStartY = t.clientY;
     this.isDragging = false;
     this.weeklyScrollbarDrag = false;
     this.runLogTouchInList = true;
+    this.pressedButtonId = '';
+    if (this.narrative) {
+      this.narrativeGestureY = t.clientY;
+      return;
+    }
+
+    const pressed = this.findButtonAt(t.clientX, t.clientY, 3);
+    this.pressedButtonId = pressed && pressed.id ? pressed.id : '';
+
     if (this.scene === 'run_log' && this._runLogScrollUi) {
       const { listTop, listBottom } = this._runLogScrollUi;
       this.runLogTouchInList = t.clientY >= listTop && t.clientY <= listBottom;
@@ -932,6 +900,20 @@ export default class SimulationMain {
 
   onTouchMove(e) {
     const t = e.touches[0];
+    if (!t) return;
+    if (this.narrative) {
+      const dy = this.narrativeGestureY - t.clientY;
+      if (Math.abs(dy) > 6) {
+        this.isDragging = true;
+        this.narrativeScroll = clamp(
+          (this.narrativeScroll || 0) + dy,
+          0,
+          Math.max(0, Number(this.narrative.maxScroll || 0)),
+        );
+        this.narrativeGestureY = t.clientY;
+      }
+      return;
+    }
     if (this.weeklyScrollbarDrag && this._weeklyScrollUi) {
       this.setWeeklyScrollFromTrackY(t.clientY);
       return;
@@ -939,6 +921,7 @@ export default class SimulationMain {
     const deltaY = this.touchStartY - t.clientY;
     if (Math.abs(deltaY) > 10) {
       this.isDragging = true;
+      this.pressedButtonId = '';
     }
     if (this.isDragging) {
       if (this.scene === 'gallery') {
@@ -966,8 +949,9 @@ export default class SimulationMain {
         this.weeklyShopOverlay.scroll = (this.weeklyShopOverlay.scroll || 0) + deltaY;
         this.weeklyShopOverlay.scroll = Math.max(0, Math.min(cap, this.weeklyShopOverlay.scroll));
       } else if (this.scene === 'play' && this.run && this.run.phase === 'week_action' && !this.weeklyShopOverlay) {
-        const actions = this.getWeeklyActionChoices();
-        const maxScroll = Math.max(0, (actions.length - WEEK_ACTION_MAX_VISIBLE) * WEEK_ACTION_ROW_H);
+        const maxScroll = this._weeklyScrollUi
+          ? Number(this._weeklyScrollUi.maxScroll || 0)
+          : Math.max(0, (this.getWeeklyActionChoices().length - WEEK_ACTION_MAX_VISIBLE) * WEEK_ACTION_ROW_H);
         this.weeklyActionScroll += deltaY;
         this.weeklyActionScroll = Math.max(0, Math.min(maxScroll, this.weeklyActionScroll));
       } else if (this.scene === 'play' && this.run && this.run.phase !== 'week_action' && !this.weeklyShopOverlay) {
@@ -990,8 +974,16 @@ export default class SimulationMain {
         this.relationsScroll = (this.relationsScroll || 0) + deltaY;
         const rcap = this._relationsScrollMax != null ? this._relationsScrollMax : 0;
         this.relationsScroll = Math.max(0, Math.min(rcap, this.relationsScroll));
+      } else if (this.scene === 'inventory') {
+        this.inventoryScroll = (this.inventoryScroll || 0) + deltaY;
+        const cap = this._inventoryScrollMax != null ? this._inventoryScrollMax : 0;
+        this.inventoryScroll = Math.max(0, Math.min(cap, this.inventoryScroll));
       } else if (this.scene === 'ending_playback') {
-        /* 打字机场景：中部点击快进由 handleTap 处理 */
+        const cap = Number(this._endingPlaybackScrollMax || 0);
+        this.endingPlaybackScroll = clamp((this.endingPlaybackScroll || 0) + deltaY, 0, cap);
+      } else if (this.scene === 'achievement_playback') {
+        const cap = Number(this._achievementPlaybackScrollMax || 0);
+        this.achievementPlaybackScroll = clamp((this.achievementPlaybackScroll || 0) + deltaY, 0, cap);
       }
     }
     this.touchStartY = t.clientY;
@@ -999,11 +991,45 @@ export default class SimulationMain {
 
   onTouchEnd(e) {
     this.weeklyScrollbarDrag = false;
-    const t = e.changedTouches[0];
+    const t = e.changedTouches && e.changedTouches[0];
+    if (!t) {
+      this.pressedButtonId = '';
+      this.isDragging = false;
+      return;
+    }
     if (!this.isDragging) {
       this.handleTap(t.clientX, t.clientY);
     }
+    this.pressedButtonId = '';
     this.isDragging = false;
+  }
+
+  findButtonAt(x, y, hitPadding = 0) {
+    for (let i = 0; i < this.buttons.length; i++) {
+      const b = this.buttons[i];
+      if (!b || b.disabled) continue;
+      if (
+        x >= b.x - hitPadding &&
+        x <= b.x + b.w + hitPadding &&
+        y >= b.y - hitPadding &&
+        y <= b.y + b.h + hitPadding
+      ) {
+        return b;
+      }
+    }
+    return null;
+  }
+
+  feedbackTap() {
+    const now = Date.now();
+    if (now - Number(this.lastHapticAt || 0) < 60) return;
+    this.lastHapticAt = now;
+    if (this.bgm) this.bgm.playTap();
+    try {
+      if (wx.vibrateShort) wx.vibrateShort({ type: 'light' });
+    } catch (e) {
+      // Some devices expose the API without supporting haptic feedback.
+    }
   }
 
   handleTap(x, y) {
@@ -1017,6 +1043,7 @@ export default class SimulationMain {
             this.narrative = null;
             if (typeof cb === 'function') cb();
             this.processCgQueue();
+            this.feedbackTap();
             this.tapLockedUntil = Date.now() + 150;
             return;
           }
@@ -1024,23 +1051,29 @@ export default class SimulationMain {
       }
       const btn = this.narrative.btnRect;
       if (btn && x >= btn.x && x <= btn.x + btn.w && y >= btn.y && y <= btn.y + btn.h) {
+        if ((this.narrativeScroll || 0) < Number(this.narrative.maxScroll || 0)) {
+          this.narrativeScroll = Math.min(
+            Number(this.narrative.maxScroll || 0),
+            (this.narrativeScroll || 0) + Math.max(80, btn.h * 2),
+          );
+          this.tapLockedUntil = Date.now() + 80;
+          return;
+        }
         const cb = this.narrative.onDismiss;
         this.narrative = null;
         if (typeof cb === 'function') cb();
         this.processCgQueue();
+        this.feedbackTap();
         this.tapLockedUntil = Date.now() + 150;
       }
       return;
     }
     let tappedButton = false;
-    for (let i = 0; i < this.buttons.length; i++) {
-      const b = this.buttons[i];
-      if (b.disabled) continue;
-      if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) {
-        b.onClick();
-        tappedButton = true;
-        break;
-      }
+    const tapped = this.findButtonAt(x, y, 5);
+    if (tapped) {
+      tapped.onClick();
+      tappedButton = true;
+      this.feedbackTap();
     }
     if (!tappedButton && this.scene === 'ending_playback' && this.endingPlayback) {
       // 结局回放改为全文直出，无需点击快进
@@ -1054,6 +1087,7 @@ export default class SimulationMain {
         const area = this.galleryEndingHitAreas[i];
         if (x >= area.x && x <= area.x + area.w && y >= area.y && y <= area.y + area.h) {
           this.startEndingPlayback(area.ending);
+          this.feedbackTap();
           this.tapLockedUntil = Date.now() + 120;
           return;
         }
@@ -1064,6 +1098,7 @@ export default class SimulationMain {
         const area = this.achievementHitAreas[i];
         if (x >= area.x && x <= area.x + area.w && y >= area.y && y <= area.y + area.h) {
           this.startAchievementPlayback(area.achievement);
+          this.feedbackTap();
           this.tapLockedUntil = Date.now() + 120;
           return;
         }
@@ -1074,6 +1109,7 @@ export default class SimulationMain {
         const area = this.cgHitAreas[i];
         if (x >= area.x && x <= area.x + area.w && y >= area.y && y <= area.y + area.h) {
           this.startCgPlayback(area.cg, 'cg_gallery');
+          this.feedbackTap();
           this.tapLockedUntil = Date.now() + 120;
           return;
         }
@@ -1084,6 +1120,7 @@ export default class SimulationMain {
         const area = this.bgmHitAreas[i];
         if (x >= area.x && x <= area.x + area.w && y >= area.y && y <= area.y + area.h) {
           this.playBgmFromGallery(area.bgm);
+          this.feedbackTap();
           this.tapLockedUntil = Date.now() + 120;
           return;
         }
@@ -1092,7 +1129,8 @@ export default class SimulationMain {
   }
 
   showToast(text, ms = 2200) {
-    this.toast = { text, until: Date.now() + ms };
+    const now = Date.now();
+    this.toast = { text: String(text || ''), until: now + ms, started: now };
   }
 
   /**
@@ -1102,10 +1140,17 @@ export default class SimulationMain {
    * @param {Function} [onDismiss] - 关闭后回调
    */
   showNarrative(text, changes = [], onDismiss = null) {
-    this.narrative = { text: this.dedupeNarrativeEcho(text), changes, onDismiss };
+    this.narrativeScroll = 0;
+    this.narrative = {
+      text: this.dedupeNarrativeEcho(text),
+      changes,
+      onDismiss,
+      openedAt: Date.now(),
+    };
   }
 
   showNarrativeWithOptions(text, options = []) {
+    this.narrativeScroll = 0;
     const cleaned = (Array.isArray(options) ? options : [])
       .map((op) => ({
         label: String(op && op.label ? op.label : '确认'),
@@ -1120,6 +1165,7 @@ export default class SimulationMain {
       options: cleaned,
       optionRects: [],
       btnRect: null,
+      openedAt: Date.now(),
     };
   }
 
@@ -1184,15 +1230,22 @@ export default class SimulationMain {
       internshipReady: '完成至少一次实习主线选择',
       studentWork: '学生工作参与次数',
       certProgress: '考证推进程度',
+      civilProgress: '考公推进程度',
       researchProgress: '科研线推进程度',
       contestProgress: '竞赛线推进程度',
       dormProgress: '宿舍事件推进程度',
       financeProgress: '理财投入次数',
       isCrossMajor: '跨专业路径标记',
+      crossMajorChallenge: '跨专业挑战进度',
       researchTrack: '科研主线路径',
       civilTrack: '考公路线标记',
       publicInstitutionTrack: '考编路线标记',
       itemUsage: '道具使用次数',
+      mentorUnlocked: '已建立导师关系',
+      npcEventHits: '同学专属经历次数',
+      offCampus: '外宿路线',
+      postgradLockedIn: '推免与保研已锁定',
+      careerBigTech: '大厂求职方向',
       primaryMentor: '成功锁定主导师',
       romanceSkipped: '主动跳过恋爱开局',
       startupIntent: '创业意向已确认',
@@ -1375,34 +1428,12 @@ export default class SimulationMain {
   }
 
   buildEndingStoryText(ending) {
-    const title = String((ending && ending.title) || '这个结局');
-    const desc = String((ending && ending.description) || '你完成了一段属于自己的校园篇章');
-    const id = String((ending && ending.id) || '');
+    const desc = String((ending && ending.description) || '你完成了一段属于自己的校园篇章').trim();
     const epilogue = String((ending && ending.epilogue) || '').trim();
-    const flavorPool = [
-      '你不是简单“过关”，而是把这一局过成了一段能跟朋友讲三遍的校园故事。',
-      '这一条线最妙的地方，是每个选择当时都像临场发挥，回头看却又刚好拼成最适合你的路线。',
-      '如果人生有弹幕，这里大概会飘过一整屏“这波可以写进校史馆彩蛋”。',
-      '它有点像期末周的你：白天硬扛、晚上复盘，嘴上说平平无奇，成绩单却在悄悄发光。',
-      '恭喜你把“普通大学日常”玩成了限定剧情，属于多年后同学聚会还会被点名回忆的那种。',
-      '这不是标准答案结局，而是你在一堆不确定里，亲手攒出来的高光片段。',
-    ];
-    let seed = 0;
-    for (let i = 0; i < id.length; i++) seed += id.charCodeAt(i);
-    const flavor = flavorPool[Math.abs(seed) % flavorPool.length];
-    const lines = [
-      `${desc}。`,
-      '',
-      '这段结局不只是结果页上的一行字，更像是你这局人生在学业、情感、资源和心态之间做出的总和。每次权衡、每次咬牙坚持、每次“先把这一周过完再说”，最后都汇成了现在这句定场白。',
-      '',
-      flavor,
-    ];
+    const lines = [/[。！？.!?]$/.test(desc) ? desc : `${desc}。`];
     if (epilogue) {
-      lines.push('', `五年后你把这段经历继续写了下去：${epilogue}`);
-    } else {
-      lines.push('', '如果把镜头拉远，你的故事不会停在毕业这一刻，而是会带着这段经历继续展开后续章节。');
+      lines.push('', epilogue);
     }
-    lines.push('', '你当然还能打出别的结局，但这一条已经足够独特，足够像你。');
     return lines.join('\n');
   }
 
@@ -1477,23 +1508,6 @@ export default class SimulationMain {
   }
 
   /** 渲染 talent.specialEffects 对应中文说明，返回最后一行下方 y */
-  drawTalentSpecialEffectLines(x, y, maxW, lineHeight, specialEffects) {
-    const se = specialEffects || {};
-    const lines = Object.keys(se)
-      .filter((k) => se[k])
-      .map((k) => TALENT_SPECIAL_LABEL[k])
-      .filter(Boolean);
-    if (!lines.length) return y;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    let cy = y;
-    for (const line of lines) {
-      cy = this.wrapText(line, x, cy, maxW, lineHeight, 2);
-    }
-    return cy;
-  }
 
   queueTransition(buttonId, summary, callback) {
     this.pendingTransition = {
@@ -1537,6 +1551,7 @@ export default class SimulationMain {
       if (k !== 'themes') delete uiTheme[k];
     });
     Object.assign(uiTheme, nextTheme);
+    this.backdropCacheKey = '';
   }
 
   setThemeMode(mode) {
@@ -1575,20 +1590,6 @@ export default class SimulationMain {
    * 主菜单刘海/状态栏安全下移：优先 wx.getSystemInfoSync().safeArea.top，
    * 与 SAFE_TOP 兜底，整体至少下移 80px，避免顶部内容被遮挡。
    */
-  getMenuSafeOffsetY() {
-    let safeInset = 0;
-    try {
-      if (wx.getSystemInfoSync) {
-        const s = wx.getSystemInfoSync();
-        safeInset = Number(s.safeArea?.top ?? s.safeAreaTop ?? 0);
-      }
-    } catch (e) {
-      safeInset = 0;
-    }
-    if (!safeInset) safeInset = Number(SAFE_TOP || 0);
-    const padded = safeInset + 24;
-    return Math.max(80, padded);
-  }
 
   pushReturnScene() {
     this.returnScene = this.scene;
@@ -1630,6 +1631,10 @@ export default class SimulationMain {
     }
     this.buttons = [];
     this.scene = scene;
+    this.sceneEnteredAt = Date.now();
+    this.pressedButtonId = '';
+    this.narrativeScroll = 0;
+    if (scene === 'ending') this.endingScroll = 0;
     this.syncBgmUnlockByScene(scene);
     if (scene === 'create_role' && options.initCreateRole) {
       this.ensureDefaultTalentForCreateRole();
@@ -1666,11 +1671,11 @@ export default class SimulationMain {
     this.availableTalents.push({
       id: 'no_talent',
       name: '无天赋',
-      description: '平凡的大学生，没有特殊天赋，靠努力改变命运',
+      description: '不借助额外特质，从最普通的状态开始。',
       effects: {},
       specialEffects: {},
       rarity: 'common',
-      meme: '我命由我不由天🌟'
+      meme: ''
     });
 
     const byTier = {
@@ -2056,7 +2061,82 @@ export default class SimulationMain {
   queueSemesterSummaryIfNeeded(adv) {
     if (!adv || adv.kind !== 'semester_completed') return;
     const body = this.buildSemesterSummaryText(adv.completedSemesterIndex);
-    this.showNarrative(body, [], null);
+    this.showNarrative(body, [], () => {
+      this.flushPendingNpcUnlockNarrative();
+      this.maybeShowSemesterInterstitial(adv.completedSemesterIndex);
+    });
+  }
+
+  maybeShowSemesterInterstitial(completedSemesterIndex) {
+    const semNo = Number(completedSemesterIndex || 0) + 1;
+    if (!Number.isFinite(semNo) || semNo <= 0 || semNo >= TOTAL_SEMESTERS || semNo % 2 !== 0) return;
+    if (Date.now() - Number(this.lastRewardedAdAt || 0) < 120000) return;
+    const meta = save.loadMeta();
+    if (Number(meta.lastInterstitialSemester || 0) === semNo) return;
+    if (Date.now() - Number(meta.lastInterstitialAt || 0) < 6 * 60 * 1000) return;
+    setTimeout(() => {
+      if (this.narrative || this.cgPlayback) return;
+      showInterstitial('semester_complete').then((result) => {
+        if (!result.ok) return;
+        const nextMeta = save.loadMeta();
+        nextMeta.lastInterstitialAt = Date.now();
+        nextMeta.lastInterstitialSemester = semNo;
+        save.saveMeta(nextMeta);
+      });
+    }, 650);
+  }
+
+  isRewardAssistEligible() {
+    if (!this.run || this.scene !== 'play' || this.pendingTransition) return false;
+    const st = this.run.stats || {};
+    const semester = Number(this.run.semesterIndex || 0);
+    if (Number((this.run.flags || {}).rewardAssistSemester) === semester) return false;
+    return Number(st.health || 0) <= 35 || Number(st.pressure || 0) >= 72;
+  }
+
+  openRewardAssist() {
+    if (!this.isRewardAssistEligible() || this.rewardedAssistPending) return;
+    const watch = () => {
+      this.rewardedAssistPending = true;
+      showRewardedVideo('low_state_assist').then((result) => {
+        this.rewardedAssistPending = false;
+        if (!result.ok) {
+          this.showToast(result.reason === 'closed_early' ? '这次没有看完，补给未生效' : '补给通道暂时不可用');
+          return;
+        }
+        const semester = Number(this.run.semesterIndex || 0);
+        this.run.stats = {
+          ...this.run.stats,
+          health: Math.min(100, Number(this.run.stats.health || 0) + 8),
+          pressure: Math.max(0, Number(this.run.stats.pressure || 0) - 8),
+        };
+        this.run.flags = {
+          ...(this.run.flags || {}),
+          rewardAssistSemester: semester,
+        };
+        this.lastRewardedAdAt = Date.now();
+        save.saveRun(this.run);
+        this.showNarrative(
+          '你关掉手机，去操场慢慢走了一圈。夜风让紧绷的肩膀松下来，回到宿舍后，你给自己留了半小时什么都不做。\n\n状态不是奖励，是继续往前走的底盘。',
+          this.formatStatChanges({ health: 8, pressure: -8 }),
+          () => this.flushPendingNpcUnlockNarrative(),
+        );
+      });
+    };
+
+    if (!wx.showModal) {
+      watch();
+      return;
+    }
+    wx.showModal({
+      title: '应急补给',
+      content: '观看一段激励视频，健康 +8、压力 −8。本学期仅一次，不影响其他奖励。',
+      confirmText: '去休息',
+      cancelText: '先不用',
+      success: (res) => {
+        if (res.confirm) watch();
+      },
+    });
   }
 
   formatLogTimeLabel(semesterIndex, weekIndex, phase) {
@@ -2068,7 +2148,7 @@ export default class SimulationMain {
     else if (p === 'side_event') tag = '支线';
     else if (p === 'week_action') tag = '周行动';
     else if (p) tag = String(p);
-    return tag ? `第${sem}学期第${wk}周，当前阶段为${tag}` : `第${sem}学期第${wk}周`;
+    return tag ? `第${sem}学期 · 第${wk}周 / ${tag}` : `第${sem}学期 · 第${wk}周`;
   }
 
   resolveLogEventTitle(entry) {
@@ -2113,6 +2193,38 @@ export default class SimulationMain {
     return `这项选择大致会影响：${Array.from(new Set(hints)).join('，')}`;
   }
 
+  formatEffectCue(effects) {
+    if (!effects || typeof effects !== 'object') return '';
+    const cues = [];
+    const cue = (value, label, inverse = false) => {
+      const n = Number(value || 0);
+      if (!n) return;
+      const up = inverse ? n < 0 : n > 0;
+      cues.push(`${label}${up ? '↑' : '↓'}`);
+    };
+    cue(effects.gpa, '学业');
+    cue(effects.skill, '能力');
+    cue(effects.social, '社交');
+    cue(effects.health, '健康');
+    cue(effects.money, '余额');
+    cue(effects.pressure, '压力');
+    return cues.slice(0, 2).join(' · ');
+  }
+
+  describeChoiceConsequenceShort(effects) {
+    const e = effects || {};
+    if (Number(e.health || 0) <= -7) return '身体会多承担一些，后面得补回来。';
+    if (Number(e.pressure || 0) >= 10) return '这一周会更紧，收益也会更集中。';
+    if (Number(e.pressure || 0) <= -6) return '先把节奏放慢，给状态留一点余地。';
+    if (Number(e.money || 0) < 0) return '需要先投入一笔成本，再看后面的回报。';
+    if (Number(e.gpa || 0) > 0.12) return '会把重心往课业和成绩上挪。';
+    if (Number(e.skill || 0) >= 6) return '会积累一段能带走的能力和经验。';
+    if (Number(e.social || 0) >= 6) return '会牵动身边的关系，也可能带来新机会。';
+    if (Number(e.health || 0) > 0) return '优先照顾状态，后面会更稳。';
+    if (Number(e.money || 0) > 0) return '会换来一笔看得见的收入。';
+    return '这个选择会写进本学期的经历。';
+  }
+
   buildEventChoiceMetaText(choice) {
     if (!this.run || !choice) return '';
     const roster = this.run.npcRoster || {};
@@ -2137,12 +2249,9 @@ export default class SimulationMain {
   buildEventChoicePickContent(choice) {
     const titleRaw = this.applyRunContent(choice && choice.text ? choice.text : '继续');
     const title = choice && choice.mentorIndex !== undefined ? this.sanitizePickName(titleRaw) : titleRaw;
-    const subtitleRaw = choice && choice.narrative
-      ? this.applyRunContent(choice.narrative)
-      : '确认后将推进剧情并结算本次选择。';
-    const subtitle = this.fitText(subtitleRaw, SCREEN_WIDTH - 120);
-    const effectSmall = this.formatEffectHintLine(choice && choice.effects ? choice.effects : null);
     const metaSmall = this.buildEventChoiceMetaText(choice);
+    const subtitle = metaSmall || this.describeChoiceConsequenceShort(choice && choice.effects ? choice.effects : null);
+    const effectSmall = this.formatEffectCue(choice && choice.effects ? choice.effects : null);
     return {
       title,
       subtitle,
@@ -2262,15 +2371,14 @@ export default class SimulationMain {
 
   formatRunSettlementText(settlement) {
     if (!settlement) return '';
-    const lines = [
-      '这一局大学生活的回望',
-      '故事暂时落幕，你也终于有机会回头看清自己走过的轨迹。',
-      `共记录 ${settlement.totalRecords} 条，其中主事件 ${settlement.byPhase.main_event} 条，支线 ${settlement.byPhase.side_event} 条，周行动 ${settlement.byPhase.week_action} 条`,
-    ];
+    const lines = ['四年档案'];
     const fs = settlement.finalStats || {};
+    const place = [settlement.schoolName, settlement.majorName].filter(Boolean).join(' · ');
+    if (place) lines.push(place);
+    if (settlement.primaryMentorName) lines.push(`导师：${settlement.primaryMentorName}`);
+    if (settlement.partnerName) lines.push(`同行的人：${settlement.partnerName}`);
     lines.push('');
-    lines.push('你在成长曲线上的位置');
-    lines.push('成绩、能力和心态并非直线前进，但它们共同勾勒出了你的轮廓。');
+    lines.push('最终状态');
     lines.push(
       `绩点 ${this.formatStatValue('gpa', fs.gpa)}，能力 ${this.formatStatValue('ability', fs.ability)}，社交 ${this.formatStatValue('social', fs.social)}`,
     );
@@ -2278,59 +2386,41 @@ export default class SimulationMain {
       `健康 ${this.formatStatValue('health', fs.health)}，压力 ${this.formatStatValue('pressure', fs.pressure)}，存款 ￥${this.formatStatValue('money', fs.money)}`,
     );
     if (settlement.topActions && settlement.topActions.length) {
-    lines.push(`你最常进行的周行动是${settlement.topActions.map((x) => `${x.title} 共 ${x.n} 次`).join('，')}`);
+      lines.push(`最常做：${settlement.topActions.map((x) => `${x.title} ${x.n} 次`).join('，')}`);
     }
     lines.push('');
-    lines.push('你与他人的故事进展');
-    lines.push('人与人的靠近，从来不是一瞬间，而是很多次认真回应的累积。');
-    if (settlement.schoolName || settlement.majorName) {
-      lines.push(`你这一局所在的学校与专业是${`${settlement.schoolName || ''} ${settlement.majorName || ''}`.trim()}`);
-    }
-    if (settlement.primaryMentorName) {
-      lines.push(`你选择的主导师是${settlement.primaryMentorName}`);
-    }
-    if (settlement.partnerName) {
-      lines.push(`与你建立亲密关系的是${settlement.partnerName}`);
-    }
+    lines.push('这一局的选择');
+    lines.push(
+      `共记录 ${settlement.totalRecords} 条：主事件 ${settlement.byPhase.main_event}，支线 ${settlement.byPhase.side_event}，周行动 ${settlement.byPhase.week_action}`,
+    );
     if (settlement.notableFlags && settlement.notableFlags.length) {
-      lines.push(`你的路线关键词包括${settlement.notableFlags.slice(0, 14).join('，')}`);
+      lines.push(`路线：${settlement.notableFlags.slice(0, 12).join('，')}`);
     }
     if (settlement.affinityLines && settlement.affinityLines.length) {
-      lines.push(`当前关系网的好感概况是${settlement.affinityLines.join('，')}`);
+      lines.push(`好感：${settlement.affinityLines.join('，')}`);
     }
-    lines.push('');
-    lines.push('那些改变走向的关键选择');
-    lines.push('当时看似普通的决定，后来都成了分岔路口上的方向牌。');
-    lines.push(`本局累计出现了 ${settlement.activeFlagCount} 个关键标记`);
     if (settlement.npcHitBreakdown && settlement.npcHitBreakdown.length) {
-      lines.push(`专属事件主要分布在${settlement.npcHitBreakdown.join('，')}`);
+      lines.push(`重要交集：${settlement.npcHitBreakdown.join('，')}`);
     } else if (settlement.npcEventHitsTotal > 0) {
-      lines.push(`你与 NPC 的专属事件互动共计 ${settlement.npcEventHitsTotal} 次`);
-    }
-    if (settlement.notableFlags && settlement.notableFlags.length) {
-      lines.push(`回顾这一路，你的路线关键词是${settlement.notableFlags.slice(0, 14).join('，')}`);
+      lines.push(`与同学相关的专属经历共 ${settlement.npcEventHitsTotal} 次`);
     }
     lines.push('');
-    lines.push('随机片段与图鉴收藏');
-    lines.push('命运偶尔会送来意外，而你把其中一部分变成了自己的收藏。');
+    lines.push('收藏进度');
     lines.push(
-      `截至目前，你一共解锁了 ${settlement.unlockedEndingsCount || 0} 个结局，达成了 ${settlement.achievementsCount || 0} 项成就，以上为全局存档统计`,
+      `结局 ${settlement.unlockedEndingsCount || 0} 个 · 成就 ${settlement.achievementsCount || 0} 项`,
     );
-    if (settlement.thisRunEndingId) {
-      lines.push(`这一局解锁的结局编号是 ${settlement.thisRunEndingId}`);
-    }
     if (settlement.thisRunNewAchievements && settlement.thisRunNewAchievements.length) {
       const titles = settlement.thisRunNewAchievements
         .map((id) => achievementsCatalog.find((x) => x.id === id))
         .filter(Boolean)
         .map((a) => a.title);
-      lines.push(`本局新成就共 ${settlement.thisRunNewAchievements.length} 项，分别是 ${titles.join('；')}`);
+      lines.push(`本局新成就：${titles.join('；')}`);
     }
     if (settlement.thisRunNewSchools && settlement.thisRunNewSchools.length) {
-      lines.push(`这一局新解锁了这些学校，${settlement.thisRunNewSchools.join('，')}`);
+      lines.push(`新解锁学校：${settlement.thisRunNewSchools.join('，')}`);
     }
     if (settlement.thisRunNewMajors && settlement.thisRunNewMajors.length) {
-      lines.push(`这一局新解锁了这些专业，${settlement.thisRunNewMajors.join('，')}`);
+      lines.push(`新解锁专业：${settlement.thisRunNewMajors.join('，')}`);
     }
     return lines.join('\n');
   }
@@ -2350,7 +2440,7 @@ export default class SimulationMain {
           this.run.npcRoster.primaryMentor = mid;
           this.pruneRelationshipUnlocks();
           this.unlockNpc(mid, ev.title || choice.text || '导师选择事件');
-          adjustNpcAffinity(this.run, mid, 6, '你选定导师，课题组画风悄然对齐。');
+          adjustNpcAffinity(this.run, mid, 6, '你选定了导师，也知道了课题组的节奏。');
         }
       }
       if (choice.romanceSkip) {
@@ -2363,7 +2453,7 @@ export default class SimulationMain {
           this.run.flags = { ...(this.run.flags || {}), romanceCommitted: true };
           this.pruneRelationshipUnlocks();
           this.unlockNpc(pid, ev.title || choice.text || '关系选择事件');
-          adjustNpcAffinity(this.run, pid, 10, '你们在故事里轻轻对齐了频率。');
+          adjustNpcAffinity(this.run, pid, 10, '这次谈话之后，你们对彼此的了解多了一些。');
         }
       }
       if (choice.npcAffinityDelta && typeof choice.npcAffinityDelta === 'object') {
@@ -2437,11 +2527,11 @@ export default class SimulationMain {
       effectDescriptions.push('钱包鼓了一点');
     }
     
-    const defaultDesc = effectDescriptions.length > 0 
+    const defaultDesc = effectDescriptions.length > 0
       ? effectDescriptions.join('，') + '。'
-      : '这个选择似乎会带来一些改变。';
-    
-    return `${playerName}${choice.text}。${defaultDesc}`;
+      : '事情没有立刻发生明显变化。';
+
+    return `${playerName}决定${choice.text}。${defaultDesc}`;
   }
 
   notifyPostWeeklyActionFeedback() {
@@ -2750,14 +2840,10 @@ export default class SimulationMain {
     }
     const stock = ov.currentDisplayItems;
     const stageInfo = this.getWeeklyShopStageInfo();
-    // 为右侧「背包/记录/关系」按钮预留空间，避免商店层与其重叠
-    const rightColX = SCREEN_WIDTH - 96 - 16;
-    const panelRight = rightColX - 20;
-    const panelW = Math.max(220, Math.min(w, panelRight - pad));
-    // 整体上移，并为底部操作区（返回主菜单/背包/记录/关系）预留安全空间
-    const panelTop = Math.max(SAFE_TOP + 56, yStart - 14);
+    const panelW = w;
+    const panelTop = Math.max(SAFE_TOP + 56, yStart);
     const chrome = this._playChrome || this.getPlaySceneChrome();
-    const panelBottom = chrome.defaultContinueY - 8;
+    const panelBottom = Number(chrome.navTop || chrome.defaultContinueY) - 8;
     const rowH = 84;
     const footerH = 44;
     const footerGap = 10;
@@ -2767,22 +2853,18 @@ export default class SimulationMain {
     const contentH = stock.length * rowH;
     this._weeklyShopScrollMax = Math.max(0, contentH - listMaxH);
 
-    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillStyle = 'rgba(0,0,0,0.42)';
     ctx.fillRect(0, panelTop - 8, SCREEN_WIDTH, SCREEN_HEIGHT - panelTop + 8);
 
-    ctx.fillStyle = uiTheme.colors.panel || 'rgba(32,38,54,0.96)';
-    this.fillRoundRect(pad, panelTop, panelW, panelH, 12);
-    ctx.strokeStyle = uiTheme.colors.border || 'rgba(120,130,160,0.35)';
-    ctx.lineWidth = 1;
-    this.strokeRoundRect(pad, panelTop, panelW, panelH, 12);
+    drawGlassPanel(ctx, pad, panelTop, panelW, panelH, { radius: 19, strong: true });
 
-    ctx.fillStyle = uiTheme.colors.textMain;
+    ctx.fillStyle = COLORS.ink;
     ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
     ctx.textAlign = 'left';
     ctx.fillText('购物', pad + 12, panelTop + 10);
 
     const previewTotal = this.computeWeeklyShopPreviewTotal(cart);
-    ctx.fillStyle = uiTheme.colors.textSub;
+    ctx.fillStyle = COLORS.inkMuted;
     ctx.font = `${uiTheme.font.small}px sans-serif`;
     ctx.fillText(
       previewTotal > 0
@@ -3027,23 +3109,6 @@ export default class SimulationMain {
     return out.slice(0, maxLines);
   }
 
-  drawPickTitleCentered(btn, pc, mainTint) {
-    const titleFs = uiTheme.font.small + 1;
-    const bodyLH = 14;
-    const padX = 10;
-    const innerW = btn.w - padX * 2;
-    ctx.textBaseline = 'top';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = mainTint;
-    ctx.font = `bold ${titleFs}px sans-serif`;
-    const lines = this.splitWrappedLines(pc.title || '', innerW, 2);
-    const blockH = lines.length * bodyLH;
-    const startY = btn.y + (btn.h - blockH) / 2;
-    const cx = btn.x + btn.w / 2;
-    lines.forEach((line, i) => {
-      ctx.fillText(line, cx, startY + i * bodyLH);
-    });
-  }
 
   measurePickDetailPanelHeight(pc, textMaxW) {
     const bodyFs = uiTheme.font.small;
@@ -3068,10 +3133,11 @@ export default class SimulationMain {
   drawPickDetailPanel(x, y, w, pc) {
     const textMaxW = w - 20;
     const h = this.measurePickDetailPanelHeight(pc, textMaxW);
+    const light = this.themeMode === 'light';
     ctx.save();
-    ctx.fillStyle = 'rgba(30, 36, 48, 0.92)';
+    ctx.fillStyle = light ? 'rgba(247,242,232,0.94)' : 'rgba(20, 29, 44, 0.95)';
     this.fillRoundRect(x, y, w, h, 8);
-    ctx.strokeStyle = 'rgba(100, 115, 145, 0.5)';
+    ctx.strokeStyle = light ? 'rgba(38,48,65,0.12)' : 'rgba(255,255,255,0.12)';
     ctx.lineWidth = 1;
     this.strokeRoundRect(x, y, w, h, 8);
     const innerX = x + 10;
@@ -3082,11 +3148,11 @@ export default class SimulationMain {
     const tinyLH = 12;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillStyle = uiTheme.colors.textSub;
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.68)' : COLORS.inkMuted;
     ctx.font = `${bodyFs}px sans-serif`;
     ty = this.wrapText(pc.subtitle || '', innerX, ty, textMaxW, bodyLH, pc.locked ? 4 : 3);
     if (pc.effectSmall) {
-      ctx.fillStyle = 'rgba(75, 90, 118, 0.95)';
+      ctx.fillStyle = light ? COLORS.coralDeep : COLORS.gold;
       ctx.font = `${tinyFs}px sans-serif`;
       ty = this.wrapText(pc.effectSmall, innerX, ty + 4, textMaxW, tinyLH, 3);
     }
@@ -3101,118 +3167,167 @@ export default class SimulationMain {
   drawButton(btn) {
     if (btn.invisible) return;
     const isSelected = !!(this.pendingTransition && btn.id && this.pendingTransition.buttonId === btn.id);
+    const pressed = !!btn.id && this.pressedButtonId === btn.id;
     const variant = btn.variant || 'normal';
-    const borderColor = variant === 'primary' ? '#ffffff' : uiTheme.colors.panelSoft;
-    if (
-      !btn.disabled
-      && this.assets.ui_button_primary
-      && this.assets.ui_button_primary.__ready
-      && !this.assets.ui_button_primary.__failed
-    ) {
-      ctx.drawImage(this.assets.ui_button_primary, btn.x, btn.y, btn.w, btn.h);
-      // Keep center area clean so labels stay readable on generated skins.
-      ctx.fillStyle = 'rgba(255,255,255,0.18)';
-      ctx.fillRect(btn.x + 10, btn.y + 8, btn.w - 20, btn.h - 16);
-      if (variant === 'secondary') {
-        ctx.fillStyle = 'rgba(0,0,0,0.12)';
-        ctx.fillRect(btn.x, btn.y, btn.w, btn.h);
+    const isPickRow = !!btn.pickContent;
+    const isPrimary = !isPickRow && (variant === 'primary' || variant === 'normal' || variant === 'danger');
+    const isGhost = variant === 'ghost';
+    const light = this.themeMode === 'light';
+    const drawY = btn.y + (pressed && !btn.disabled ? 2 : 0);
+    const radius = Math.min(15, Math.max(9, btn.h * 0.28));
+    const minX = btn.x;
+    const minW = btn.w;
+    const right = minX + minW - 14;
+    const textInk = btn.disabled
+      ? (light ? 'rgba(46, 57, 70, 0.38)' : 'rgba(230, 232, 228, 0.35)')
+      : (btn.textColor || (isPrimary ? '#172231' : (light ? COLORS.paperInk : COLORS.ink)));
+
+    ctx.save();
+    if (btn.h >= 34 && !isGhost && !isPickRow) {
+      ctx.shadowColor = pressed ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.22)';
+      ctx.shadowBlur = pressed ? 4 : 12;
+      ctx.shadowOffsetY = pressed ? 1 : 5;
+    }
+    if (isPrimary) {
+      const fill = ctx.createLinearGradient(minX, drawY, minX + minW, drawY + btn.h);
+      if (btn.disabled) {
+        fill.addColorStop(0, light ? 'rgba(151,154,153,0.36)' : 'rgba(91,102,110,0.42)');
+        fill.addColorStop(1, light ? 'rgba(151,154,153,0.26)' : 'rgba(72,82,91,0.36)');
+      } else if (variant === 'danger') {
+        fill.addColorStop(0, '#F39B87');
+        fill.addColorStop(1, COLORS.coralDeep);
+      } else {
+        fill.addColorStop(0, pressed ? '#EECB84' : '#F1D38F');
+        fill.addColorStop(0.48, pressed ? '#F3B070' : COLORS.coral);
+        fill.addColorStop(1, pressed ? '#D96851' : COLORS.coralDeep);
       }
+      fillRoundRect(ctx, minX, drawY, minW, btn.h, radius, fill);
+    } else if (isGhost) {
+      ctx.globalAlpha = pressed ? 0.18 : 0.08;
+      fillRoundRect(ctx, minX, drawY, minW, btn.h, radius, light ? COLORS.paperInk : '#FFFFFF');
+      ctx.globalAlpha = 1;
     } else {
-      ctx.fillStyle = isSelected
-        ? uiTheme.colors.accent
-        : (btn.disabled ? uiTheme.colors.buttonDisabled : (variant === 'secondary' ? uiTheme.colors.panelSoft : uiTheme.colors.button));
-      ctx.fillRect(btn.x, btn.y, btn.w, btn.h);
+      fillRoundRect(
+        ctx,
+        minX,
+        drawY,
+        minW,
+        btn.h,
+        radius,
+        btn.disabled
+          ? (light ? 'rgba(245,245,242,0.38)' : 'rgba(25,34,48,0.5)')
+          : (light ? 'rgba(252,249,242,0.82)' : 'rgba(26,36,53,0.84)'),
+      );
     }
-    ctx.strokeStyle = borderColor;
-    ctx.lineWidth = variant === 'primary' ? 2 : 1.5;
-    ctx.strokeRect(btn.x + 0.5, btn.y + 0.5, btn.w - 1, btn.h - 1);
-    if (isSelected) {
-      ctx.strokeStyle = '#ffd166';
-      ctx.lineWidth = 3;
-      ctx.strokeRect(btn.x + 2, btn.y + 2, btn.w - 4, btn.h - 4);
-      ctx.fillStyle = '#ffd166';
-      ctx.font = `bold ${uiTheme.font.small}px sans-serif`;
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'top';
-      ctx.fillText('已选', btn.x + btn.w - 8, btn.y + 6);
+    ctx.shadowColor = 'transparent';
+    strokeRoundRect(
+      ctx,
+      minX + 0.5,
+      drawY + 0.5,
+      minW - 1,
+      btn.h - 1,
+      radius,
+      isPrimary
+        ? 'rgba(255,255,255,0.32)'
+        : (light ? 'rgba(38,48,61,0.12)' : 'rgba(255,255,255,0.14)'),
+      1,
+    );
+    if (pressed && !btn.disabled) {
+      ctx.fillStyle = 'rgba(255,255,255,0.12)';
+      roundRectPath(ctx, minX + 1, drawY + 1, minW - 2, btn.h - 2, Math.max(1, radius - 1));
+      ctx.fill();
     }
-    const textColor = btn.textColor || '#1f2a3d';
-    const mainTint = btn.disabled ? uiTheme.colors.textSub : textColor;
+
     if (btn.pickContent) {
       const pc = btn.pickContent;
-      ctx.save();
-      this.drawPickTitleCentered(btn, pc, mainTint);
+      const locked = !!pc.locked || btn.disabled;
+      const left = minX + 15;
+      const titleSize = Math.max(14, TYPE.body);
+      const subtitleSize = Math.max(10.5, TYPE.caption);
+      const title = this.fitText(pc.title || btn.label || '', minW - 68);
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = locked ? textInk : (light ? COLORS.paperInk : COLORS.ink);
+      ctx.font = font(titleSize, 650);
+      ctx.fillText(title, left, drawY + 8);
+
+      if (pc.subtitle) {
+        ctx.fillStyle = locked
+          ? (light ? 'rgba(46,57,70,0.34)' : 'rgba(230,232,228,0.28)')
+          : (light ? 'rgba(46,57,70,0.63)' : COLORS.inkMuted);
+        ctx.font = font(subtitleSize, 400);
+        ctx.fillText(this.fitText(pc.subtitle, minW - (pc.effectSmall ? 132 : 64)), left, drawY + 28);
+      }
+      if (pc.effectSmall) {
+        ctx.textAlign = 'right';
+        ctx.fillStyle = locked
+          ? (light ? 'rgba(46,57,70,0.32)' : 'rgba(230,232,228,0.28)')
+          : (light ? alpha(COLORS.coralDeep, 0.92) : COLORS.gold);
+        ctx.font = font(10.5, 600);
+        ctx.fillText(this.fitText(pc.effectSmall, 88), right - 17, drawY + 12);
+      }
+      if (locked) {
+        ctx.textAlign = 'right';
+        ctx.fillStyle = pc.lockedLabel === '余额不足'
+          ? 'rgba(238, 122, 118, 0.9)'
+          : (light ? 'rgba(38,48,65,0.32)' : COLORS.inkFaint);
+        ctx.font = font(10, 600);
+        ctx.fillText(pc.lockedLabel || '暂时不可选', right - 17, drawY + 29);
+      } else {
+        drawChevron(
+          ctx,
+          right - 5,
+          drawY + btn.h / 2,
+          13,
+          isSelected ? (light ? COLORS.coralDeep : COLORS.gold) : (light ? 'rgba(46,57,70,0.42)' : COLORS.inkFaint),
+          'right',
+        );
+      }
+
+      if (isSelected) {
+        ctx.fillStyle = light ? COLORS.coralDeep : COLORS.gold;
+        fillRoundRect(ctx, minX, drawY + 10, 3, btn.h - 20, 2, ctx.fillStyle);
+      }
       if (btn.pickDetailBelow && isSelected) {
         this.drawPickDetailPanel(btn.x, btn.y + btn.h + 8, btn.w, pc);
       }
       ctx.restore();
       return;
     }
-    ctx.fillStyle = textColor;
+
+    const compactButton = btn.h <= 32;
+    const maxTextW = Math.max(18, btn.w - (compactButton ? 10 : (btn.icon ? 66 : 38)));
+    const rawParts = String(btn.label || '').split('\n');
+    const title = rawParts[0] || '';
+    const subtitle = rawParts.slice(1).join(' ');
+    const centerY = drawY + btn.h / 2;
+    const iconSize = Math.min(22, btn.h - 15);
+    if (btn.icon) drawIcon(ctx, btn.icon, minX + 14, centerY - iconSize / 2, iconSize, textInk);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const maxTextW = Math.max(20, btn.w - 18);
-    const rawParts = String(btn.label || '').split('\n');
-    const hasSubtitle = rawParts.length > 1 && rawParts.slice(1).join('').trim().length > 0;
-    if (hasSubtitle) {
-      const title = rawParts[0] || '';
-      const subtitle = rawParts.slice(1).join(' ');
-      const titleFs = Math.max(12, uiTheme.font.body);
-      const subtitleFs = Math.max(10, uiTheme.font.small - 1);
-      const titleLH = 15;
-      const subtitleLH = 13;
-      ctx.font = `bold ${titleFs}px sans-serif`;
-      const titleLines = this.splitWrappedLines(title, maxTextW, 1);
-      ctx.font = `${subtitleFs}px sans-serif`;
-      const subtitleLines = this.splitWrappedLines(subtitle, maxTextW, 1);
-      const totalH = titleLines.length * titleLH + subtitleLines.length * subtitleLH + 2;
-      const centerY = btn.y + btn.h / 2;
-      let cy = centerY - totalH / 2 + titleLH / 2;
-      ctx.fillStyle = textColor;
-      ctx.font = `bold ${titleFs}px sans-serif`;
-      titleLines.forEach((line) => {
-        ctx.fillText(line, btn.x + btn.w / 2, cy);
-        cy += titleLH;
-      });
-      ctx.fillStyle = btn.disabled ? '#6f7686' : '#263247';
-      ctx.shadowColor = 'rgba(255,255,255,0.35)';
-      ctx.shadowBlur = 1;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 0;
-      ctx.font = `${subtitleFs}px sans-serif`;
-      cy += 2;
-      subtitleLines.forEach((line) => {
-        ctx.fillText(line, btn.x + btn.w / 2, cy);
-        cy += subtitleLH;
-      });
-      ctx.shadowColor = 'transparent';
-      ctx.shadowBlur = 0;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 0;
+    ctx.fillStyle = textInk;
+    if (subtitle) {
+      ctx.font = font(14, 650);
+      ctx.fillText(this.fitText(title, maxTextW), minX + minW / 2, centerY - 8);
+      ctx.font = font(10.5, 400);
+      ctx.fillStyle = isPrimary ? 'rgba(23,34,49,0.68)' : textInk;
+      ctx.globalAlpha = isPrimary ? 1 : 0.66;
+      ctx.fillText(this.fitText(subtitle, maxTextW), minX + minW / 2, centerY + 8);
+      ctx.globalAlpha = 1;
     } else {
-      const lineHeight = 14;
-      const maxLines = Math.max(1, Math.floor((btn.h - 8) / lineHeight));
-      const lines = this.splitWrappedLines(rawParts[0] || '', maxTextW, maxLines);
-      const midY = btn.y + btn.h / 2;
-      const startY = midY - ((lines.length - 1) * lineHeight) / 2;
-      ctx.fillStyle = textColor;
-      ctx.font = `${variant === 'primary' ? `bold ${uiTheme.font.body}` : uiTheme.font.body}px sans-serif`;
-      lines.forEach((line, i) => {
-        ctx.fillText(line, btn.x + btn.w / 2, startY + i * lineHeight);
-      });
+      const labelSize = compactButton ? 10.5 : (variant === 'primary' || variant === 'normal' ? 14.5 : 13.5);
+      ctx.font = font(labelSize, isPrimary ? 650 : 550);
+      ctx.fillText(this.fitText(title, maxTextW), minX + minW / 2, centerY + 0.5);
     }
+    if (isSelected) {
+      ctx.textAlign = 'right';
+      ctx.font = font(10, 650);
+      ctx.fillStyle = 'rgba(23,34,49,0.72)';
+      ctx.fillText('已选', right, centerY);
+    }
+    ctx.restore();
   }
 
-  drawSmallIcon(assetId, x, y, size = 22) {
-    const icon = this.assets[assetId];
-    if (icon && icon.__ready && !icon.__failed) {
-      ctx.drawImage(icon, x, y, size, size);
-      return true;
-    }
-    ctx.fillStyle = uiTheme.colors.panelSoft;
-    ctx.fillRect(x, y, size, size);
-    return false;
-  }
 
   drawAvatar(x, y, size = 48, profile = null) {
     const profileToUse = profile || this.tempProfile;
@@ -3258,160 +3373,100 @@ export default class SimulationMain {
       return true;
     }
     
-    // 备用方案
-    ctx.fillStyle = uiTheme.colors.panelSoft;
+    const fallbackFill = ctx.createLinearGradient(x, y, x + size, y + size);
+    fallbackFill.addColorStop(0, '#38505A');
+    fallbackFill.addColorStop(1, '#B98367');
+    ctx.fillStyle = fallbackFill;
     ctx.beginPath();
     ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2);
     ctx.fill();
+    ctx.fillStyle = 'rgba(247,243,232,0.92)';
+    ctx.beginPath();
+    ctx.arc(x + size / 2, y + size * 0.4, size * 0.15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x + size / 2, y + size * 0.83, size * 0.27, size * 0.19, 0, Math.PI, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = COLORS.gold;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(x + size/2, y + size/2, size/2 - 1, 0, Math.PI * 2);
+    ctx.stroke();
     return false;
   }
 
   drawSceneBackground() {
-    // 根据当前场景选择合适的背景
-    const backgroundAsset = this.getSceneBackground();
-    
-    if (backgroundAsset && backgroundAsset.__ready && !backgroundAsset.__failed) {
-      ctx.drawImage(backgroundAsset, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-      // 添加半透明遮罩确保文字可读性
-      ctx.fillStyle = 'rgba(18, 14, 22, 0.30)';
-      ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    } else if (this.assets.ui_panel_bg && this.assets.ui_panel_bg.__ready && !this.assets.ui_panel_bg.__failed) {
-      ctx.drawImage(this.assets.ui_panel_bg, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-      ctx.fillStyle = 'rgba(18, 14, 22, 0.20)';
-      ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    const semesterIndex = this.run ? Number(this.run.semesterIndex || 0) : 0;
+    const weekIndex = this.scene === 'play' && this.run ? Number(this.run.weekIndex || 0) : 0;
+    const cacheKey = [
+      this.scene,
+      this.themeMode,
+      semesterIndex,
+      weekIndex,
+      SCREEN_WIDTH,
+      SCREEN_HEIGHT,
+    ].join(':');
+
+    if (cacheKey !== this.backdropCacheKey) {
+      this.backdropCacheKey = cacheKey;
+      try {
+        if (!this.backdropCache && wx.createOffscreenCanvas) {
+          this.backdropCache = wx.createOffscreenCanvas({
+            type: '2d',
+            width: Math.round(SCREEN_WIDTH * DEVICE_PIXEL_RATIO),
+            height: Math.round(SCREEN_HEIGHT * DEVICE_PIXEL_RATIO),
+          });
+        }
+        if (this.backdropCache) {
+          renderBackdrop(this.backdropCache, {
+            width: SCREEN_WIDTH,
+            height: SCREEN_HEIGHT,
+            dpr: DEVICE_PIXEL_RATIO,
+            scene: this.scene,
+            themeMode: this.themeMode,
+            semesterIndex,
+            weekIndex,
+          });
+        }
+      } catch (e) {
+        this.backdropCache = null;
+      }
+    }
+
+    if (this.backdropCache) {
+      ctx.drawImage(this.backdropCache, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     } else {
-      ctx.fillStyle = uiTheme.colors.bg;
+      const fallback = ctx.createLinearGradient(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+      if (this.themeMode === 'light') {
+        fallback.addColorStop(0, '#F4EBDD');
+        fallback.addColorStop(1, '#9CB1B7');
+      } else {
+        fallback.addColorStop(0, '#18243A');
+        fallback.addColorStop(1, '#263A3D');
+      }
+      ctx.fillStyle = fallback;
       ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     }
+
+    const readability = ctx.createLinearGradient(0, 0, 0, SCREEN_HEIGHT);
+    readability.addColorStop(0, this.themeMode === 'light' ? 'rgba(248,243,234,0.34)' : 'rgba(7,12,21,0.24)');
+    readability.addColorStop(0.42, 'rgba(8,14,24,0)');
+    readability.addColorStop(0.72, this.themeMode === 'light' ? 'rgba(29,42,50,0.2)' : 'rgba(7,12,21,0.38)');
+    readability.addColorStop(1, this.themeMode === 'light' ? 'rgba(18,28,35,0.46)' : 'rgba(5,10,18,0.74)');
+    ctx.fillStyle = readability;
+    ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    drawAmbientMotes(ctx, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT * 0.82, Date.now(), this.themeMode);
   }
 
-  getSceneBackground() {
-    // 根据场景和当前状态选择背景
-    if (this.scene === 'play' && this.run) {
-      // 游戏中根据当前阶段选择背景
-      if (this.run.phase === 'main_event' || this.run.phase === 'side_event') {
-        // 事件场景：使用SchoolMiniPack的教室背景
-        const eventBackgrounds = [
-          this.assets.smp_classroom1_day1,
-          this.assets.smp_classroom2_day1,
-          this.assets.smp_classroom3_day1,
-          this.assets.smp_classroom4_day1,
-          this.assets.Library_Day,
-          this.assets.Classroom_Day,
-          this.assets.Science_Laboratory_Room_Day,
-          this.assets.Music_Room_Day
-        ].filter(bg => bg);
-        
-        if (eventBackgrounds.length > 0) {
-          const weeks = Number(this.run.weeksPerSemester || WEEKS_PER_SEMESTER);
-          const index = (this.run.semesterIndex * weeks + this.run.weekIndex) % eventBackgrounds.length;
-          return eventBackgrounds[index];
-        }
-      } else if (this.run.phase === 'week_action') {
-        // 周行动场景：使用SchoolMiniPack的多样化背景
-        const backgrounds = [
-          this.assets.smp_hallway_day1,
-          this.assets.smp_hallway11_day1,
-          this.assets.smp_hallway21_day1,
-          this.assets.smp_hallway31_day1,
-          this.assets.smp_front_day1,
-          this.assets.smp_noticeboard_day1,
-          this.assets.smp_stairs1_day1,
-          this.assets.smp_stairs2_day1,
-          this.assets.Library_Day,
-          this.assets.Gym_Day,
-          this.assets.Corridor_Day,
-          this.assets.Refectory_Day,
-          this.assets.Courtyard1_Day,
-          this.assets.Athletics_Track_Day,
-          this.assets.Student_Council_Room_Day
-        ].filter(bg => bg);
-        
-        // 根据当前状态选择合适的背景
-        const st = this.run.stats;
-        if (st.pressure > 70) {
-          // 压力大时显示放松场景
-          const relaxBackgrounds = [
-            this.assets.smp_roof_day1,
-            this.assets.smp_front_day1,
-            this.assets.Gym_Day,
-            this.assets.Courtyard1_Day,
-            this.assets.Athletics_Track_Day
-          ].filter(bg => bg);
-          if (relaxBackgrounds.length > 0) {
-            return relaxBackgrounds[Math.floor(Math.random() * relaxBackgrounds.length)];
-          }
-        }
-        
-        if (backgrounds.length > 0) {
-          const index = (this.run.semesterIndex * 7 + this.run.weekIndex) % backgrounds.length;
-          return backgrounds[index];
-        }
-      }
-    } else if (this.scene === 'create_role') {
-      // 创建角色：使用个人房间背景
-      const roomBackgrounds = [
-        this.assets.pra_a1_day1,
-        this.assets.pra_a1_evening1,
-        this.assets.pra_a1_night1_lights,
-        this.assets.prb_a1_day1,
-        this.assets.prb_a1_evening1,
-        this.assets.prb_a1_night1_lights,
-        this.assets.prc_a1_day1,
-        this.assets.prc_a1_evening1,
-        this.assets.prc_a1_night1_lights
-      ].filter(bg => bg);
-      
-      if (roomBackgrounds.length > 0) {
-        return roomBackgrounds[Math.floor(Math.random() * roomBackgrounds.length)];
-      }
-    } else if (this.scene === 'menu') {
-      // 主菜单：使用SchoolMiniPack的前门背景
-      return this.assets.smp_front_day1 || this.assets.Courtyard1_Day;
-    } else if (this.scene === 'gallery' || this.scene === 'achievements' || this.scene === 'run_log' || this.scene === 'cg_gallery' || this.scene === 'bgm_gallery' || this.scene === 'credits' || this.scene === 'cg_playback') {
-      // 图鉴和成就：使用SchoolMiniPack的布告栏背景
-      return this.assets.smp_noticeboard_day1 || this.assets.Student_Council_Room_Day;
-    } else if (this.scene === 'inventory') {
-      // 背包：使用个人房间背景
-      const roomBackgrounds = [
-        this.assets.pra_a1_day1,
-        this.assets.pra_a1_evening1,
-        this.assets.pra_a1_night1_lights
-      ].filter(bg => bg);
-      
-      if (roomBackgrounds.length > 0) {
-        return roomBackgrounds[Math.floor(Math.random() * roomBackgrounds.length)];
-      }
-    }
-    
-    return null;
-  }
 
   wrapText(text, x, y, maxWidth, lineHeight, maxLines) {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    let line = '';
-    let cy = y;
-    let lines = 0;
-    const chars = String(text).split('');
-    for (let n = 0; n < chars.length; n++) {
-      const testLine = line + chars[n];
-      const metrics = ctx.measureText(testLine);
-      if (metrics.width > maxWidth && n > 0) {
-        ctx.fillText(line, x, cy);
-        line = chars[n];
-        cy += lineHeight;
-        lines += 1;
-        if (lines >= maxLines - 1) {
-          line += '…';
-          break;
-        }
-      } else {
-        line = testLine;
-      }
-    }
-    ctx.fillText(line, x, cy);
-    return cy + lineHeight;
+    const lines = this.splitWrappedLines(String(text || ''), maxWidth, Math.max(1, maxLines));
+    lines.forEach((line, index) => {
+      ctx.fillText(line, x, y + index * lineHeight);
+    });
+    return y + Math.max(1, lines.length) * lineHeight;
   }
 
   /** 按段落渲染文本：支持 \n 换段，段内自动折行 */
@@ -3445,31 +3500,13 @@ export default class SimulationMain {
   measureWrappedTextBottom(text, x, y, maxWidth, lineHeight, maxLines) {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    let line = '';
-    let cy = y;
-    let lines = 0;
-    const chars = String(text).split('');
-    for (let n = 0; n < chars.length; n++) {
-      const testLine = line + chars[n];
-      const metrics = ctx.measureText(testLine);
-      if (metrics.width > maxWidth && n > 0) {
-        cy += lineHeight;
-        lines += 1;
-        line = chars[n];
-        if (lines >= maxLines - 1) {
-          line += '…';
-          break;
-        }
-      } else {
-        line = testLine;
-      }
-    }
-    return cy + lineHeight;
+    const lines = this.splitWrappedLines(String(text || ''), maxWidth, Math.max(1, maxLines));
+    return y + Math.max(1, lines.length) * lineHeight;
   }
 
   /** 学校/专业：仅按钮区 + 选中时按钮下方说明框（与 drawButton 一致） */
   measurePickRowHeight(pc, innerW, expanded) {
-    const PICK_ROW_BTN_H = 44;
+    const PICK_ROW_BTN_H = 55;
     const DETAIL_GAP = 8;
     if (!expanded) return PICK_ROW_BTN_H;
     ctx.save();
@@ -3478,33 +3515,6 @@ export default class SimulationMain {
     return PICK_ROW_BTN_H + DETAIL_GAP + detailH;
   }
 
-  drawStatBar(label, value, max, x, y, w) {
-    const numericValue = Number(value || 0);
-    const ratio = Math.max(0, Math.min(1, numericValue / max));
-    ctx.fillStyle = uiTheme.colors.panelSoft;
-    ctx.fillRect(x, y, w, 14);
-    let barColor = uiTheme.colors.good;
-    
-    // 压力条特殊逻辑：值越高越危险
-    if (label === '压力') {
-      if (ratio > 0.7) barColor = uiTheme.colors.danger;
-      else if (ratio > 0.5) barColor = uiTheme.colors.warn;
-    } else {
-      if (ratio < 0.35) barColor = uiTheme.colors.danger;
-      else if (ratio < 0.7) barColor = uiTheme.colors.warn;
-    }
-    
-    ctx.fillStyle = barColor;
-    ctx.fillRect(x, y, w * ratio, 14);
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, x + 4, y + 7);
-    ctx.textAlign = 'right';
-    ctx.fillText(String(Math.round(numericValue)), x + w - 4, y + 7);
-    ctx.textBaseline = 'top';
-  }
 
   fitText(text, maxWidth) {
     const s = String(text);
@@ -3626,6 +3636,48 @@ export default class SimulationMain {
     return selectedActions;
   }
 
+  editorializeActionDescription(action, fallback) {
+    const descriptions = {
+      act_study: '把注意力留给课本和题库，今天晚些再回消息。',
+      act_night_market: '沿着摊位慢慢逛，吃点热的，也看看校园外的灯。',
+      act_campus_cafe: '找一张靠窗的桌子，把手机扣在一边。',
+      act_class_review: '补上遗漏的推导，把零散笔记整理成自己的话。',
+      act_help_classmate: '陪同学把卡住的那一题重新捋一遍。',
+      act_stargazing: '在操场坐一会儿，让脑子里的声音慢下来。',
+      act_old_bookstore: '翻翻旧书和旁人的批注，挑一本真正想读的。',
+      act_plant_care: '修掉枯叶，换水松土，给宿舍添一点生气。',
+      act_campus_photo: '带上相机绕校园一圈，记下最近忽略的角落。',
+      act_try_new_food: '去窗口试一份没吃过的菜，接受一点小冒险。',
+      act_write_diary: '把这一周没来得及想清楚的事写下来。',
+      act_morning_run: '天刚亮就出门，跑完再去吃早饭。',
+      act_library_volunteer: '整理书车和归还区，在安静里待上半天。',
+      act_parttime: '接一份能兼顾课表的活，换回一些生活费和经验。',
+      act_exercise: '活动肩颈，跑几圈，今晚尽量早点睡。',
+      act_social: '约熟悉的人聊近况，也顺便认识几张新面孔。',
+      act_cert: '按计划刷题，把错题真正弄懂，而不是只记答案。',
+      act_intern: '改简历，查岗位，投出几份认真准备过的申请。',
+      act_research: '读文献、跑实验，把问题带去和导师讨论。',
+      act_civil: '刷行测、写申论，把稳定路线拆成今天能做的题。',
+      act_invest: '先补基础知识，再决定要不要把生活费投进去。',
+      act_shopping_relax: '进店看看喜欢的小物，或只逛不买散散心。',
+      act_skill_course: '报一门能补齐短板的课，按周完成练习。',
+      act_movie_night: '关掉消息，认真看完一部电影。',
+      act_join_club: '去活动室看看，找到一件愿意长期做的事。',
+      act_volunteer: '把时间交给一场具体的服务，而不是只攒时长。',
+      act_read_book: '读一本与专业无关的书，把视野往外挪一点。',
+      act_cook_meal: '买菜、做饭、收拾厨房，认真吃顿热饭。',
+      act_contest_prepare: '拆解赛题，和队友对齐下一步分工。',
+      act_roommate_chat: '熄灯后聊聊天，把最近没说的话说开。',
+      act_project_team: '组队推进一个小项目，先做出能运行的第一版。',
+      act_travel_day: '去附近城市走走，换一条街和一种节奏。',
+      act_library_browse: '不带任务地逛书架，遇到什么读什么。',
+      act_all_night_gaming: '和朋友打一整晚，快乐很直接，困意也会准时到账。',
+      act_skip_class_proxy: '用钱换一次缺席，后果未必只出现在账面上。',
+      act_dorm_slump: '不安排任何任务，给大脑留一个空白的下午。',
+    };
+    return descriptions[action && action.id] || action.description || fallback || '给这周留出一个选择。';
+  }
+
   generateRandomActionDescription(action, seededRandom) {
     const variations = {
       'act_study': [
@@ -3707,49 +3759,217 @@ export default class SimulationMain {
 
   renderMenu() {
     this.drawSceneBackground();
-    const oy = this.getMenuSafeOffsetY();
-
-    // 绘制游戏头像
-    const avatarSize = 80;
-    const avatarX = (SCREEN_WIDTH - avatarSize) / 2;
-    this.drawSmallIcon('game_avatar', avatarX, 20 + oy, avatarSize);
-
-    const titleBoxW = Math.min(SCREEN_WIDTH - 28, 360);
-    const titleBoxX = (SCREEN_WIDTH - titleBoxW) / 2;
-    ctx.fillStyle = 'rgba(24, 16, 10, 0.45)';
-    ctx.fillRect(titleBoxX, 116 + oy, titleBoxW, 78);
-    ctx.fillStyle = '#ffe7c7';
-    ctx.strokeStyle = 'rgba(33, 24, 18, 0.7)';
-    ctx.lineWidth = 3;
-    ctx.font = `bold ${uiTheme.font.title + 4}px serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.strokeText('本科生的四年日记', SCREEN_WIDTH / 2, 122 + oy);
-    ctx.fillText('本科生的四年日记', SCREEN_WIDTH / 2, 122 + oy);
-    ctx.font = `${uiTheme.font.body}px sans-serif`;
-    ctx.fillStyle = '#ffe4bf';
-    ctx.fillText('感谢各位的支持', SCREEN_WIDTH / 2, 155 + oy);
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.fillText('有bug、建议等，欢迎发送到邮箱:zzz051201@163.com', SCREEN_WIDTH / 2, 175 + oy);
-
+    const pad = Math.max(18, Math.round(SCREEN_WIDTH * 0.052));
+    const menuTop = SAFE_TOP + 12;
+    const bottomSafe = SCREEN_HEIGHT - SAFE_BOTTOM;
+    const light = this.themeMode === 'light';
     const canContinue = save.hasSavedRun();
+    const savedRun = canContinue ? save.loadRun() : null;
+    const meta = save.loadMeta();
+    const titleInk = light ? COLORS.paperInk : COLORS.ink;
+
+    drawSceneKicker(ctx, pad, menuTop + 3, 'FOUR YEARS  /  ONE CAMPUS', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = titleInk;
+    ctx.font = font(TYPE.display, 750);
+    ctx.fillText('本科生的', pad, menuTop + 25);
+    ctx.fillStyle = light ? COLORS.coralDeep : COLORS.gold;
+    ctx.fillText('四年日记', pad, menuTop + 66);
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.72)' : COLORS.inkMuted;
+    ctx.font = font(TYPE.body, 450);
+    ctx.fillText('把每一次选择，写进这四年。', pad, menuTop + 113);
+
+    const sealSize = 58;
+    const sealX = SCREEN_WIDTH - pad - sealSize;
+    const sealY = menuTop + 20;
+    ctx.save();
+    ctx.globalAlpha = light ? 0.62 : 0.82;
+    strokeRoundRect(ctx, sealX, sealY, sealSize, sealSize, 14, light ? alpha(COLORS.coralDeep, 0.58) : alpha(COLORS.gold, 0.54), 1.2);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = light ? COLORS.coralDeep : COLORS.gold;
+    ctx.font = font(21, 700);
+    ctx.fillText('四', sealX + sealSize / 2, sealY + 22);
+    ctx.font = font(9, 600);
+    ctx.fillText('YEARS', sealX + sealSize / 2, sealY + 42);
+    ctx.restore();
+
     this.buttons = [];
-    const pad = 16;
     const w = SCREEN_WIDTH - pad * 2;
-    const h = 42;
-    let y = 202 + oy;
-    const add = (label, disabled, onClick) => {
-      this.buttons.push({ x: pad, y, w, h, label, disabled, onClick });
-      y += h + 8;
-    };
-    add('新游戏', false, () => { this.goScene('create_role', { initCreateRole: true }); });
-    add('继续', !canContinue, () => { if (canContinue) this.continueRun(); });
-    add('结局图鉴', false, () => { this.goScene('gallery'); });
-    add('成就系统', false, () => { this.goScene('achievements'); });
-    add('CG 图鉴', false, () => { this.goScene('cg_gallery'); });
-    add('BGM 图鉴', false, () => { this.goScene('bgm_gallery'); });
-    add('致谢', false, () => { this.creditsScroll = 0; this.goScene('credits'); });
-    add('设置', false, () => { this.goScene('settings'); });
+    const secondaryH = 42;
+    const primaryH = 54;
+    const secondaryY = bottomSafe - secondaryH;
+    const primaryY = secondaryY - primaryH - 10;
+    const utilityH = 66;
+    const utilityY = primaryY - utilityH - 18;
+
+    const collections = [
+      {
+        key: 'gallery',
+        label: '结局',
+        icon: 'trophy',
+        count: `${(meta.unlockedEndings || []).length}/${endingsCatalog.length}`,
+        onClick: () => this.goScene('gallery'),
+      },
+      {
+        key: 'achievements',
+        label: '成就',
+        icon: 'people',
+        count: `${Object.keys(meta.achievements || {}).length}/${achievementsCatalog.length}`,
+        onClick: () => this.goScene('achievements'),
+      },
+      {
+        key: 'cg_gallery',
+        label: '影像',
+        icon: 'image',
+        count: `${(meta.unlockedCgs || []).length}/${CG_CATALOG.length}`,
+        onClick: () => this.goScene('cg_gallery'),
+      },
+      {
+        key: 'bgm_gallery',
+        label: '声音',
+        icon: 'music',
+        count: `${(meta.unlockedBgms || []).length}/${BGM_CATALOG.length}`,
+        onClick: () => this.goScene('bgm_gallery'),
+      },
+    ];
+    const tileGap = 8;
+    const tileW = (w - tileGap * 3) / 4;
+    collections.forEach((item, index) => {
+      const x = pad + index * (tileW + tileGap);
+      const btnId = `menu_${item.key}`;
+      const pressed = this.pressedButtonId === btnId;
+      const y = utilityY + (pressed ? 2 : 0);
+      fillRoundRect(
+        ctx,
+        x,
+        y,
+        tileW,
+        utilityH,
+        15,
+        light ? 'rgba(252,249,243,0.72)' : 'rgba(20,29,44,0.74)',
+      );
+      strokeRoundRect(
+        ctx,
+        x + 0.5,
+        y + 0.5,
+        tileW - 1,
+        utilityH - 1,
+        15,
+        light ? 'rgba(38,48,61,0.1)' : 'rgba(255,255,255,0.11)',
+      );
+      const iconColor = light ? COLORS.paperInk : COLORS.ink;
+      drawIcon(ctx, item.icon, x + 12, y + 11, 22, iconColor);
+      if (tileW >= 68) {
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = light ? 'rgba(38,48,61,0.42)' : COLORS.inkFaint;
+        ctx.font = font(9.5, 500);
+        ctx.fillText(item.count, x + tileW - 10, y + 11);
+      }
+      ctx.textAlign = 'left';
+      ctx.fillStyle = light ? 'rgba(38,48,61,0.84)' : 'rgba(245,241,232,0.88)';
+      ctx.font = font(13, 600);
+      ctx.fillText(item.label, x + 12, y + 42);
+      this.buttons.push({
+        id: btnId,
+        x,
+        y: utilityY,
+        w: tileW,
+        h: utilityH,
+        label: item.label,
+        invisible: true,
+        disabled: false,
+        onClick: item.onClick,
+      });
+    });
+
+    if (canContinue && savedRun) {
+      const sem = Number(savedRun.semesterIndex || 0) + 1;
+      const week = Number(savedRun.weekIndex || 0) + 1;
+      const playerName = savedRun.playerProfile && savedRun.playerProfile.name
+        ? savedRun.playerProfile.name
+        : '同学';
+      this.buttons.push({
+        id: 'menu_continue',
+        x: pad,
+        y: primaryY,
+        w,
+        h: primaryH,
+        label: `继续上学\n第 ${sem} 学期 · 第 ${week} 周 · ${playerName}`,
+        variant: 'primary',
+        disabled: false,
+        onClick: () => this.continueRun(),
+      });
+      this.buttons.push({
+        id: 'menu_new_game',
+        x: pad,
+        y: secondaryY,
+        w,
+        h: secondaryH,
+        label: '开始新的四年',
+        variant: 'secondary',
+        disabled: false,
+        onClick: () => this.goScene('create_role', { initCreateRole: true }),
+      });
+    } else {
+      this.buttons.push({
+        id: 'menu_new_game',
+        x: pad,
+        y: primaryY,
+        w,
+        h: primaryH,
+        label: '开始新的四年\n创建角色 · 选择学校与专业',
+        variant: 'primary',
+        disabled: false,
+        onClick: () => this.goScene('create_role', { initCreateRole: true }),
+      });
+      this.buttons.push({
+        id: 'menu_settings_footer',
+        x: pad,
+        y: secondaryY,
+        w,
+        h: secondaryH,
+        label: '设置与声音',
+        variant: 'secondary',
+        disabled: false,
+        onClick: () => this.goScene('settings'),
+      });
+    }
+
+    const footerY = utilityY - 27;
+    const footerButtons = canContinue
+      ? [
+          { id: 'menu_settings_footer', label: '设置', icon: 'settings', action: () => this.goScene('settings') },
+          { id: 'menu_credits_footer', label: '制作名单', icon: 'people', action: () => { this.creditsScroll = 0; this.goScene('credits'); } },
+        ]
+      : [
+          { id: 'menu_credits_footer', label: '制作名单', icon: 'people', action: () => { this.creditsScroll = 0; this.goScene('credits'); } },
+        ];
+    let footerX = pad;
+    footerButtons.forEach((item) => {
+      ctx.font = font(11, 500);
+      const labelW = 22 + ctx.measureText(item.label).width;
+      const buttonW = 52 + labelW;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = light ? 'rgba(38,48,61,0.58)' : COLORS.inkMuted;
+      drawIcon(ctx, item.icon, footerX, footerY - 7, 14, ctx.fillStyle);
+      ctx.fillText(item.label, footerX + 19, footerY);
+      this.buttons.push({
+        id: item.id,
+        x: footerX - 4,
+        y: footerY - 16,
+        w: buttonW,
+        h: 32,
+        label: item.label,
+        invisible: true,
+        disabled: false,
+        onClick: item.action,
+      });
+      footerX += buttonW + 18;
+    });
   }
 
   getStatName(stat) {
@@ -3879,319 +4099,305 @@ export default class SimulationMain {
 
   renderCreateRole() {
     this.drawSceneBackground();
-    const pad = 20;
+    const pad = 14;
     const w = SCREEN_WIDTH - pad * 2;
-    const gap = 12;
-    const panelTop = 60;
-    const inner = pad + 8;
-    const avatarLeft = pad + 6;
-    const avatarSize = 48;
-    const btnH = 34;
-    const btnGap = 8;
-    const btn3w = Math.floor((w - btnGap * 2) / 3);
-    const bodyLH = uiTheme.lineHeight?.body || 19;
-    const smallLH = (uiTheme.lineHeight?.small || 14) + 2;
-    const h2Line = uiTheme.lineHeight?.title ? uiTheme.lineHeight.title : 28;
-
-    const bottomBtnH = 44;
-    const bottomGap = 10;
-    const yBack = SCREEN_HEIGHT - 16 - bottomBtnH;
-    const yConfirm = yBack - bottomGap - bottomBtnH;
-    const panelBottom = yConfirm - 8;
-
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText('创建角色', SCREEN_WIDTH / 2, 44);
-
-    ctx.fillStyle = uiTheme.colors.panel;
-    ctx.fillRect(pad, panelTop, w, panelBottom - panelTop);
-
+    const light = this.themeMode === 'light';
+    const titleInk = light ? COLORS.paperInk : COLORS.ink;
+    const compact = SCREEN_HEIGHT < 720;
+    const veryCompact = SCREEN_HEIGHT < 620;
     this.buttons = [];
 
-    let y = panelTop + 8;
-    const textMaxW = w - 16;
-
-    this.drawAvatar(avatarLeft, y, avatarSize, this.tempProfile);
-    const nickX = avatarLeft + avatarSize + 10;
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `${uiTheme.font.body}px sans-serif`;
+    drawSceneKicker(ctx, pad, SAFE_TOP + 5, 'NEW CHAPTER', light ? COLORS.coralDeep : COLORS.gold);
     ctx.textAlign = 'left';
-    ctx.fillText(`昵称：${this.tempProfile.name}`, nickX, y + 4);
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.fillText(
-      `性别：${this.tempProfile.gender === 'male' ? '男' : '女'}`,
-      nickX,
-      y + 4 + bodyLH,
-    );
-
-    const btnRowY = y + avatarSize + 8;
-    this.buttons.push({
-      id: 'role_name_random',
-      x: pad,
-      y: btnRowY,
-      w: btn3w,
-      h: btnH,
-      label: '随机姓名',
-      variant: 'secondary',
-      disabled: false,
-      onClick: () => this.pickRandomNameByGender(this.tempProfile.gender),
-    });
-    this.buttons.push({
-      id: 'role_gender_toggle',
-      x: pad + btn3w + btnGap,
-      y: btnRowY,
-      w: btn3w,
-      h: btnH,
-      label: '切换性别',
-      variant: 'secondary',
-      disabled: false,
-      onClick: () => {
-        this.tempProfile.gender = this.tempProfile.gender === 'male' ? 'female' : 'male';
-        this.pickRandomNameByGender(this.tempProfile.gender);
-        this.pickRandomAvatarByGender(this.tempProfile.gender);
-      },
-    });
-    this.buttons.push({
-      id: 'role_avatar_random',
-      x: pad + 2 * (btn3w + btnGap),
-      y: btnRowY,
-      w: btn3w,
-      h: btnH,
-      label: '随机头像',
-      variant: 'secondary',
-      disabled: false,
-      onClick: () => this.pickRandomAvatarByGender(this.tempProfile.gender),
-    });
-
-    y = btnRowY + btnH + gap;
-
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.small}px sans-serif`;
-    ctx.textAlign = 'left';
-    ctx.fillText('难度', inner, y);
-    y += 16;
-    const diffRowY = y;
-    const d = this.tempProfile.difficulty || DEFAULT_DIFFICULTY;
-    this.buttons.push({
-      id: 'diff_easy',
-      x: pad,
-      y: diffRowY,
-      w: btn3w,
-      h: btnH,
-      label: '简单',
-      variant: d === 'easy' ? 'primary' : 'secondary',
-      disabled: false,
-      onClick: () => { this.tempProfile.difficulty = 'easy'; },
-    });
-    this.buttons.push({
-      id: 'diff_normal',
-      x: pad + btn3w + btnGap,
-      y: diffRowY,
-      w: btn3w,
-      h: btnH,
-      label: '标准',
-      variant: d === 'normal' ? 'primary' : 'secondary',
-      disabled: false,
-      onClick: () => { this.tempProfile.difficulty = 'normal'; },
-    });
-    this.buttons.push({
-      id: 'diff_hard',
-      x: pad + 2 * (btn3w + btnGap),
-      y: diffRowY,
-      w: btn3w,
-      h: btnH,
-      label: '困难',
-      variant: d === 'hard' ? 'primary' : 'secondary',
-      disabled: false,
-      onClick: () => { this.tempProfile.difficulty = 'hard'; },
-    });
-
-    y = diffRowY + btnH + 8;
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
     ctx.textBaseline = 'top';
-    const diffKey = d === 'easy' || d === 'hard' ? d : 'normal';
-    const diffExpl = DIFFICULTY_CREATE_ROLE_HINT[diffKey];
-    y = this.wrapText(diffExpl, inner, y, textMaxW, smallLH, 3);
-
-    y += gap;
-
-    const talentActionGap = 8;
-    const talentActionW = 56;
-    const talentActionH = 32;
-    const talentActionsTotalW = talentActionW * 2 + talentActionGap;
-    const talentActionX = pad + w - 8 - talentActionsTotalW;
-    const talentTitleY = y;
-
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'left';
-    ctx.fillText('选择天赋', inner, talentTitleY);
-
-    const tierFilter = this.talentTierFilter || 'all';
-    const tierBtnGap = 6;
-    const tierBtnCount = TALENT_TIER_FILTER_KEYS.length;
-    const tierBtnW = Math.floor((w - tierBtnGap * (tierBtnCount - 1)) / tierBtnCount);
-    const tierBtnH = 30;
-    y = talentTitleY + talentActionH + 8;
-
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.fillText('随机池分层', inner, y);
-    y += 16;
-    const tierRowY = y;
-    TALENT_TIER_FILTER_KEYS.forEach((key, idx) => {
-      this.buttons.push({
-        id: `talent_tier_${key}`,
-        x: pad + idx * (tierBtnW + tierBtnGap),
-        y: tierRowY,
-        w: tierBtnW,
-        h: tierBtnH,
-        label: TALENT_TIER_FILTER_LABEL[key] || key,
-        variant: tierFilter === key ? 'primary' : 'secondary',
-        disabled: false,
-        onClick: () => { this.talentTierFilter = key; },
-      });
-    });
-    y = tierRowY + tierBtnH + 8;
-
-    const talentDisplay = this.selectedTalent ? this.selectedTalent.name : '—';
-    const talentTier = this.selectedTalent
-      ? (TALENT_TIER_LABEL[this.selectedTalent.tier] || TALENT_TIER_LABEL.balanced)
-      : '—';
-    const poolLabel = TALENT_TIER_FILTER_LABEL[tierFilter] || '全部';
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.body}px sans-serif`;
-    ctx.textAlign = 'left';
-    ctx.fillText(`当前：${talentDisplay}`, inner, y);
-    y += bodyLH;
-    ctx.fillText(`随机池：${poolLabel}　天赋分层：${talentTier}`, inner, y);
-    y += bodyLH + 4;
-
-    ctx.textAlign = 'left';
-    if (this.selectedTalent) {
-      const st = this.selectedTalent;
-      const desc = st.description || '';
-      const meme = st.meme || '';
-      const se = st.specialEffects || {};
-      const activeSpecialCount = Object.keys(se).filter((k) => se[k]).length;
-      const nChips = this.formatStatChanges(st.effects || {}).length;
-      const statBlockH = nChips ? Math.max(smallLH, Math.ceil(nChips / 2) * smallLH) : smallLH;
-      const reserveFx =
-        18 +
-        statBlockH +
-        activeSpecialCount * smallLH * 2 +
-        12;
-      const memeReserve = meme ? 6 + smallLH * 2 : 0;
-      const room = yConfirm - gap - y - reserveFx - memeReserve;
-      const descMaxLines = Math.max(1, Math.min(5, Math.floor(Math.max(0, room) / bodyLH)));
-      const afterDesc = yConfirm - gap - y - reserveFx - descMaxLines * bodyLH - (meme ? 6 : 0);
-      const memeMaxLines = meme
-        ? Math.max(1, Math.min(2, Math.floor(Math.max(0, afterDesc) / smallLH)))
-        : 0;
-
-      ctx.fillStyle = uiTheme.colors.textSub;
-      ctx.font = `${uiTheme.font.body}px sans-serif`;
-      if (desc) {
-        y = this.wrapText(desc, inner, y, textMaxW, bodyLH, descMaxLines);
-      }
-      if (meme) {
-        ctx.fillStyle = uiTheme.colors.accent;
-        ctx.font = `${uiTheme.font.small}px sans-serif`;
-        y = this.wrapText(meme, inner, y + 6, textMaxW, smallLH, Math.max(1, memeMaxLines));
-      }
-      y += 8;
-      ctx.fillStyle = uiTheme.colors.textMain;
-      ctx.font = `bold ${uiTheme.font.small}px sans-serif`;
-      ctx.fillText('天赋效果', inner, y);
-      y += smallLH;
-      y = this.drawColoredStatChangeLine(inner, y, textMaxW, smallLH, st.effects || {});
-      y = this.drawTalentSpecialEffectLines(inner, y + 2, textMaxW, smallLH, st.specialEffects);
-    } else {
-      ctx.fillStyle = uiTheme.colors.textSub;
-      ctx.font = `${uiTheme.font.small}px sans-serif`;
-      y = this.wrapText(
-        '先选随机池分层，再点「随机」从该池抽取；「无」表示不携带天赋。',
-        inner,
-        y,
-        textMaxW,
-        smallLH,
-        3,
-      );
+    ctx.fillStyle = titleInk;
+    ctx.font = font(26, 730);
+    ctx.fillText('先认识一下你', pad, SAFE_TOP + 18);
+    if (!veryCompact) {
+      ctx.fillStyle = light ? 'rgba(38,48,65,0.6)' : COLORS.inkMuted;
+      ctx.font = font(11, 450);
+      ctx.fillText('这些设定决定开局，之后的路仍由你选择。', pad, SAFE_TOP + 51);
     }
 
+    const bottomSafe = SCREEN_HEIGHT - SAFE_BOTTOM;
+    const actionH = veryCompact ? 46 : 50;
+    const actionY = bottomSafe - actionH;
+    let y = SAFE_TOP + (veryCompact ? 54 : compact ? 72 : 78);
+
+    const profileH = veryCompact ? 84 : (compact ? 98 : 106);
+    drawGlassPanel(ctx, pad, y, w, profileH, { radius: 20, strong: true });
+    const avatarSize = veryCompact ? 46 : 56;
+    this.drawAvatar(pad + (veryCompact ? 12 : 14), y + (veryCompact ? 12 : 14), avatarSize, this.tempProfile);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = COLORS.ink;
+    ctx.font = font(veryCompact ? 19 : 21, 690);
+    ctx.fillText(this.tempProfile.name, pad + (veryCompact ? 70 : 84), y + (veryCompact ? 12 : 15));
+    ctx.fillStyle = COLORS.inkMuted;
+    ctx.font = font(10.5, 500);
+    ctx.fillText(
+      `${this.tempProfile.gender === 'male' ? '男生' : '女生'} · 大一新生`,
+      pad + (veryCompact ? 70 : 84),
+      y + (veryCompact ? 36 : 42),
+    );
+    const miniY = y + (veryCompact ? 49 : (compact ? 60 : 66));
+    const miniGap = 6;
+    const miniX = pad + (veryCompact ? 70 : 84);
+    const miniW = (w - (veryCompact ? 70 : 84) - 14 - miniGap * 2) / 3;
+    [
+      {
+        id: 'role_name_random',
+        label: '换名字',
+        onClick: () => this.pickRandomNameByGender(this.tempProfile.gender),
+      },
+      {
+        id: 'role_gender_toggle',
+        label: '切换性别',
+        onClick: () => {
+          this.tempProfile.gender = this.tempProfile.gender === 'male' ? 'female' : 'male';
+          this.pickRandomNameByGender(this.tempProfile.gender);
+          this.pickRandomAvatarByGender(this.tempProfile.gender);
+        },
+      },
+      {
+        id: 'role_avatar_random',
+        label: '换头像',
+        onClick: () => this.pickRandomAvatarByGender(this.tempProfile.gender),
+      },
+    ].forEach((item, index) => {
+      this.buttons.push({
+        id: item.id,
+        x: miniX + index * (miniW + miniGap),
+        y: miniY,
+        w: miniW,
+        h: veryCompact ? 27 : 30,
+        label: item.label,
+        variant: 'ghost',
+        textColor: COLORS.ink,
+        disabled: false,
+        onClick: item.onClick,
+      });
+    });
+    y += profileH + (veryCompact ? 8 : 14);
+
+    ctx.fillStyle = titleInk;
+    ctx.font = font(13, 650);
+    ctx.fillText('难度', pad, y);
+    const difficulty = this.tempProfile.difficulty || DEFAULT_DIFFICULTY;
+    const diffGap = 7;
+    const diffW = (w - diffGap * 2) / 3;
+    const diffY = y + (veryCompact ? 17 : 20);
+    [
+      ['easy', '轻松'],
+      ['normal', '标准'],
+      ['hard', '挑战'],
+    ].forEach(([key, label], index) => {
+      this.buttons.push({
+        id: `diff_${key}`,
+        x: pad + index * (diffW + diffGap),
+        y: diffY,
+        w: diffW,
+        h: veryCompact ? 32 : 35,
+        label,
+        variant: difficulty === key ? 'primary' : 'secondary',
+        disabled: false,
+        onClick: () => { this.tempProfile.difficulty = key; },
+      });
+    });
+    const diffKey = difficulty === 'easy' || difficulty === 'hard' ? difficulty : 'normal';
+    const diffText = DIFFICULTY_CREATE_ROLE_HINT[diffKey];
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.58)' : COLORS.inkMuted;
+    ctx.font = font(10, 430);
+    const hintBottom = this.wrapText(
+      diffText,
+      pad,
+      diffY + (veryCompact ? 36 : 44),
+      w,
+      veryCompact ? 13 : 15,
+      1,
+    );
+    y = hintBottom + (compact ? 4 : 8);
+
+    ctx.fillStyle = titleInk;
+    ctx.font = font(13, 650);
+    ctx.fillText('初始特质', pad, y);
+    const tierKeys = TALENT_TIER_FILTER_KEYS;
+    const poolLabel = TALENT_TIER_FILTER_LABEL[this.talentTierFilter] || '全部';
+    const filterW = 76;
+    const randomW = 66;
+    const noneW = 38;
+    const actionGap = 6;
+    const randomX = pad + w - randomW;
+    const filterX = randomX - actionGap - filterW;
+    const noneX = filterX - actionGap - noneW;
     this.buttons.push({
       id: 'talent_none',
-      x: talentActionX,
-      y: talentTitleY,
-      w: talentActionW,
-      h: talentActionH,
+      x: noneX,
+      y: y - 7,
+      w: noneW,
+      h: 30,
       label: '无',
-      variant: 'secondary',
+      variant: 'ghost',
       disabled: false,
       onClick: () => {
         this.selectTalent({
           id: 'no_talent',
           name: '无',
-          description: '平凡的大学生，没有特殊天赋，靠努力改变命运',
+          description: '不借助额外特质，从最普通的状态开始。',
           effects: {},
           specialEffects: {},
           rarity: 'common',
-          meme: '我命由我不由天🌟',
+          meme: '',
         });
       },
     });
-
+    this.buttons.push({
+      id: 'talent_tier_cycle',
+      x: filterX,
+      y: y - 7,
+      w: filterW,
+      h: 30,
+      label: `池 · ${poolLabel}`,
+      variant: 'ghost',
+      disabled: false,
+      onClick: () => {
+        const index = tierKeys.indexOf(this.talentTierFilter);
+        this.talentTierFilter = tierKeys[(index + 1) % tierKeys.length];
+      },
+    });
     this.buttons.push({
       id: 'talent_random',
-      x: talentActionX + talentActionW + talentActionGap,
-      y: talentTitleY,
-      w: talentActionW,
-      h: talentActionH,
-      label: '随机',
+      x: randomX,
+      y: y - 7,
+      w: randomW,
+      h: 30,
+      label: '换一个',
       variant: 'secondary',
       disabled: false,
       onClick: () => {
-        const randomTalent = this.pickRandomTalentFromTierFilter();
-        if (randomTalent) {
-          this.selectTalent(randomTalent);
-        } else {
-          const poolName = TALENT_TIER_FILTER_LABEL[this.talentTierFilter] || '该分层';
-          this.showToast(`${poolName}池暂无可用天赋`);
-        }
+        const next = this.pickRandomTalentFromTierFilter();
+        if (next) this.selectTalent(next);
+        else this.showToast('这个筛选池暂时没有可选特质');
       },
     });
+    y += (veryCompact ? 22 : (compact ? 26 : 30));
 
+    const talentCardBottom = actionY - 12;
+    const talentH = Math.max(veryCompact ? 120 : 150, talentCardBottom - y);
+    drawGlassPanel(ctx, pad, y, w, talentH, { radius: 20, strong: true });
+    const talent = this.selectedTalent;
+    const innerX = pad + 15;
+    const textW = w - 30;
+    let ty = y + 14;
+    if (talent) {
+      const tier = TALENT_TIER_LABEL[talent.tier] || '平衡';
+      const tierColor = talent.tier === 'positive'
+        ? COLORS.jade
+        : talent.tier === 'negative' || talent.tier === 'hell'
+          ? COLORS.coral
+          : COLORS.gold;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = alpha(tierColor, 0.14);
+      const tierW = ctx.measureText(tier).width + 18;
+      fillRoundRect(ctx, innerX, ty, Math.max(42, tierW), 20, 10, alpha(tierColor, 0.14));
+      ctx.fillStyle = tierColor;
+      ctx.font = font(9.5, 650);
+      ctx.textAlign = 'center';
+      ctx.fillText(tier, innerX + Math.max(42, tierW) / 2, ty + 10);
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = COLORS.ink;
+      ctx.font = font(21, 690);
+      ctx.fillText(talent.name || '未选择', innerX, ty + 27);
+      ty += 59;
+      ctx.fillStyle = COLORS.inkMuted;
+      ctx.font = font(11.5, 430);
+      const descLines = compact ? 2 : 3;
+      ty = this.wrapText(
+        talent.description || '',
+        innerX,
+        ty,
+        textW,
+        veryCompact ? 16 : 18,
+        descLines,
+      );
+      ty += veryCompact ? 5 : 9;
+      const chips = this.formatStatChanges(talent.effects || {});
+      let chipX = innerX;
+      chips.forEach((chip) => {
+        ctx.font = font(10, 600);
+        const chipW = Math.min(textW, ctx.measureText(chip.label).width + 18);
+        if (chipX + chipW > innerX + textW) return;
+        fillRoundRect(ctx, chipX, ty, chipW, 22, 11, 'rgba(255,255,255,0.07)');
+        ctx.fillStyle = chip.color;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(chip.label, chipX + chipW / 2, ty + 11);
+        chipX += chipW + 6;
+      });
+      ty += chips.length ? (veryCompact ? 28 : 32) : 2;
+      const specialLines = Object.keys(talent.specialEffects || {})
+        .filter((key) => talent.specialEffects[key] && TALENT_SPECIAL_LABEL[key])
+        .map((key) => TALENT_SPECIAL_LABEL[key])
+        .slice(0, compact ? 1 : 2);
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      specialLines.forEach((line) => {
+        if (ty + 34 > y + talentH) return;
+        ctx.fillStyle = COLORS.gold;
+        ctx.beginPath();
+        ctx.arc(innerX + 3, ty + 6, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = COLORS.inkMuted;
+        ctx.font = font(10, 430);
+        const next = this.wrapText(line, innerX + 12, ty, textW - 12, 15, 2);
+        ty = Math.max(ty + 18, next);
+      });
+    } else {
+      ctx.fillStyle = COLORS.inkMuted;
+      ctx.font = font(12, 450);
+      this.wrapText('随机抽取一个开局特质，或选择无特质开始。', innerX, y + 28, textW, 18, 2);
+    }
+
+    const backW = veryCompact ? 78 : 86;
+    this.buttons.push({
+      id: 'role_back',
+      x: pad,
+      y: actionY,
+      w: backW,
+      h: actionH,
+      label: '返回',
+      variant: 'secondary',
+      disabled: false,
+      onClick: () => this.goScene('menu'),
+    });
     this.buttons.push({
       id: 'role_confirm_continue',
-      x: pad,
-      y: yConfirm,
-      w,
-      h: bottomBtnH,
-      label: '确认并继续',
+      x: pad + backW + (veryCompact ? 8 : 9),
+      y: actionY,
+      w: w - backW - (veryCompact ? 8 : 9),
+      h: actionH,
+      label: '选择学校  →',
       variant: 'primary',
       disabled: false,
       onClick: () => {
-        if (!this.selectedTalent || this.selectedTalent.id === 'no_talent') {
-          this.ensureDefaultTalentForCreateRole();
+        if (!this.selectedTalent) {
+          this.selectTalent({
+            id: 'no_talent',
+            name: '无',
+            description: '不借助额外特质，从最普通的状态开始。',
+            effects: {},
+            specialEffects: {},
+            rarity: 'common',
+            meme: '',
+          });
         }
         this.goScene('school', { clearPending: true });
       },
     });
-    this.buttons.push({
-      id: 'role_back',
-      x: pad,
-      y: yBack,
-      w,
-      h: bottomBtnH,
-      label: '返回',
-      variant: 'secondary',
-      disabled: false,
-      onClick: () => { this.goScene('menu'); },
-    });
   }
+
 
   getUnlockHint(type, id) {
     const rules = UNLOCK_RULES[type];
@@ -4242,14 +4448,6 @@ export default class SimulationMain {
     return split[0] || cleaned;
   }
 
-  buildPickImpactLine(item, type) {
-    const effectLine = this.formatPickEffectsLine(item);
-    const prefix = effectLine ? `属性会这样变化，${effectLine}` : '属性会有轻微变化';
-    const tail = type === 'schools'
-      ? '并影响后续可见事件、可达成成就与结局分支'
-      : '并影响后续选项池、成就触发与结局走向';
-    return `选择影响如下，${prefix}。${tail}`;
-  }
 
   /** 右侧极简滚动位置指示线（trackTop, trackH, scroll, contentScrollRange） */
   drawScrollIndicator(trackTop, trackH, scroll, maxScroll) {
@@ -4265,45 +4463,55 @@ export default class SimulationMain {
     ctx.fillRect(x, trackTop + t * inner, barW, thumbH);
   }
 
-  renderPickScreen(title, list, unlockedSet, type, onPick, backScenePrev, extra = {}) {
+  renderPickScreen(title, list, unlockedSet, type, onPick, backScenePrev) {
     this.drawSceneBackground();
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText(title, SCREEN_WIDTH / 2, 46);
+    const light = this.themeMode === 'light';
+    const titleInk = light ? COLORS.paperInk : COLORS.ink;
+    drawSceneKicker(ctx, 15, SAFE_TOP + 5, type === 'schools' ? 'CHOOSE A CAMPUS' : 'CHOOSE A DIRECTION', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = titleInk;
+    ctx.font = font(26, 730);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText(title, 15, SAFE_TOP + 18);
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.58)' : COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText(
+      type === 'schools' ? '学校决定起点、资源与最先遇见的人。' : '专业会改变能力成长和后续事件。',
+      15,
+      SAFE_TOP + 51,
+    );
     this.buttons = [];
-    const pad = 16;
-    const w = SCREEN_WIDTH - pad * 2 - 14;
-    const rowGap = 10;
-    const listTop = 88;
-    const pickBtnH = 44;
-    const bottomPad = 8;
-    const footerBtnH = 44;
-    const footerStackGap = 8;
-    const scrollHintBand = 28;
-    const backY = SCREEN_HEIGHT - bottomPad - footerBtnH;
-    const confirmY = backY - footerStackGap - footerBtnH;
-    const footerStackTop = confirmY;
-    const maxBottom = footerStackTop - scrollHintBand;
-    const scrollHintY = footerStackTop - scrollHintBand / 2;
+    const pad = 15;
+    const w = SCREEN_WIDTH - pad * 2 - 10;
+    const rowGap = 8;
+    const listTop = SAFE_TOP + 72;
+    const pickBtnH = 55;
+    const footerBtnH = 50;
+    const actionY = SCREEN_HEIGHT - SAFE_BOTTOM - footerBtnH;
+    const maxBottom = actionY - 34;
+    const scrollHintY = actionY - 17;
 
     const innerW = w - 20;
     const positions = [];
     const rowMetas = list.map((item) => {
       const unlocked = unlockedSet.has(item.id);
-      const rel = (extra.relationById && extra.relationById[item.id]) || '';
       const lockHint = this.getUnlockHint(type, item.id);
       const titleText = unlocked ? this.sanitizePickName(item.name) : `${this.sanitizePickName(item.name)} · 未解锁`;
-      const subtitle = unlocked ? this.buildPickSubtitle(item.tagline) : '暂不可选，满足条件后可解锁';
+      const subtitle = unlocked
+        ? (PICK_SUBTITLE_OVERRIDES[item.id] || this.buildPickSubtitle(item.tagline))
+        : `解锁条件：${lockHint}`;
       const metaSmall = unlocked
         ? (type === 'majors' ? '' : (type === 'schools' ? '学校会改变可选专业与校内事件池' : '专业会改变后续分支、成就与结局倾向'))
-        : (type === 'majors' ? `解锁条件是${lockHint}` : `${rel ? `${rel}，` : ''}解锁条件是${lockHint}`);
+        : '';
+      const effectCue = unlocked ? this.formatEffectCue(item.effects || {}) : '';
+      const effectDetail = unlocked ? this.formatPickEffectsLine(item) : '';
       const pickContent = {
         title: titleText,
         subtitle,
-        effectSmall: unlocked ? this.buildPickImpactLine(item, type) : '',
-        metaSmall,
+        effectSmall: effectCue,
+        metaSmall: effectDetail || metaSmall,
         locked: !unlocked,
+        lockedLabel: '暂未解锁',
       };
       const id = `${type}_${item.id}`;
       const expanded = !!(unlocked && this.pendingTransition && this.pendingTransition.buttonId === id);
@@ -4336,7 +4544,7 @@ export default class SimulationMain {
     for (let i = 0; i < rowMetas.length; i += 1) {
       const rm = rowMetas[i];
       const topY = listTop + positions[i] - scrollOffset;
-      if (topY + rm.h < listTop || topY > maxBottom) continue;
+      if (topY < listTop || topY + rm.h > maxBottom) continue;
       this.buttons.push({
         id: rm.id,
         x: pad,
@@ -4367,14 +4575,14 @@ export default class SimulationMain {
       ctx.textBaseline = 'top';
     }
 
-    const footerBtnW = SCREEN_WIDTH - pad * 2;
+    const backW = Math.max(78, Math.round((SCREEN_WIDTH - pad * 2) * 0.24));
     this.buttons.push({
       id: `${type}_confirm`,
-      x: pad,
-      y: confirmY,
-      w: footerBtnW,
+      x: pad + backW + 9,
+      y: actionY,
+      w: SCREEN_WIDTH - pad * 2 - backW - 9,
       h: footerBtnH,
-      label: '确认并继续',
+      label: type === 'schools' ? '选择这所学校  →' : '开始这四年  →',
       variant: 'primary',
       disabled: !this.pendingTransition,
       onClick: () => {
@@ -4384,8 +4592,8 @@ export default class SimulationMain {
     });
     this.buttons.push({
       x: pad,
-      y: backY,
-      w: footerBtnW,
+      y: actionY,
+      w: backW,
       h: footerBtnH,
       label: '返回',
       variant: 'secondary',
@@ -4396,14 +4604,10 @@ export default class SimulationMain {
 
   renderSchool() {
     const meta = save.loadMeta();
-    const relationById = {};
-    Object.values(SCHOOLS).forEach((s) => {
-      if (s.topTier) relationById[s.id] = 'TOP2';
-    });
     this.renderPickScreen('选择学校', Object.values(SCHOOLS), new Set(meta.unlockedSchools), 'schools', (s) => {
       this.pendingSchoolId = s.id;
       this.goScene('major');
-    }, 'create_role', { relationById });
+    }, 'create_role');
   }
 
   renderMajor() {
@@ -4417,37 +4621,30 @@ export default class SimulationMain {
 
   /** 游玩场景底部状态栏与操作区布局（随屏幕高度自适应） */
   getPlaySceneChrome() {
-    const statsPanelH = Math.min(174, Math.max(152, Math.round(SCREEN_HEIGHT * 0.205)));
-    const statsPadBottom = Math.max(10, Math.round(SCREEN_HEIGHT * 0.018));
-    const statsTop = SCREEN_HEIGHT - statsPanelH - statsPadBottom;
-
-    const sideBtnH = 30;
-    const sideBtnGap = 8;
-    const chromeGap = Math.max(8, Math.round(SCREEN_HEIGHT * 0.012));
-    const sideStackBottom = statsTop - chromeGap;
-    const relationsY = sideStackBottom - sideBtnH;
-    const logY = relationsY - sideBtnH - sideBtnGap;
-    const invY = logY - sideBtnH - sideBtnGap;
-
-    const continueBtnH = 36;
-    const continueGap = 10;
-    const defaultContinueY = relationsY - continueGap - continueBtnH;
-    const contentBottom = (this.pendingTransition ? defaultContinueY : sideStackBottom) - chromeGap;
-
+    const headerTop = SAFE_TOP + 2;
+    const statsPanelH = 74;
+    const statsTop = headerTop + 62;
+    const navH = 50;
+    const navBottom = SCREEN_HEIGHT - SAFE_BOTTOM;
+    const navTop = navBottom - navH;
+    const continueBtnH = 45;
+    const continueGap = 9;
+    const defaultContinueY = navTop - continueGap - continueBtnH;
+    const chromeGap = 9;
+    const contentTop = statsTop + statsPanelH + 10;
+    const contentBottom = (this.pendingTransition ? defaultContinueY : navTop) - chromeGap;
     return {
+      headerTop,
       statsTop,
       statsPanelH,
-      relationsY,
-      logY,
-      invY,
-      sideBtnH,
+      contentTop,
+      contentBottom,
+      navTop,
+      navBottom,
+      navH,
       continueBtnH,
       continueGap,
       defaultContinueY,
-      contentBottom,
-      rightColX: SCREEN_WIDTH - 96 - 16,
-      btnStackW: 96,
-      sideStackBottom,
       chromeGap,
     };
   }
@@ -4455,55 +4652,58 @@ export default class SimulationMain {
   renderStatsPanel() {
     const st = this.run.stats;
     const chrome = this._playChrome || this.getPlaySceneChrome();
-    const x = 16;
+    const x = 13;
     const y = chrome.statsTop;
     const panelH = chrome.statsPanelH;
-    const w = SCREEN_WIDTH - 32;
-    ctx.fillStyle = uiTheme.colors.panel;
-    ctx.fillRect(x, y, w, panelH);
-    
-    // 状态条
-    this.drawStatBar('健康', st.health, 100, x + 10, y + 56, w - 20);
-    this.drawStatBar('社交', st.social, 100, x + 10, y + 82, w - 20);
-    this.drawStatBar('能力', st.skill, 100, x + 10, y + 108, w - 20);
-    this.drawStatBar('压力', st.pressure, 100, x + 10, y + 134, w - 20);
-    
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText(`绩点 ${this.formatStatValue('gpa', st.gpa)}/4.00`, x + w * 0.28, y + 10);
-    ctx.fillText(`金钱 ￥${this.formatStatValue('money', st.money)}`, x + w * 0.72, y + 10);
-    
-    // 第一行额外信息
-    ctx.textAlign = 'left';
-    const invCount = Array.isArray(this.run.inventory) ? this.run.inventory.length : 0;
-    ctx.fillText(`背包 ${invCount} 件`, x + 10, y + 28);
-    if (invCount > 0) {
-      const firstId = this.run.inventory[0];
-      const first = itemsCatalog.find((it) => it.id === firstId);
-      const recentLabel = first ? first.name || first.title || first.id : firstId;
+    const w = SCREEN_WIDTH - 26;
+    drawGlassPanel(ctx, x, y, w, panelH, { radius: 18, strong: true });
+
+    const metrics = [
+      { label: '健康', value: Math.round(Number(st.health || 0)), ratio: Number(st.health || 0) / 100, color: COLORS.jade },
+      { label: '压力', value: Math.round(Number(st.pressure || 0)), ratio: Number(st.pressure || 0) / 100, color: COLORS.warning, inverse: true },
+      { label: '绩点', value: this.formatStatValue('gpa', st.gpa), ratio: Number(st.gpa || 0) / 4, color: COLORS.sky },
+      { label: '社交', value: Math.round(Number(st.social || 0)), ratio: Number(st.social || 0) / 100, color: '#D7A8D9' },
+      { label: '能力', value: Math.round(Number(st.skill || 0)), ratio: Number(st.skill || 0) / 100, color: COLORS.gold },
+      { label: '余额', value: `¥${this.formatStatValue('money', st.money)}`, ratio: clamp(Number(st.money || 0) / 5000, 0, 1), color: COLORS.coral },
+    ];
+    const cellW = w / 3;
+    const rowH = panelH / 2;
+    metrics.forEach((metric, index) => {
+      const col = index % 3;
+      const row = Math.floor(index / 3);
+      const cx = x + col * cellW;
+      const cy = y + row * rowH;
+      if (col > 0) {
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.fillRect(cx, cy + 11, 1, rowH - 22);
+      }
+      if (row === 1) {
+        ctx.fillStyle = 'rgba(255,255,255,0.07)';
+        ctx.fillRect(x + 12, cy, w - 24, 1);
+      }
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = COLORS.inkMuted;
+      ctx.font = font(10, 500);
+      ctx.fillText(metric.label, cx + 11, cy + 18);
       ctx.textAlign = 'right';
-      ctx.fillText(
-        `最近：${this.fitText(String(recentLabel || '道具'), w - 150)}`,
-        x + w - 10,
-        y + 28,
+      let valueColor = COLORS.ink;
+      if (metric.inverse && metric.ratio >= 0.72) valueColor = COLORS.danger;
+      if (metric.label === '健康' && metric.ratio <= 0.3) valueColor = COLORS.danger;
+      ctx.fillStyle = valueColor;
+      ctx.font = font(14, 650);
+      ctx.fillText(this.fitText(String(metric.value), cellW - 34), cx + cellW - 11, cy + 18);
+      fillRoundRect(ctx, cx + 11, cy + rowH - 12, cellW - 22, 3, 1.5, 'rgba(255,255,255,0.08)');
+      fillRoundRect(
+        ctx,
+        cx + 11,
+        cy + rowH - 12,
+        Math.max(2, (cellW - 22) * clamp(metric.ratio, 0, 1)),
+        3,
+        1.5,
+        metric.color,
       );
-      ctx.textAlign = 'left';
-    }
-    
-    // 第二行有趣信息
-    const funnyStatus = this.generateFunnyStatus();
-    ctx.fillText(funnyStatus, x + 10, y + 44);
-    
-    // 底部成就/进度信息
-    const progressInfo = this.generateProgressInfo();
-    if (progressInfo) {
-      ctx.fillStyle = uiTheme.colors.textSub;
-      ctx.font = `${uiTheme.font.small - 1}px sans-serif`;
-      ctx.textAlign = 'right';
-      ctx.fillText(progressInfo, x + w - 10, y + panelH - 14);
-      ctx.textAlign = 'left';
-    }
+    });
   }
 
   /** 事件阶段：测算标题、正文与选项总高度（含展开说明框） */
@@ -4557,7 +4757,7 @@ export default class SimulationMain {
     ctx.clip();
 
     const drawY0 = measured.titleY - scroll;
-    ctx.fillStyle = uiTheme.colors.textMain;
+    ctx.fillStyle = COLORS.ink;
     ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
@@ -4566,7 +4766,7 @@ export default class SimulationMain {
     }
 
     ctx.font = `${uiTheme.font.body}px sans-serif`;
-    ctx.fillStyle = uiTheme.colors.textSub;
+    ctx.fillStyle = COLORS.inkMuted;
     const bodyY = drawY0 + 24;
     if (bodyY < contentBottom) {
       this.wrapText(eventObj.body || '', pad, bodyY, SCREEN_WIDTH - pad * 2, bodyLH, 6);
@@ -4577,7 +4777,7 @@ export default class SimulationMain {
 
     measured.choiceMetas.forEach((m) => {
       const drawY = m.y - scroll;
-      if (drawY + m.rowH < contentTop || drawY > contentBottom) return;
+      if (drawY < contentTop || drawY + m.rowH > contentBottom) return;
       this.buttons.push({
         id: m.choiceId,
         x: pad,
@@ -4601,525 +4801,496 @@ export default class SimulationMain {
 
     if (maxScroll > 0) {
       this.drawScrollIndicator(contentTop, viewportH, scroll, maxScroll);
-      ctx.fillStyle = 'rgba(185, 196, 224, 0.55)';
-      ctx.font = `${uiTheme.font.small}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('上下滑动查看事件与选项', SCREEN_WIDTH / 2, contentTop + 14);
-      ctx.textBaseline = 'top';
     }
 
     return measured.totalHeight;
   }
 
-  generateFunnyStatus() {
-    const st = this.run.stats;
-    
-    // 计算当前状态的哈希值
-    const currentStatsHash = JSON.stringify({
-      health: Math.round(st.health / 10) * 10,
-      social: Math.round(st.social / 10) * 10,
-      skill: Math.round(st.skill / 10) * 10,
-      pressure: Math.round(st.pressure / 10) * 10,
-      gpa: Math.round(st.gpa * 10) / 10,
-      money: Math.round(st.money / 100) * 100
-    });
-    
-    // 如果状态没有显著变化，返回固定的状态描述
-    if (this.lastStatsHash === currentStatsHash && this.fixedFunnyStatus) {
-      return this.fixedFunnyStatus;
-    }
-    
-    // 状态发生变化时，生成新的状态描述并固定
-    this.lastStatsHash = currentStatsHash;
-    const statuses = [];
-    
-    // 基于状态生成有趣的描述
-    if (st.pressure > 80) {
-      statuses.push('压力山大，快秃了👨‍🦲');
-    } else if (st.pressure > 60) {
-      statuses.push('有点焦虑，需要放松😰');
-    } else if (st.pressure < 20) {
-      statuses.push('心态平和，佛系青年🧘');
-    }
-    
-    if (st.health > 80) {
-      statuses.push('身体棒棒，吃嘛嘛香💪');
-    } else if (st.health < 30) {
-      statuses.push('身体被掏空，需要补补😵');
-    }
-    
-    if (st.social > 80) {
-      statuses.push('社交达人，人脉广🎉');
-    } else if (st.social < 20) {
-      statuses.push('自闭边缘，需要社交👥');
-    }
-    
-    if (st.skill > 80) {
-      statuses.push('技能点满，大佬级别🚀');
-    } else if (st.skill < 30) {
-      statuses.push('萌新上路，还需努力🌱');
-    }
-    
-    if (st.gpa > 3.5) {
-      statuses.push('学霸附体，绩点起飞📚');
-    } else if (st.gpa < 2.0) {
-      statuses.push('学渣预警，危险边缘⚠️');
-    }
-    
-    if (st.money > 1000) {
-      statuses.push('小富翁，消费自由💰');
-    } else if (st.money < 100) {
-      statuses.push('吃土模式，急需打工🏗️');
-    }
-    
-    // 特殊组合状态
-    if (st.pressure > 70 && st.health < 40) {
-      statuses.push('过劳肥预备役⚖️');
-    }
-    
-    if (st.social > 70 && st.gpa < 2.5) {
-      statuses.push('社交学霸，学习困难🎭');
-    }
-    
-    // 随机选择一个状态并固定
-    if (statuses.length > 0) {
-      this.fixedFunnyStatus = statuses[Math.floor(Math.random() * statuses.length)];
-    } else {
-      // 默认状态
-      const defaultStatuses = [
-        '大学生活进行中🎓',
-        '青春不散场🌟',
-        '未来可期🌈',
-        '努力奋斗中💼',
-        '平凡的一天📅'
-      ];
-      this.fixedFunnyStatus = defaultStatuses[Math.floor(Math.random() * defaultStatuses.length)];
-    }
-    
-    return this.fixedFunnyStatus;
-  }
 
-  generateProgressInfo() {
-    const flags = this.run.flags || {};
-    const progress = [];
-    
-    if (flags.certProgress) {
-      progress.push(`证书进度${flags.certProgress}/3`);
-    }
-    if (flags.contestProgress) {
-      progress.push(`竞赛进度${flags.contestProgress}/3`);
-    }
-    if (flags.researchProgress) {
-      progress.push(`科研进度${flags.researchProgress}/3`);
-    }
-    if (flags.financeProgress) {
-      progress.push(`理财进度${flags.financeProgress}/3`);
-    }
-    if (flags.civilProgress) {
-      progress.push(`考公进度${flags.civilProgress}/3`);
-    }
-    
-    if (progress.length > 0) {
-      return progress.join(' · ');
-    }
-    
-    // 根据压力值显示状态评语
-    const pressure = this.run.stats.pressure || 0;
-    if (pressure >= 85) {
-      return '当前状态：在崩溃的边缘疯狂试探';
-    } else if (pressure >= 70) {
-      return '当前状态：压力山大，需要休息';
-    } else if (pressure >= 55) {
-      return '当前状态：有点紧绷，但还能坚持';
-    } else if (pressure >= 40) {
-      return '当前状态：节奏适中，稳步前行';
-    } else if (pressure >= 25) {
-      return '当前状态：状态不错，游刃有余';
-    } else {
-      return '当前状态：轻松惬意，享受校园时光';
-    }
-  }
 
   renderPlay() {
     this.drawSceneBackground();
     if (!this.run) return;
     if (this.run.phase !== 'week_action') this._weeklyScrollUi = null;
-    
-    // 绘制右上角头像
-    this.drawAvatar(SCREEN_WIDTH - 64, SAFE_TOP, 48, this.run.playerProfile);
-    
-    ctx.fillStyle = uiTheme.colors.accent;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.textAlign = 'left';
-    const statusText = this.fitText(
-      `第 ${this.run.semesterIndex + 1} 学期，共 ${TOTAL_SEMESTERS} 学期；第 ${this.run.weekIndex + 1} 周，本学期共 ${Number(this.run.weeksPerSemester || WEEKS_PER_SEMESTER)} 周`,
-      SCREEN_WIDTH - 100,
-    );
-    ctx.fillText(
-      statusText,
-      10,
-      SAFE_TOP,
-    );
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.fillText(this.fitText(`你扮演的角色是${this.run.playerProfile.name}，${this.run.playerProfile.gender === 'male' ? '男生' : '女生'}`, SCREEN_WIDTH - 100), 10, SAFE_TOP + 18);
-    const school = SCHOOLS[this.run.schoolId];
-    let metaY = SAFE_TOP + 36;
-    if (school && school.collegeSystem && this.run.semesterIndex < 2) {
-      ctx.fillText(this.fitText('书院阶段：大一通识培养中，大二再细化方向', SCREEN_WIDTH - 24), 10, metaY);
-      metaY += 18;
-    }
-    if (this.run.goals && this.run.goals.currentWeekGoal) {
-      ctx.fillText(this.fitText(`本周目标是${this.run.goals.currentWeekGoal.title}`, SCREEN_WIDTH - 24), 10, metaY);
-      metaY += 18;
-    }
 
     const chrome = this.getPlaySceneChrome();
     this._playChrome = chrome;
+    const pad = 13;
+    const w = SCREEN_WIDTH - pad * 2;
+    const headerY = chrome.headerTop;
+    const semNo = Number(this.run.semesterIndex || 0) + 1;
+    const weekNo = Number(this.run.weekIndex || 0) + 1;
+    const yearNo = Math.min(4, Math.ceil(semNo / 2));
+    const school = SCHOOLS[this.run.schoolId];
+    const major = MAJORS[this.run.majorId];
+    const light = this.themeMode === 'light';
+    const titleInk = light ? COLORS.paperInk : COLORS.ink;
+
+    drawSceneKicker(
+      ctx,
+      pad,
+      headerY + 4,
+      `YEAR ${yearNo}  /  SEMESTER ${semNo}  /  WEEK ${weekNo}`,
+      light ? COLORS.coralDeep : COLORS.gold,
+    );
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = titleInk;
+    ctx.font = font(TYPE.title, 720);
+    ctx.fillText(`第 ${semNo} 学期`, pad, headerY + 17);
+    const titleWidth = ctx.measureText(`第 ${semNo} 学期`).width;
+    const weekTag = `第 ${weekNo} 周`;
+    ctx.font = font(10.5, 600);
+    const weekTagW = ctx.measureText(weekTag).width + 15;
+    fillRoundRect(
+      ctx,
+      pad + titleWidth + 8,
+      headerY + 22,
+      weekTagW,
+      20,
+      10,
+      light ? 'rgba(233,105,77,0.1)' : 'rgba(235,199,121,0.13)',
+    );
+    ctx.fillStyle = light ? COLORS.coralDeep : COLORS.gold;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(weekTag, pad + titleWidth + 8 + weekTagW / 2, headerY + 32);
+
+    const avatarSize = 42;
+    this.drawAvatar(SCREEN_WIDTH - pad - avatarSize, headerY + 6, avatarSize, this.run.playerProfile);
+    const metaLabel = [school && school.name, major && major.name].filter(Boolean).join(' · ');
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.64)' : COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText(
+      this.fitText(metaLabel || this.run.playerProfile.name, SCREEN_WIDTH - pad * 2 - avatarSize - 16),
+      pad,
+      headerY + 45,
+    );
+    const trackW = SCREEN_WIDTH - pad * 2 - avatarSize - 14;
+    for (let i = 0; i < TOTAL_SEMESTERS; i += 1) {
+      const segmentGap = 3;
+      const segmentW = (trackW - segmentGap * (TOTAL_SEMESTERS - 1)) / TOTAL_SEMESTERS;
+      const sx = pad + i * (segmentW + segmentGap);
+      const active = i < semNo;
+      const current = i === semNo - 1;
+      fillRoundRect(
+        ctx,
+        sx,
+        headerY + 58,
+        segmentW,
+        current ? 3 : 2,
+        1,
+        current
+          ? (light ? COLORS.coralDeep : COLORS.gold)
+          : active
+            ? (light ? 'rgba(233,105,77,0.38)' : 'rgba(235,199,121,0.4)')
+            : (light ? 'rgba(38,48,65,0.12)' : 'rgba(255,255,255,0.12)'),
+      );
+    }
 
     this.buttons = [];
-    const pad = 16;
-    const w = SCREEN_WIDTH - pad * 2;
-    let y = metaY + 10;
+    const contentTop = chrome.contentTop;
     const contentBottom = chrome.contentBottom;
 
     if (this.run.phase === 'week_action') {
-      this._weeklyScrollUi = null;
-      ctx.fillStyle = uiTheme.colors.textMain;
-      ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-      ctx.fillText('本周行动', 16, y);
-      y += 26;
+      drawSceneKicker(
+        ctx,
+        pad,
+        contentTop + 7,
+        'THIS WEEK',
+        light ? COLORS.coralDeep : COLORS.coral,
+      );
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = titleInk;
+      ctx.font = font(TYPE.heading, 680);
+      ctx.fillText(this.weeklyShopOverlay ? '顺路逛逛' : '这周怎么过', pad, contentTop + 18);
 
       if (this.weeklyShopOverlay) {
-        this.renderWeeklyShopOverlay(pad, w, y, contentBottom);
+        this.renderWeeklyShopOverlay(pad, w, contentTop + 55, contentBottom);
       } else {
-      const actions = this.getWeeklyActionChoices();
-      const needsScroll = actions.length > WEEK_ACTION_MAX_VISIBLE;
-      
-      // 显示滚动指示器和滚动条
-      if (needsScroll) {
-        // 页面指示器
-        ctx.fillStyle = uiTheme.colors.textSub;
-        ctx.font = `${uiTheme.font.small}px sans-serif`;
-        ctx.textAlign = 'right';
-        ctx.fillText(
-          `${Math.floor(this.weeklyActionScroll / WEEK_ACTION_ROW_H) + 1}/${Math.ceil(actions.length / WEEK_ACTION_MAX_VISIBLE)}`,
-          SCREEN_WIDTH - 16,
-          y + 20,
-        );
-        ctx.textAlign = 'left';
-        
-        // 绘制自定义滚动条
-        const scrollbarX = SCREEN_WIDTH - 24;
-        const scrollbarY = y;
-        const scrollbarHeight = WEEK_ACTION_MAX_VISIBLE * WEEK_ACTION_ROW_H;
-        const scrollbarWidth = 8;
-        const totalHeight = actions.length * WEEK_ACTION_ROW_H;
-        const maxScroll = Math.max(0, totalHeight - scrollbarHeight);
-        const thumbHeight =
-          maxScroll <= 0 ? scrollbarHeight : Math.max(20, (scrollbarHeight / totalHeight) * scrollbarHeight);
-        const thumbY =
-          maxScroll <= 0
-            ? scrollbarY
-            : scrollbarY + (this.weeklyActionScroll / maxScroll) * (scrollbarHeight - thumbHeight);
-        
-        // 滚动条背景
-        ctx.fillStyle = 'rgba(128, 128, 128, 0.3)';
-        this.fillRoundRect(scrollbarX, scrollbarY, scrollbarWidth, scrollbarHeight, 4);
-        
-        // 滚动条滑块
-        ctx.fillStyle = 'rgba(64, 64, 64, 0.8)';
-        this.fillRoundRect(scrollbarX, thumbY, scrollbarWidth, thumbHeight, 4);
+        const actions = this.getWeeklyActionChoices();
+        const listTop = contentTop + 48;
+        const viewportH = Math.max(WEEK_ACTION_ROW_H, contentBottom - listTop);
+        const totalH = actions.length * WEEK_ACTION_ROW_H;
+        const maxScroll = Math.max(0, totalH - viewportH);
+        this.weeklyActionScroll = clamp(Number(this.weeklyActionScroll || 0), 0, maxScroll);
+        const visibleCount = Math.max(1, Math.floor(viewportH / WEEK_ACTION_ROW_H));
+        const startVisible = Math.floor(this.weeklyActionScroll / WEEK_ACTION_ROW_H) + 1;
+        const endVisible = Math.min(actions.length, startVisible + visibleCount - 1);
+        if (this.isRewardAssistEligible()) {
+          this.buttons.push({
+            id: 'reward_assist',
+            x: SCREEN_WIDTH - pad - 86,
+            y: contentTop + 2,
+            w: 86,
+            h: 31,
+            label: '应急补给',
+            variant: 'secondary',
+            disabled: false,
+            onClick: () => this.openRewardAssist(),
+          });
+        } else {
+          ctx.textAlign = 'right';
+          ctx.textBaseline = 'top';
+          ctx.fillStyle = light ? 'rgba(38,48,65,0.42)' : COLORS.inkFaint;
+          ctx.font = font(10, 500);
+          ctx.fillText(
+            actions.length > visibleCount ? `${startVisible}–${endVisible} / ${actions.length}` : `${actions.length} 个选择`,
+            SCREEN_WIDTH - pad,
+            contentTop + 23,
+          );
+        }
 
         this._weeklyScrollUi = {
           maxScroll,
-          thumbH: thumbHeight,
-          track: { x: scrollbarX - 10, y: scrollbarY, w: 28, h: scrollbarHeight },
+          thumbH: maxScroll > 0 ? Math.max(24, (viewportH / totalH) * viewportH) : viewportH,
+          track: { x: SCREEN_WIDTH - 14, y: listTop, w: 18, h: viewportH },
         };
-        this.buttons.push({
-          id: 'weekly_scroll_up',
-          x: SCREEN_WIDTH - 58,
-          y: y,
-          w: 30,
-          h: 24,
-          label: '↑',
-          variant: 'secondary',
-          disabled: this.weeklyActionScroll <= 0,
-          onClick: () => {
-            this.weeklyActionScroll = Math.max(0, this.weeklyActionScroll - WEEK_ACTION_SCROLL_STEP);
-          },
-        });
-        this.buttons.push({
-          id: 'weekly_scroll_down',
-          x: SCREEN_WIDTH - 58,
-          y: y + WEEK_ACTION_MAX_VISIBLE * WEEK_ACTION_ROW_H - 24,
-          w: 30,
-          h: 24,
-          label: '↓',
-          variant: 'secondary',
-          disabled: this.weeklyActionScroll >= maxScroll,
-          onClick: () => {
-            this.weeklyActionScroll = Math.min(maxScroll, this.weeklyActionScroll + WEEK_ACTION_SCROLL_STEP);
-          },
-        });
-      }
-      
-      // 计算可见的选项
-      const startIndex = Math.floor(this.weeklyActionScroll / WEEK_ACTION_ROW_H);
-      const endIndex = Math.min(startIndex + WEEK_ACTION_MAX_VISIBLE, actions.length);
-      const visibleActions = actions.slice(startIndex, endIndex);
-      
-      visibleActions.forEach((action, index) => {
-        const buttonId = `action_${action.id}`;
-        const cost = Number(action.cost || 0);
-        const afford = Number((this.run.stats && this.run.stats.money) || 0) >= cost;
-        // 使用随机但固定的描述（用于说明框）
-        const descKey = `${this.run.semesterIndex}_${this.run.weekIndex}_${action.id}`;
-        const randomDesc = this.fixedActionDescriptions.get(descKey) || action.description;
-        const pickContent = {
-          title: action.title,
-          subtitle: randomDesc || action.description || '暂无说明',
-          effectSmall: cost > 0 ? `预计花费 ￥${cost}` : '预计花费 ￥0',
-          metaSmall: afford ? '' : '资金不足，暂时无法选择',
-          locked: !afford,
-        };
-        const expanded = !!(this.pendingTransition && this.pendingTransition.buttonId === buttonId);
-        const detailH = expanded ? this.measurePickDetailPanelHeight(pickContent, w - 20) : 0;
-        const rowH = 50 + (expanded ? (8 + detailH) : 0);
-        if (y + rowH > contentBottom) return;
+        if (maxScroll > 0) {
+          fillRoundRect(ctx, SCREEN_WIDTH - 12, listTop + 2, 2, viewportH - 4, 1, 'rgba(255,255,255,0.09)');
+          const thumbH = this._weeklyScrollUi.thumbH;
+          const thumbY = listTop + (this.weeklyActionScroll / maxScroll) * (viewportH - thumbH);
+          fillRoundRect(
+            ctx,
+            SCREEN_WIDTH - 12,
+            thumbY + 2,
+            2,
+            thumbH - 4,
+            1,
+            light ? 'rgba(233,105,77,0.46)' : 'rgba(235,199,121,0.5)',
+          );
+        }
 
-        this.buttons.push({
-          id: buttonId,
-          x: pad,
-          y,
-          w,
-          h: 50,
-          label: action.title,
-          pickContent,
-          pickDetailBelow: true,
-          disabled: !afford,
-          onClick: () => {
-            if (Array.isArray(action.tags) && action.tags.includes('weekly_shop')) {
-              this.openWeeklyShop(action);
-              return;
-            }
-            this.queueTransition(buttonId, `你已选择本周行动，${action.title}`, () => this.handleWeeklyAction(action));
-          },
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, listTop, SCREEN_WIDTH, viewportH);
+        ctx.clip();
+        actions.forEach((action, index) => {
+          const buttonId = `action_${action.id}`;
+          const cardY = listTop + index * WEEK_ACTION_ROW_H + 3 - this.weeklyActionScroll;
+          const cardH = WEEK_ACTION_ROW_H - 7;
+          if (cardY < listTop || cardY + cardH > listTop + viewportH) return;
+          const cost = Number(action.cost || 0);
+          const afford = Number((this.run.stats && this.run.stats.money) || 0) >= cost;
+          const descKey = `${this.run.semesterIndex}_${this.run.weekIndex}_${action.id}`;
+          const randomDesc = this.fixedActionDescriptions.get(descKey) || action.description;
+          const pickContent = {
+            title: action.title,
+            subtitle: this.editorializeActionDescription(action, randomDesc),
+            effectSmall: cost > 0 ? `−¥${cost}` : '',
+            metaSmall: afford ? '' : '资金不足',
+            locked: !afford,
+            lockedLabel: '余额不足',
+          };
+          this.buttons.push({
+            id: buttonId,
+            x: pad,
+            y: cardY,
+            w: w - 8,
+            h: cardH,
+            label: action.title,
+            pickContent,
+            pickDetailBelow: false,
+            disabled: !afford,
+            onClick: () => {
+              if (Array.isArray(action.tags) && action.tags.includes('weekly_shop')) {
+                this.openWeeklyShop(action);
+                return;
+              }
+              this.queueTransition(buttonId, action.title, () => this.handleWeeklyAction(action));
+            },
+          });
         });
-        y += rowH + 6;
-      });
-      
-      // 在行动列表后添加滚动提示
-      if (needsScroll) {
-        const hintText = ' ↕ 滑动列表查看更多选项 ↕ ';
-        const hintY = y + 12; // 添加呼吸感
-        
-        // 绘制纯文字提示，去掉背景
-        ctx.fillStyle = 'rgba(185, 196, 224, 0.6)'; // 调暗文字颜色，加透明度
-        ctx.font = `${uiTheme.font.small}px sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(hintText, SCREEN_WIDTH / 2, hintY);
-        ctx.textBaseline = 'top';
-      }
+        ctx.restore();
       }
     } else {
+      drawSceneKicker(
+        ctx,
+        pad,
+        contentTop + 7,
+        this.run.phase === 'main_event' ? 'MAIN EVENT' : 'CAMPUS EVENT',
+        light ? COLORS.coralDeep : COLORS.coral,
+      );
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = titleInk;
+      ctx.font = font(TYPE.heading, 680);
+      ctx.fillText(
+        this.run.phase === 'main_event' ? '这一周，有些事绕不开' : '路上遇到一点插曲',
+        pad,
+        contentTop + 18,
+      );
+      if (this.isRewardAssistEligible()) {
+        this.buttons.push({
+          id: 'reward_assist',
+          x: SCREEN_WIDTH - pad - 86,
+          y: contentTop + 2,
+          w: 86,
+          h: 31,
+          label: '应急补给',
+          variant: 'secondary',
+          disabled: false,
+          onClick: () => this.openRewardAssist(),
+        });
+      }
+
       let eventObj = this.getCurrentEvent();
       if (!eventObj) {
-        // 如果没有当前事件，根据阶段生成相应事件
         if (this.run.phase === 'main_event') {
           this.run.pendingMainEvent = this.pickMainForRun(this.run);
         } else if (this.run.phase === 'side_event') {
           this.run.pendingSideEvent = this.pickSideForRun(this.run);
         }
-        // 重新获取事件对象
-        const updatedEvent = this.getCurrentEvent();
-        if (!updatedEvent) return; // 如果仍然没有事件，退出
-        // 使用更新后的事件对象
-        eventObj = updatedEvent;
+        eventObj = this.getCurrentEvent();
+        if (!eventObj) return;
       }
-      
-      if (eventObj) {
-        this.maybeShowNpcPreChoiceNarrative(eventObj);
-        const eventScrollKey = String(eventObj.id || '');
-        if (this._playEventScrollKey !== eventScrollKey) {
-          this._playEventScrollKey = eventScrollKey;
-          this.playContentScroll = 0;
-        }
-        const contentTop = y;
-        this.renderPlayEventBlock(eventObj, pad, w, y, contentTop, contentBottom);
+
+      this.maybeShowNpcPreChoiceNarrative(eventObj);
+      const eventScrollKey = String(eventObj.id || '');
+      if (this._playEventScrollKey !== eventScrollKey) {
+        this._playEventScrollKey = eventScrollKey;
+        this.playContentScroll = 0;
       }
+      const eventTop = contentTop + 48;
+      const eventInnerX = pad + 13;
+      const eventInnerW = w - 26;
+      const eventStartY = eventTop + 15;
+      const measuredEvent = this.measurePlayEventContent(
+        eventObj,
+        eventInnerX,
+        eventInnerW,
+        eventStartY,
+      );
+      const cardH = Math.min(
+        contentBottom - eventTop,
+        Math.max(190, measuredEvent.totalHeight + 28),
+      );
+      const eventBottom = eventTop + cardH;
+      drawGlassPanel(ctx, pad, eventTop, w, cardH, {
+        radius: 19,
+        strong: true,
+        shadow: false,
+      });
+      this.renderPlayEventBlock(
+        eventObj,
+        eventInnerX,
+        eventInnerW,
+        eventStartY,
+        eventTop,
+        eventBottom,
+      );
     }
-
-    if (this.run.lastAttributeEffects && this.run.lastAttributeEffects.length) {
-      const fxY = Math.max(metaY + 8, chrome.statsTop - 34);
-      ctx.fillStyle = uiTheme.colors.warn;
-      ctx.font = `${uiTheme.font.small}px sans-serif`;
-      this.wrapText(this.run.lastAttributeEffects.join('；'), 16, fxY, SCREEN_WIDTH - 32, 16, 2);
-    }
-
-    const {
-      rightColX,
-      btnStackW,
-      sideBtnH: btnH,
-      relationsY,
-      logY,
-      invY,
-      defaultContinueY,
-      continueBtnH,
-    } = chrome;
 
     if (this.pendingTransition) {
-      const continueGap = 10;
-      const continueW = Math.max(160, rightColX - pad - continueGap);
       this.buttons.push({
         id: 'play_continue',
         x: pad,
-        y: defaultContinueY,
-        w: continueW,
-        h: continueBtnH,
-        label: '确认并继续',
+        y: chrome.defaultContinueY,
+        w,
+        h: chrome.continueBtnH,
+        label: '确认这个选择   ›',
         variant: 'primary',
         disabled: false,
         onClick: () => this.commitPendingTransition(),
       });
     }
-    this.buttons.push({
-      id: 'open_relations',
-      x: rightColX,
-      y: relationsY,
-      w: btnStackW,
-      h: btnH,
-      label: '关系',
-      variant: 'secondary',
-      disabled: false,
-      onClick: () => {
-        this.pushReturnScene();
-        this.relationsScroll = 0;
-        this.goScene('relations', { clearPending: false });
-      },
-    });
 
-    this.buttons.push({
-      id: 'open_run_log',
-      x: rightColX,
-      y: logY,
-      w: btnStackW,
-      h: btnH,
-      label: '记录',
-      variant: 'secondary',
-      disabled: false,
-      onClick: () => {
-        this.pushReturnScene();
-        this.runLogScroll = 0;
-        this.goScene('run_log', { clearPending: false });
+    const navItems = [
+      {
+        id: 'open_relations',
+        label: '关系',
+        icon: 'people',
+        onClick: () => {
+          this.pushReturnScene();
+          this.relationsScroll = 0;
+          this.goScene('relations', { clearPending: false });
+        },
       },
-    });
-
-    this.buttons.push({
-      id: 'open_inventory',
-      x: rightColX,
-      y: invY,
-      w: btnStackW,
-      h: btnH,
-      label: '背包',
-      variant: 'secondary',
-      disabled: false,
-      onClick: () => {
-        this.pushReturnScene();
-        this.goScene('inventory', { clearPending: false });
+      {
+        id: 'open_run_log',
+        label: '记录',
+        icon: 'book',
+        onClick: () => {
+          this.pushReturnScene();
+          this.runLogScroll = 0;
+          this.goScene('run_log', { clearPending: false });
+        },
       },
-    });
-
-    this.buttons.push({
-      id: 'play_back_safe',
-      x: 16,
-      y: relationsY,
-      w: btnStackW,
-      h: btnH,
-      label: '返回主菜单',
-      variant: 'secondary',
-      disabled: false,
-      onClick: () => this.confirmReturnToMenu(),
+      {
+        id: 'open_inventory',
+        label: '背包',
+        icon: 'bag',
+        onClick: () => {
+          this.pushReturnScene();
+          this.inventoryScroll = 0;
+          this.goScene('inventory', { clearPending: false });
+        },
+      },
+      {
+        id: 'play_back_safe',
+        label: '菜单',
+        icon: 'home',
+        onClick: () => this.confirmReturnToMenu(),
+      },
+    ];
+    drawGlassPanel(ctx, pad, chrome.navTop, w, chrome.navH, { radius: 17, strong: true });
+    const navCellW = w / navItems.length;
+    navItems.forEach((item, index) => {
+      const nx = pad + index * navCellW;
+      const isPressed = this.pressedButtonId === item.id;
+      if (isPressed) {
+        fillRoundRect(
+          ctx,
+          nx + 7,
+          chrome.navTop + 5,
+          navCellW - 14,
+          chrome.navH - 10,
+          13,
+          'rgba(255,255,255,0.08)',
+        );
+      }
+      if (index > 0) {
+        ctx.fillStyle = 'rgba(255,255,255,0.07)';
+        ctx.fillRect(nx, chrome.navTop + 14, 1, chrome.navH - 28);
+      }
+      const iconSize = 17;
+      const centerX = nx + navCellW / 2;
+      drawIcon(ctx, item.icon, centerX - iconSize / 2, chrome.navTop + 8, iconSize, COLORS.inkMuted);
+      ctx.fillStyle = COLORS.inkMuted;
+      ctx.font = font(9.5, 500);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(item.label, centerX, chrome.navTop + 38);
+      this.buttons.push({
+        id: item.id,
+        x: nx,
+        y: chrome.navTop,
+        w: navCellW,
+        h: chrome.navH,
+        label: item.label,
+        invisible: true,
+        disabled: false,
+        onClick: item.onClick,
+      });
     });
 
     this.renderStatsPanel();
   }
 
+
   renderEnding() {
     this.drawSceneBackground();
     const e = this.currentEnding;
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.title}px sans-serif`;
-    ctx.textAlign = 'center';
+    const light = this.themeMode === 'light';
+    const titleInk = light ? COLORS.paperInk : COLORS.ink;
+    drawSceneKicker(ctx, 15, SAFE_TOP + 5, 'EPILOGUE', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = titleInk;
+    ctx.font = font(25, 730);
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText(e ? e.title : '结局', SCREEN_WIDTH / 2, 48);
+    ctx.fillText(this.fitText(e ? e.title : '四年之后', SCREEN_WIDTH - 30), 15, SAFE_TOP + 18);
     const scroll = this.endingScroll || 0;
-    let penY = 88 - scroll;
-    const pad = 20;
-    const textW = SCREEN_WIDTH - 40;
-    const listTop = 80;
-    const listBottom = SCREEN_HEIGHT - 120;
+    const pad = 14;
+    const cardX = pad;
+    const cardW = SCREEN_WIDTH - pad * 2;
+    const cardY = SAFE_TOP + 61;
+    const actionY = SCREEN_HEIGHT - SAFE_BOTTOM - 50;
+    const cardH = Math.max(220, actionY - cardY - 12);
+    drawPaperPanel(ctx, cardX, cardY, cardW, cardH, { radius: 21 });
+    let penY = cardY + 18 - scroll;
+    const textX = cardX + 21;
+    const textW = cardW - 42;
+    const listTop = cardY;
+    const listBottom = cardY + cardH;
     ctx.save();
     ctx.beginPath();
-    ctx.rect(pad - 4, listTop - 4, textW + 8, listBottom - listTop + 8);
+    ctx.rect(cardX + 8, listTop + 8, cardW - 16, cardH - 16);
     ctx.clip();
     ctx.textAlign = 'left';
     if (e) {
-      ctx.fillStyle = uiTheme.colors.textSub;
-      ctx.font = `${uiTheme.font.body}px sans-serif`;
+      ctx.fillStyle = 'rgba(38,48,65,0.82)';
+      ctx.font = font(14, 430);
       const endingStory = this.buildEndingStoryText(e);
-      penY = this.drawParagraphText(endingStory || '', pad, penY, textW, 22, 40);
+      penY = this.drawParagraphText(endingStory || '', textX, penY, textW, 22, 999);
     }
     if (this.runSettlement) {
-      ctx.fillStyle = uiTheme.colors.textSub;
-      ctx.font = `${uiTheme.font.small}px sans-serif`;
-      penY += 12;
+      ctx.fillStyle = 'rgba(38,48,65,0.56)';
+      ctx.font = font(10.5, 430);
+      penY += 18;
       penY = this.wrapText(
         this.formatRunSettlementText(this.runSettlement),
-        pad,
+        textX,
         penY,
         textW,
         17,
-        30,
+        999,
       );
     }
     ctx.restore();
-    const viewH = listBottom - listTop;
-    const maxScroll = Math.max(0, penY - listBottom + 24);
+    const contentTop = cardY + 18;
+    const viewH = cardH - 36;
+    const maxScroll = Math.max(0, penY + scroll - (cardY + cardH - 18));
     this._endingScrollMax = maxScroll;
-    this.drawScrollIndicator(listTop, viewH, scroll, maxScroll);
+    this.endingScroll = clamp(this.endingScroll || 0, 0, maxScroll);
+    if (maxScroll > 0) {
+      const thumbH = Math.max(24, (viewH / (viewH + maxScroll)) * viewH);
+      const thumbY = contentTop + (this.endingScroll / maxScroll) * (viewH - thumbH);
+      fillRoundRect(ctx, cardX + cardW - 10, contentTop, 2, viewH, 1, 'rgba(38,48,65,0.13)');
+      fillRoundRect(ctx, cardX + cardW - 10, thumbY, 2, thumbH, 1, 'rgba(233,105,77,0.55)');
+    }
 
     this.buttons = [];
-    const w = SCREEN_WIDTH - pad * 2;
+    const backW = 92;
     this.buttons.push({
-      x: pad, y: SCREEN_HEIGHT - 68, w, h: 44, label: '返回主菜单', disabled: false, onClick: () => {
+      id: 'ending_menu',
+      x: pad,
+      y: actionY,
+      w: backW,
+      h: 50,
+      label: '返回',
+      variant: 'secondary',
+      disabled: false,
+      onClick: () => {
         this.currentEnding = null;
         this.runSettlement = null;
         this.endingScroll = 0;
         this.goScene('menu');
       },
     });
-    // 激励视频按钮已暂时注释
-    // const adLabel = AD_CONFIG.rewardedEnabled ? '看激励视频（额外提示）' : '激励视频（开通后可用）';
-    // this.buttons.push({
-    //   x: pad, y: SCREEN_HEIGHT - 68, w, h: 40, label: adLabel, disabled: false, onClick: () => {
-    //     showRewardedVideo('ending_bonus').then((r) => {
-    //       this.showToast(r.ok ? '感谢支持！' : '未完成观看或暂未开通');
-    //     });
-    //   },
-    // });
+    this.buttons.push({
+      id: 'ending_again',
+      x: pad + backW + 9,
+      y: actionY,
+      w: SCREEN_WIDTH - pad * 2 - backW - 9,
+      h: 50,
+      label: '再走一局  →',
+      variant: 'primary',
+      disabled: false,
+      onClick: () => {
+        this.currentEnding = null;
+        this.runSettlement = null;
+        this.endingScroll = 0;
+        this.run = null;
+        this.goScene('create_role', { initCreateRole: true });
+      },
+    });
   }
 
   renderGallery() {
     this.drawSceneBackground();
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText('结局图鉴', SCREEN_WIDTH / 2, 48);
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.fillText('点击下方文字可查看已解锁结局，支持上下滑动', SCREEN_WIDTH / 2, 74);
+    const light = this.themeMode === 'light';
+    drawSceneKicker(ctx, 15, SAFE_TOP + 5, 'ENDINGS', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = light ? COLORS.paperInk : COLORS.ink;
+    ctx.font = font(26, 730);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('结局档案', 15, SAFE_TOP + 18);
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.56)' : COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText('每一条路，都会留下不同的毕业以后。', 15, SAFE_TOP + 51);
 
     const meta = save.loadMeta();
     const unlocked = new Set(meta.unlockedEndings);
@@ -5146,8 +5317,8 @@ export default class SimulationMain {
       return 0;
     });
     ctx.textAlign = 'left';
-    const listTop = 92;
-    const backBtnY = SCREEN_HEIGHT - 52;
+    const listTop = SAFE_TOP + 72;
+    const backBtnY = SCREEN_HEIGHT - SAFE_BOTTOM - 42;
     const listBottom = backBtnY - 8;
     let y = listTop - this.galleryScroll;
     this.buttons = [];
@@ -5162,7 +5333,9 @@ export default class SimulationMain {
       if (y < listBottom + 200 && y + rowH > listTop - 200) {
         const cardX = 16;
         const cardW = SCREEN_WIDTH - 32;
-        ctx.fillStyle = ok ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.06)';
+        ctx.fillStyle = ok
+          ? (light ? 'rgba(252,249,242,0.9)' : 'rgba(25,37,54,0.9)')
+          : (light ? 'rgba(255,255,255,0.54)' : 'rgba(15,24,38,0.82)');
         this.fillRoundRect(cardX, y, cardW, rowH, 10);
         ctx.strokeStyle = ok ? 'rgba(255, 209, 102, 0.65)' : 'rgba(255,255,255,0.18)';
         ctx.lineWidth = 1.2;
@@ -5187,7 +5360,7 @@ export default class SimulationMain {
         if (ok) {
           ctx.fillStyle = uiTheme.colors.textSub;
           ctx.font = `${uiTheme.font.small}px sans-serif`;
-          const descLines = this.splitWrappedLines(this.fitText(end.description, cardW - 24), cardW - 24, 2);
+          const descLines = this.splitWrappedLines(end.description || '', cardW - 24, 2);
           const descStartY = y + 64;
           descLines.forEach((line, idx) => {
             ctx.fillText(line, cardX + cardW / 2, descStartY + idx * 15);
@@ -5222,9 +5395,9 @@ export default class SimulationMain {
 
     this.buttons.push({
       x: 16,
-      y: SCREEN_HEIGHT - 52,
+      y: backBtnY,
       w: SCREEN_WIDTH - 32,
-      h: 40,
+      h: 42,
       label: '返回',
       variant: 'secondary',
       disabled: false,
@@ -5236,13 +5409,16 @@ export default class SimulationMain {
 
   renderAchievements() {
     this.drawSceneBackground();
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText('成就系统', SCREEN_WIDTH / 2, 48);
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.fillText('上下滑动查看更多', SCREEN_WIDTH / 2, 75);
+    const light = this.themeMode === 'light';
+    drawSceneKicker(ctx, 15, SAFE_TOP + 5, 'MILESTONES', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = light ? COLORS.paperInk : COLORS.ink;
+    ctx.font = font(26, 730);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('四年印记', 15, SAFE_TOP + 18);
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.56)' : COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText('不是任务清单，是你真的做过的事。', 15, SAFE_TOP + 51);
 
     const meta = save.loadMeta();
     const got = meta.achievements || {};
@@ -5269,8 +5445,8 @@ export default class SimulationMain {
       return 0;
     });
     ctx.textAlign = 'left';
-    const listTop = 92;
-    const backBtnY = SCREEN_HEIGHT - 52;
+    const listTop = SAFE_TOP + 72;
+    const backBtnY = SCREEN_HEIGHT - SAFE_BOTTOM - 42;
     const listBottom = backBtnY - 8;
     let y = listTop - this.achievementScroll;
     this.achievementHitAreas = [];
@@ -5284,7 +5460,9 @@ export default class SimulationMain {
       if (y < listBottom + rowH && y > listTop - rowH) {
         const cardX = 16;
         const cardW = SCREEN_WIDTH - 32;
-        ctx.fillStyle = ok ? 'rgba(115, 214, 127, 0.1)' : 'rgba(255,255,255,0.06)';
+        ctx.fillStyle = ok
+          ? (light ? 'rgba(244,250,245,0.9)' : 'rgba(31,54,49,0.88)')
+          : (light ? 'rgba(255,255,255,0.54)' : 'rgba(15,24,38,0.82)');
         this.fillRoundRect(cardX, y, cardW, rowH, 10);
         ctx.strokeStyle = ok ? 'rgba(115,214,127,0.55)' : 'rgba(255,255,255,0.18)';
         ctx.lineWidth = 1.2;
@@ -5347,7 +5525,7 @@ export default class SimulationMain {
     this.achievementScroll = Math.min(this.achievementScroll, maxScroll);
     this.drawScrollIndicator(listTop, listBottom - listTop, this.achievementScroll, maxScroll);
 
-    this.buttons = [{ x: 16, y: SCREEN_HEIGHT - 52, w: SCREEN_WIDTH - 32, h: 40, label: '返回', variant: 'secondary', disabled: false, onClick: () => { this.goScene('menu'); } }];
+    this.buttons = [{ x: 16, y: backBtnY, w: SCREEN_WIDTH - 32, h: 42, label: '返回', variant: 'secondary', disabled: false, onClick: () => { this.goScene('menu'); } }];
   }
 
   startCgPlayback(cg, fromScene = 'cg_gallery', options = {}) {
@@ -5364,22 +5542,26 @@ export default class SimulationMain {
 
   renderCgGallery() {
     this.drawSceneBackground();
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText('CG 图鉴', SCREEN_WIDTH / 2, 48);
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.fillText('触发条件时会自动播放，完整观看一次后收录图鉴', SCREEN_WIDTH / 2, 74);
+    const light = this.themeMode === 'light';
     const meta = save.loadMeta();
     const unlocked = new Set(meta.unlockedCgs || []);
+    drawSceneKicker(ctx, 15, SAFE_TOP + 5, 'MOMENTS', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = light ? COLORS.paperInk : COLORS.ink;
+    ctx.font = font(26, 730);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('校园影像', 15, SAFE_TOP + 18);
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.56)' : COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText(`已收录 ${unlocked.size} / ${CG_CATALOG.length} 个瞬间`, 15, SAFE_TOP + 51);
+
     const order = new Map();
-    (meta.cgUnlockOrder || []).forEach((it, idx) => {
-      if (!it || !it.id) return;
-      order.set(String(it.id), Number(it.ts || idx + 1));
+    (meta.cgUnlockOrder || []).forEach((item, index) => {
+      if (!item || !item.id) return;
+      order.set(String(item.id), Number(item.ts || index + 1));
     });
-    (meta.unlockedCgs || []).forEach((id, idx) => {
-      if (!order.has(id)) order.set(id, idx + 1);
+    (meta.unlockedCgs || []).forEach((id, index) => {
+      if (!order.has(id)) order.set(id, index + 1);
     });
     const sorted = [...CG_CATALOG].sort((a, b) => {
       const ao = unlocked.has(a.id);
@@ -5389,9 +5571,13 @@ export default class SimulationMain {
       return 0;
     });
 
-    const listTop = 92;
-    const backBtnY = SCREEN_HEIGHT - 52;
-    const listBottom = backBtnY - 8;
+    const listTop = SAFE_TOP + 72;
+    const backY = SCREEN_HEIGHT - SAFE_BOTTOM - 42;
+    const listBottom = backY - 10;
+    const cardX = 15;
+    const cardW = SCREEN_WIDTH - 30;
+    const rowH = 96;
+    const gap = 9;
     let y = listTop - this.cgScroll;
     this.cgHitAreas = [];
     this.buttons = [];
@@ -5401,47 +5587,87 @@ export default class SimulationMain {
     ctx.clip();
     sorted.forEach((cg) => {
       const ok = unlocked.has(cg.id);
-      const rowH = 102;
-      const cardX = 16;
-      const cardW = SCREEN_WIDTH - 32;
-      if (y < listBottom + rowH && y > listTop - rowH) {
-        ctx.fillStyle = ok ? 'rgba(120,190,255,0.14)' : 'rgba(255,255,255,0.06)';
-        this.fillRoundRect(cardX, y, cardW, rowH, 10);
-        ctx.strokeStyle = ok ? 'rgba(120,190,255,0.55)' : 'rgba(255,255,255,0.16)';
-        ctx.lineWidth = 1.2;
-        this.strokeRoundRect(cardX, y, cardW, rowH, 10);
-        ctx.fillStyle = ok ? uiTheme.colors.accent : uiTheme.colors.buttonDisabled;
-        ctx.font = `bold ${uiTheme.font.body}px sans-serif`;
-        ctx.textAlign = 'center';
+      const image = this.assets[cg.id];
+      if (y >= listTop && y + rowH <= listBottom) {
+        fillRoundRect(
+          ctx,
+          cardX,
+          y,
+          cardW,
+          rowH,
+          17,
+          ok ? 'rgba(27,38,55,0.88)' : 'rgba(18,26,40,0.72)',
+        );
+        strokeRoundRect(
+          ctx,
+          cardX + 0.5,
+          y + 0.5,
+          cardW - 1,
+          rowH - 1,
+          17,
+          ok ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.08)',
+        );
+        const imageX = cardX + 8;
+        const imageY = y + 8;
+        const imageW = 82;
+        const imageH = rowH - 16;
+        ctx.save();
+        roundRectPath(ctx, imageX, imageY, imageW, imageH, 12);
+        ctx.clip();
+        if (ok && image && image.__ready && !image.__failed) {
+          const iw = image.width || imageW;
+          const ih = image.height || imageH;
+          const scale = Math.max(imageW / iw, imageH / ih);
+          const sw = imageW / scale;
+          const sh = imageH / scale;
+          ctx.drawImage(image, (iw - sw) / 2, (ih - sh) / 2, sw, sh, imageX, imageY, imageW, imageH);
+        } else {
+          const ph = ctx.createLinearGradient(imageX, imageY, imageX + imageW, imageY + imageH);
+          ph.addColorStop(0, ok ? '#556A70' : '#263446');
+          ph.addColorStop(1, ok ? '#9E8268' : '#141E2D');
+          ctx.fillStyle = ph;
+          ctx.fillRect(imageX, imageY, imageW, imageH);
+          drawIcon(ctx, 'image', imageX + 27, imageY + 24, 28, ok ? COLORS.paper : COLORS.inkFaint);
+        }
+        ctx.restore();
+
+        ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
-        ctx.fillText(ok ? cg.title : '？？？', SCREEN_WIDTH / 2, y + 16);
-        ctx.fillStyle = uiTheme.colors.textSub;
-        ctx.font = `${uiTheme.font.small}px sans-serif`;
-        const desc = ok ? (cg.description || '已解锁 CG') : '触发并观看一次后显示';
-        const lines = this.splitWrappedLines(desc, cardW - 24, 3);
-        lines.forEach((line, idx) => {
-          ctx.fillText(line, SCREEN_WIDTH / 2, y + 46 + idx * 16);
+        ctx.fillStyle = ok ? COLORS.ink : COLORS.inkFaint;
+        ctx.font = font(15, 650);
+        ctx.fillText(this.fitText(ok ? cg.title : '未收录的瞬间', cardW - 132), imageX + imageW + 14, y + 17);
+        ctx.fillStyle = ok ? COLORS.inkMuted : COLORS.inkFaint;
+        ctx.font = font(10.5, 430);
+        const description = ok ? (cg.description || '已收录') : '继续经历校园事件，会遇见这里的画面。';
+        const lines = this.splitWrappedLines(description, cardW - 132, 2);
+        lines.forEach((line, index) => {
+          ctx.fillText(line, imageX + imageW + 14, y + 43 + index * 16);
         });
-        if (ok) this.cgHitAreas.push({ cg, x: cardX + 6, y: y + 6, w: cardW - 12, h: rowH - 12 });
+        if (ok) {
+          drawChevron(ctx, cardX + cardW - 14, y + rowH / 2, 13, COLORS.inkFaint, 'right');
+          this.cgHitAreas.push({ cg, x: cardX + 4, y: y + 4, w: cardW - 8, h: rowH - 8 });
+        }
       }
-      y += rowH + 8;
+      y += rowH + gap;
     });
     ctx.restore();
     const maxScroll = Math.max(0, y - listBottom);
     this._cgScrollMax = maxScroll;
-    this.cgScroll = Math.min(this.cgScroll, maxScroll);
+    this.cgScroll = clamp(this.cgScroll, 0, maxScroll);
     this.drawScrollIndicator(listTop, listBottom - listTop, this.cgScroll, maxScroll);
     this.buttons.push({
-      x: 16,
-      y: SCREEN_HEIGHT - 52,
-      w: SCREEN_WIDTH - 32,
-      h: 40,
+      id: 'cg_gallery_back',
+      x: 15,
+      y: backY,
+      w: SCREEN_WIDTH - 30,
+      h: 42,
       label: '返回',
       variant: 'secondary',
       disabled: false,
       onClick: () => this.goScene('menu'),
     });
   }
+
 
   renderCgPlayback() {
     const cp = this.cgPlayback;
@@ -5451,14 +5677,16 @@ export default class SimulationMain {
     }
     const cg = CG_CATALOG.find((x) => x.id === cp.cgId);
     this.drawSceneBackground();
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
+    const light = this.themeMode === 'light';
+    drawSceneKicker(ctx, 15, SAFE_TOP + 5, 'MOMENT', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = light ? COLORS.paperInk : COLORS.ink;
+    ctx.font = font(24, 720);
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText(cp.title || cg?.title || 'CG 回放', SCREEN_WIDTH / 2, 52);
-    const cardX = 16;
-    const cardY = 88;
-    const cardW = SCREEN_WIDTH - 32;
+    ctx.fillText(this.fitText(cp.title || cg?.title || '校园影像', SCREEN_WIDTH - 30), 15, SAFE_TOP + 18);
+    const cardX = 15;
+    const cardY = SAFE_TOP + 61;
+    const cardW = SCREEN_WIDTH - 30;
     const cardH = 258;
     ctx.fillStyle = 'rgba(0,0,0,0.28)';
     this.fillRoundRect(cardX, cardY, cardW, cardH, 10);
@@ -5480,18 +5708,24 @@ export default class SimulationMain {
       ctx.fillRect(boxX, boxY, boxW, boxH);
       ctx.drawImage(img, dx, dy, dw, dh);
     } else {
-      ctx.fillStyle = uiTheme.colors.textSub;
-      ctx.font = `${uiTheme.font.body}px sans-serif`;
-      ctx.fillText('CG 素材未找到（生成后放到 images/cg/）', SCREEN_WIDTH / 2, cardY + cardH / 2 - 8);
+      const fallback = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY + cardH);
+      fallback.addColorStop(0, '#273B48');
+      fallback.addColorStop(1, '#9B7764');
+      fillRoundRect(ctx, cardX + 8, cardY + 8, cardW - 16, cardH - 16, 13, fallback);
+      drawIcon(ctx, 'image', SCREEN_WIDTH / 2 - 22, cardY + cardH / 2 - 38, 44, COLORS.paper);
+      ctx.fillStyle = COLORS.paper;
+      ctx.font = font(12, 550);
+      ctx.textAlign = 'center';
+      ctx.fillText('这一帧还在路上', SCREEN_WIDTH / 2, cardY + cardH / 2 + 18);
     }
     ctx.fillStyle = uiTheme.colors.textSub;
     ctx.font = `${uiTheme.font.small}px sans-serif`;
     this.wrapText(cp.description || cg?.description || '', cardX + 10, cardY + cardH + 12, cardW - 20, 18, 4);
     this.buttons = [{
-      x: 16,
-      y: SCREEN_HEIGHT - 52,
-      w: SCREEN_WIDTH - 32,
-      h: 40,
+      x: 15,
+      y: SCREEN_HEIGHT - SAFE_BOTTOM - 50,
+      w: SCREEN_WIDTH - 30,
+      h: 50,
       label: '返回',
       variant: 'primary',
       disabled: false,
@@ -5506,18 +5740,21 @@ export default class SimulationMain {
 
   renderBgmGallery() {
     this.drawSceneBackground();
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText('BGM 图鉴', SCREEN_WIDTH / 2, 48);
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.fillText('已解锁曲目点击卡片即可试听', SCREEN_WIDTH / 2, 74);
+    const light = this.themeMode === 'light';
+    drawSceneKicker(ctx, 15, SAFE_TOP + 5, 'SOUNDTRACK', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = light ? COLORS.paperInk : COLORS.ink;
+    ctx.font = font(26, 730);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('校园原声', 15, SAFE_TOP + 18);
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.56)' : COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText('点开已收录的曲目，可以再听一遍。', 15, SAFE_TOP + 51);
     const meta = save.loadMeta();
     const unlocked = new Set(meta.unlockedBgms || []);
     const playingKey = this.bgm && this.bgm.currentBgmName ? this.bgm.currentBgmName : '';
     this.bgmHitAreas = [];
-    let y = 102;
+    let y = SAFE_TOP + 76;
     BGM_CATALOG.forEach((bgm) => {
       const ok = unlocked.has(bgm.id);
       const isPlaying = ok && playingKey === bgm.trackKey;
@@ -5525,10 +5762,10 @@ export default class SimulationMain {
       const cardW = SCREEN_WIDTH - 32;
       const rowH = 84;
       ctx.fillStyle = isPlaying
-        ? 'rgba(255,200,80,0.28)'
+        ? (light ? 'rgba(233,105,77,0.13)' : 'rgba(255,200,80,0.28)')
         : ok
-          ? 'rgba(255,220,140,0.14)'
-          : 'rgba(255,255,255,0.06)';
+          ? (light ? 'rgba(252,249,242,0.88)' : 'rgba(255,220,140,0.14)')
+          : (light ? 'rgba(255,255,255,0.52)' : 'rgba(255,255,255,0.06)');
       this.fillRoundRect(cardX, y, cardW, rowH, 10);
       ctx.strokeStyle = isPlaying
         ? 'rgba(255,200,80,0.85)'
@@ -5537,29 +5774,31 @@ export default class SimulationMain {
           : 'rgba(255,255,255,0.18)';
       ctx.lineWidth = isPlaying ? 2 : 1.2;
       this.strokeRoundRect(cardX, y, cardW, rowH, 10);
-      ctx.fillStyle = ok ? uiTheme.colors.textMain : uiTheme.colors.buttonDisabled;
+      ctx.fillStyle = ok ? (light ? COLORS.paperInk : COLORS.ink) : COLORS.inkFaint;
       ctx.font = `bold ${uiTheme.font.body}px sans-serif`;
       ctx.textAlign = 'left';
       ctx.fillText(ok ? bgm.title : '？？？', cardX + 12, y + 16);
       if (ok) {
-        ctx.fillStyle = isPlaying ? 'rgba(255,220,140,0.95)' : uiTheme.colors.textSub;
+        ctx.fillStyle = isPlaying
+          ? (light ? COLORS.coralDeep : 'rgba(255,220,140,0.95)')
+          : (light ? 'rgba(38,48,65,0.56)' : COLORS.inkMuted);
         ctx.font = `${uiTheme.font.small}px sans-serif`;
         ctx.textAlign = 'right';
         ctx.fillText(isPlaying ? '播放中' : '点击播放', cardX + cardW - 12, y + 18);
       }
-      ctx.fillStyle = uiTheme.colors.textSub;
+      ctx.fillStyle = light ? 'rgba(38,48,65,0.58)' : COLORS.inkMuted;
       ctx.font = `${uiTheme.font.small}px sans-serif`;
       ctx.textAlign = 'left';
-      const line = ok ? `音轨 ID：${bgm.id}` : `解锁提示：${bgm.hint || '进入相关场景'}`;
+      const line = ok ? (bgm.hint || '校园原声') : (bgm.hint || '进入相关场景后收录');
       this.wrapText(line, cardX + 12, y + 40, cardW - 24, 16, 2);
       if (ok) this.bgmHitAreas.push({ bgm, x: cardX + 6, y: y + 6, w: cardW - 12, h: rowH - 12 });
       y += rowH + 10;
     });
     this.buttons = [{
       x: 16,
-      y: SCREEN_HEIGHT - 52,
+      y: SCREEN_HEIGHT - SAFE_BOTTOM - 42,
       w: SCREEN_WIDTH - 32,
-      h: 40,
+      h: 42,
       label: '返回',
       variant: 'secondary',
       disabled: false,
@@ -5569,17 +5808,19 @@ export default class SimulationMain {
 
   renderCredits() {
     this.drawSceneBackground();
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
+    const light = this.themeMode === 'light';
+    drawSceneKicker(ctx, 15, SAFE_TOP + 5, 'THANKS', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = light ? COLORS.paperInk : COLORS.ink;
+    ctx.font = font(26, 730);
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText('致谢', SCREEN_WIDTH / 2, 48);
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.fillText(CREDITS_ACK.intro, SCREEN_WIDTH / 2, 76);
+    ctx.fillText('一起完成这本日记', 15, SAFE_TOP + 18);
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.56)' : COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText(CREDITS_ACK.intro, 15, SAFE_TOP + 51);
 
-    const listTop = 104;
-    const backBtnY = SCREEN_HEIGHT - 52;
+    const listTop = SAFE_TOP + 72;
+    const backBtnY = SCREEN_HEIGHT - SAFE_BOTTOM - 42;
     const listBottom = backBtnY - 8;
     const cardX = 16;
     const cardW = SCREEN_WIDTH - 32;
@@ -5617,7 +5858,7 @@ export default class SimulationMain {
       x: 16,
       y: backBtnY,
       w: SCREEN_WIDTH - 32,
-      h: 40,
+      h: 42,
       label: '返回',
       variant: 'secondary',
       disabled: false,
@@ -5627,83 +5868,192 @@ export default class SimulationMain {
 
   renderSettings() {
     this.drawSceneBackground();
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.fillText('设置', SCREEN_WIDTH / 2, 48);
-    ctx.font = `${uiTheme.font.body}px sans-serif`;
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.fillText(`BGM 音量：${Math.round(this.bgm.volume * 100)}%`, SCREEN_WIDTH / 2, 114);
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.fillStyle = uiTheme.colors.textSub;
-    const hint = getShareTimelineHint();
-    this.wrapText(hint, 20, 138, SCREEN_WIDTH - 40, 16, 48);
-
+    const light = this.themeMode === 'light';
+    const titleInk = light ? COLORS.paperInk : COLORS.ink;
+    const pad = 14;
+    const w = SCREEN_WIDTH - pad * 2;
+    const compact = SCREEN_HEIGHT < 720;
+    const veryCompact = SCREEN_HEIGHT < 620;
+    const bottomSafe = SCREEN_HEIGHT - SAFE_BOTTOM;
     this.buttons = [];
-    const pad = 16;
-    const w = SCREEN_WIDTH - 32;
-    let y = 228;
+
+    drawSceneKicker(ctx, pad, SAFE_TOP + 5, 'SETTINGS', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = titleInk;
+    ctx.font = font(26, 730);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('合你心意的节奏', pad, SAFE_TOP + 18);
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.56)' : COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText('声音、显示与本地数据。', pad, SAFE_TOP + 51);
+
+    let y = SAFE_TOP + (veryCompact ? 62 : 72);
+    const soundH = veryCompact ? 112 : (compact ? 158 : 174);
+    drawGlassPanel(ctx, pad, y, w, soundH, { radius: 20, strong: true });
+    drawIcon(ctx, 'music', pad + 14, y + 14, 20, COLORS.gold);
+    ctx.fillStyle = COLORS.ink;
+    ctx.font = font(14, 650);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('声音', pad + 42, y + 15);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = COLORS.inkMuted;
+    ctx.font = font(11, 500);
+    ctx.fillText(this.bgm.muted ? '已静音' : `${Math.round(this.bgm.volume * 100)}%`, pad + w - 14, y + 16);
+
+    const halfGap = 8;
+    const halfW = (w - 28 - halfGap) / 2;
+    const soundBtnH = veryCompact ? 30 : 38;
+    const soundBtnY = y + (veryCompact ? 41 : 45);
+    const muteY = y + (veryCompact ? 77 : 92);
     this.buttons.push({
       id: 'settings_volume_down',
-      x: pad,
-      y,
-      w: Math.floor((w - 8) / 2),
-      h: 42,
-      label: '音量 -10%',
+      x: pad + 14,
+      y: soundBtnY,
+      w: halfW,
+      h: soundBtnH,
+      label: '音量 −',
       variant: 'secondary',
       disabled: false,
       onClick: () => this.setBgmVolume(this.bgm.volume - 0.1),
     });
     this.buttons.push({
       id: 'settings_volume_up',
-      x: pad + Math.floor((w - 8) / 2) + 8,
-      y,
-      w: Math.floor((w - 8) / 2),
-      h: 42,
-      label: '音量 +10%',
+      x: pad + 14 + halfW + halfGap,
+      y: soundBtnY,
+      w: halfW,
+      h: soundBtnH,
+      label: '音量 +',
       variant: 'secondary',
       disabled: false,
       onClick: () => this.setBgmVolume(this.bgm.volume + 0.1),
     });
-    y += 52;
     this.buttons.push({
       id: 'settings_toggle_mute',
-      x: pad,
-      y,
-      w,
-      h: 42,
-      label: this.bgm.muted ? '取消静音' : '静音',
+      x: pad + 14,
+      y: muteY,
+      w: w - 28,
+      h: soundBtnH,
+      label: this.bgm.muted ? '恢复声音' : '暂时静音',
+      variant: 'ghost',
+      textColor: COLORS.ink,
       disabled: false,
       onClick: () => {
         const muted = this.bgm.toggleMute();
         save.saveAudioPrefs({ muted, volume: this.bgm.volume });
       },
     });
-    y += 52;
+    if (!compact) {
+      const progressX = pad + 14;
+      const progressY = y + 145;
+      const progressW = w - 28;
+      fillRoundRect(ctx, progressX, progressY, progressW, 3, 1.5, 'rgba(255,255,255,0.09)');
+      fillRoundRect(ctx, progressX, progressY, Math.max(2, progressW * this.bgm.volume), 3, 1.5, COLORS.gold);
+    }
+    y += soundH + (veryCompact ? 5 : 11);
+
+    const appearanceH = veryCompact ? 60 : (compact ? 68 : 76);
+    drawGlassPanel(ctx, pad, y, w, appearanceH, { radius: 19, strong: true });
+    ctx.fillStyle = COLORS.ink;
+    ctx.font = font(13, 650);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('显示', pad + 14, y + (veryCompact ? 14 : 20));
+    ctx.fillStyle = COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText(
+      this.themeMode === 'light' ? '浅色纸张' : '夜间校园',
+      pad + 52,
+      y + (veryCompact ? 14 : 20),
+    );
+    this.buttons.push({
+      id: 'settings_toggle_theme',
+      x: pad + 14,
+      y: y + (veryCompact ? 27 : 34),
+      w: w - 28,
+      h: appearanceH - (veryCompact ? 32 : 43),
+      label: this.themeMode === 'light' ? '切换为夜间模式' : '切换为浅色模式',
+      variant: 'ghost',
+      textColor: COLORS.ink,
+      disabled: false,
+      onClick: () => {
+        this.setThemeMode(this.themeMode === 'light' ? 'dark' : 'light');
+        this.sceneEnteredAt = Date.now();
+      },
+    });
+    y += appearanceH + (veryCompact ? 5 : 11);
+
+    const shareH = veryCompact ? 59 : (compact ? 62 : 70);
+    drawGlassPanel(ctx, pad, y, w, shareH, { radius: 19, strong: true });
+    ctx.fillStyle = COLORS.ink;
+    ctx.font = font(13, 650);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('分享', pad + 14, y + (veryCompact ? 14 : 20));
+    ctx.fillStyle = COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText(
+      '把这一局校园故事发给朋友',
+      pad + 52,
+      y + (veryCompact ? 14 : 20),
+    );
+    if (wx.shareAppMessage) {
+      this.buttons.push({
+        id: 'settings_share',
+        x: pad + 14,
+        y: y + (veryCompact ? 27 : 32),
+        w: w - 28,
+        h: shareH - (veryCompact ? 32 : 41),
+        label: '转发给朋友',
+        variant: 'ghost',
+        textColor: COLORS.ink,
+        disabled: false,
+        onClick: () => {
+          wx.shareAppMessage({ title: '本科生的四年日记' });
+        },
+      });
+    }
+    y += shareH + (veryCompact ? 5 : 11);
+
+    const dataH = veryCompact ? 63 : (compact ? 74 : 82);
+    drawGlassPanel(ctx, pad, y, w, dataH, { radius: 19, strong: true });
+    ctx.fillStyle = COLORS.ink;
+    ctx.font = font(13, 650);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('本地数据', pad + 14, y + (veryCompact ? 14 : 20));
+    ctx.fillStyle = COLORS.inkMuted;
+    ctx.font = font(10, 450);
+    ctx.fillText(
+      '进度与收藏只保存在这台设备',
+      pad + 76,
+      y + (veryCompact ? 14 : 20),
+    );
     this.buttons.push({
       id: 'settings_clear_cache',
-      x: pad,
-      y,
-      w,
-      h: 42,
-      label: '清除缓存重新开始',
+      x: pad + 14,
+      y: y + (veryCompact ? 29 : 34),
+      w: w - 28,
+      h: dataH - (veryCompact ? 35 : 43),
+      label: '清除全部记录',
       variant: 'danger',
       disabled: false,
       onClick: () => this.confirmClearCache(),
     });
+
     this.buttons.push({
       id: 'settings_back',
       x: pad,
-      y: SCREEN_HEIGHT - 56,
+      y: bottomSafe - (veryCompact ? 46 : 50),
       w,
-      h: 40,
+      h: veryCompact ? 46 : 50,
       label: '返回',
       variant: 'secondary',
       disabled: false,
       onClick: () => { this.goScene('menu'); },
     });
   }
+
 
   confirmClearCache() {
     wx.showModal({
@@ -5727,6 +6077,8 @@ export default class SimulationMain {
     this.currentEnding = null;
     this.runSettlement = null;
     this.pendingTransition = null;
+    this.themeMode = 'dark';
+    this.applyTheme('dark');
     
     // 重置天赋系统
     this.availableTalents = [];
@@ -5761,81 +6113,97 @@ export default class SimulationMain {
       return;
     }
     this.drawSceneBackground();
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText('背包', SCREEN_WIDTH / 2, SAFE_TOP);
+    const light = this.themeMode === 'light';
     const inventory = Array.isArray(this.run.inventory) ? this.run.inventory : [];
-    this.buttons = [];
-    const pad = 16;
-    const w = SCREEN_WIDTH - 32;
-    const listTop = SAFE_TOP + 34;
-    const listBottom = SCREEN_HEIGHT - 56;
-    let y = listTop;
-    if (!inventory.length) {
-      ctx.fillStyle = uiTheme.colors.textSub;
-      ctx.font = `${uiTheme.font.body}px sans-serif`;
-      ctx.fillText('当前没有物品', SCREEN_WIDTH / 2, y + 24);
-      y += 56;
-    } else {
-      inventory.slice(0, 5).forEach((itemId, i) => {
-        const item = itemsCatalog.find((it) => it.id === itemId);
-        if (!item) return;
-        const rowH = 72;
-        const cardX = 16;
-        const cardW = SCREEN_WIDTH - 32;
-        ctx.fillStyle = 'rgba(255,255,255,0.08)';
-        this.fillRoundRect(cardX, y, cardW, rowH, 10);
-        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-        ctx.lineWidth = 1.2;
-        this.strokeRoundRect(cardX, y, cardW, rowH, 10);
+    drawSceneKicker(ctx, 15, SAFE_TOP + 5, 'POCKET', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = light ? COLORS.paperInk : COLORS.ink;
+    ctx.font = font(25, 730);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('随身物品', 15, SAFE_TOP + 18);
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.56)' : COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText(`背包里有 ${inventory.length} 件物品`, 15, SAFE_TOP + 51);
 
-        const tagX = cardX + 10;
-        const tagY = y + 10;
-        const tagW = 42;
-        const tagH = 20;
-        ctx.fillStyle = 'rgba(255,255,255,0.16)';
-        this.fillRoundRect(tagX, tagY, tagW, tagH, 6);
-        ctx.fillStyle = uiTheme.colors.textSub;
-        ctx.font = `bold ${uiTheme.font.small}px sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('道具', tagX + tagW / 2, tagY + tagH / 2);
+    const listTop = SAFE_TOP + 72;
+    const backY = SCREEN_HEIGHT - SAFE_BOTTOM - 42;
+    const listBottom = backY - 10;
+    const cardX = 15;
+    const cardW = SCREEN_WIDTH - 30;
+    const rowH = 76;
+    const gap = 8;
+    this.buttons = [];
+    this.inventoryScroll = this.inventoryScroll || 0;
+    let y = listTop - this.inventoryScroll;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, listTop, SCREEN_WIDTH, listBottom - listTop);
+    ctx.clip();
+    inventory.forEach((itemId, index) => {
+      const item = itemsCatalog.find((entry) => entry.id === itemId);
+      if (!item) return;
+      if (y >= listTop && y + rowH <= listBottom) {
+        drawGlassPanel(ctx, cardX, y, cardW, rowH, { radius: 17, strong: true, shadow: false });
+        fillRoundRect(ctx, cardX + 10, y + 11, 46, 46, 13, 'rgba(235,199,121,0.1)');
+        drawIcon(ctx, 'bag', cardX + 22, y + 23, 22, COLORS.gold);
         ctx.textAlign = 'left';
-        ctx.textBaseline = 'alphabetic';
-        ctx.fillStyle = uiTheme.colors.textMain;
-        ctx.font = `bold ${uiTheme.font.body}px sans-serif`;
-        ctx.fillText(item.name, cardX + 12, y + 44);
-        ctx.fillStyle = uiTheme.colors.textSub;
-        ctx.font = `${uiTheme.font.small}px sans-serif`;
-        this.wrapText(item.description || '暂无描述', cardX + 12, y + 60, cardW - 24, 15, 1);
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = COLORS.ink;
+        ctx.font = font(14, 650);
+        ctx.fillText(this.fitText(item.name, cardW - 130), cardX + 69, y + 13);
+        ctx.fillStyle = COLORS.inkMuted;
+        ctx.font = font(10.5, 430);
+        this.wrapText(item.description || '一件会用得上的校园物品', cardX + 69, y + 36, cardW - 136, 15, 2);
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = light ? COLORS.coralDeep : COLORS.gold;
+        ctx.font = font(10, 650);
+        ctx.fillText('使用', cardX + cardW - 14, y + rowH / 2);
         this.buttons.push({
-          id: `inventory_item_${i}`,
+          id: `inventory_item_${index}`,
           x: cardX,
           y,
           w: cardW,
           h: rowH,
-          label: '',
+          label: item.name,
           invisible: true,
-          variant: 'secondary',
           disabled: false,
-          onClick: () => this.handleUseItem(i),
+          onClick: () => this.handleUseItem(index),
         });
-        y += rowH + 8;
-      });
+      }
+      y += rowH + gap;
+    });
+    if (!inventory.length) {
+      drawGlassPanel(ctx, cardX, listTop, cardW, 132, { radius: 19, strong: true, shadow: false });
+      drawIcon(ctx, 'bag', SCREEN_WIDTH / 2 - 15, listTop + 25, 30, COLORS.inkFaint);
+      ctx.fillStyle = COLORS.inkMuted;
+      ctx.font = font(12, 500);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText('背包还是空的', SCREEN_WIDTH / 2, listTop + 70);
+      ctx.fillStyle = COLORS.inkFaint;
+      ctx.font = font(10, 430);
+      ctx.fillText('完成事件和校园日常时，可能会收到小物件。', SCREEN_WIDTH / 2, listTop + 94);
+      y = listTop + 132;
     }
+    ctx.restore();
+    const maxScroll = Math.max(0, y - listBottom);
+    this._inventoryScrollMax = maxScroll;
+    this.inventoryScroll = clamp(this.inventoryScroll, 0, maxScroll);
+    this.drawScrollIndicator(listTop, listBottom - listTop, this.inventoryScroll, maxScroll);
     this.buttons.push({
       id: 'inventory_back',
-      x: 16,
-      y: SCREEN_HEIGHT - 52,
-      w: SCREEN_WIDTH - 32,
-      h: 36,
+      x: 15,
+      y: backY,
+      w: SCREEN_WIDTH - 30,
+      h: 42,
       label: '返回',
       variant: 'secondary',
       disabled: false,
       onClick: () => this.goScene(this.popReturnScene(), { clearPending: false }),
     });
   }
+
 
   renderRunLog() {
     if (!this.run) {
@@ -5844,13 +6212,16 @@ export default class SimulationMain {
       return;
     }
     this.drawSceneBackground();
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText('本局记录', SCREEN_WIDTH / 2, SAFE_TOP);
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.fillText('按时间从新到旧展示，可上下滑动', SCREEN_WIDTH / 2, SAFE_TOP + 22);
+    const light = this.themeMode === 'light';
+    drawSceneKicker(ctx, 15, SAFE_TOP + 5, 'JOURNAL', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = light ? COLORS.paperInk : COLORS.ink;
+    ctx.font = font(25, 730);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('这一局，走过这里', 15, SAFE_TOP + 18);
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.56)' : COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText('选择与结果按时间倒序排列。', 15, SAFE_TOP + 51);
 
     const log = Array.isArray(this.run.log) ? [...this.run.log] : [];
     log.sort((a, b) => {
@@ -5864,9 +6235,28 @@ export default class SimulationMain {
     });
     this.buttons = [];
     const lineH = 18;
-    const listTop = SAFE_TOP + 52;
-    const listBottom = SCREEN_HEIGHT - 56;
+    const listTop = SAFE_TOP + 72;
+    const backY = SCREEN_HEIGHT - SAFE_BOTTOM - 42;
+    const listBottom = backY - 10;
     this._runLogScrollUi = { listTop, listBottom };
+    fillRoundRect(
+      ctx,
+      10,
+      listTop - 8,
+      SCREEN_WIDTH - 20,
+      listBottom - listTop + 16,
+      18,
+      light ? 'rgba(252,249,242,0.9)' : 'rgba(17,26,41,0.88)',
+    );
+    strokeRoundRect(
+      ctx,
+      10.5,
+      listTop - 7.5,
+      SCREEN_WIDTH - 21,
+      listBottom - listTop + 15,
+      18,
+      light ? 'rgba(38,48,65,0.12)' : 'rgba(255,255,255,0.1)',
+    );
     let penY = listTop - this.runLogScroll;
     let currentSemester = null;
     ctx.save();
@@ -5927,9 +6317,9 @@ export default class SimulationMain {
     this.buttons.push({
       id: 'run_log_back',
       x: 16,
-      y: SCREEN_HEIGHT - 52,
+      y: backY,
       w: SCREEN_WIDTH - 32,
-      h: 40,
+      h: 42,
       label: '返回',
       variant: 'secondary',
       disabled: false,
@@ -5965,121 +6355,170 @@ export default class SimulationMain {
       case 'achievement_playback': this.renderAchievementPlayback(); break;
       default: this.goScene('menu', { clearPending: false }); this.renderMenu();
     }
-    this.buttons.forEach((b) => this.drawButton(b));
+    this.buttons.forEach((b, index) => {
+      if (!b.id) b.id = `${this.scene}_button_${index}`;
+      this.drawButton(b);
+    });
     if (this.toast && Date.now() < this.toast.until) {
       const toastChrome = this.scene === 'play' ? (this._playChrome || this.getPlaySceneChrome()) : null;
       const toastY = toastChrome ? toastChrome.statsTop - 44 : SCREEN_HEIGHT - 220;
-      ctx.fillStyle = 'rgba(0,0,0,0.75)';
-      ctx.fillRect(16, toastY, SCREEN_WIDTH - 32, 30);
-      ctx.fillStyle = '#fff';
-      ctx.font = `${uiTheme.font.small}px sans-serif`;
+      const age = clamp((Date.now() - Number(this.toast.started || Date.now())) / 180, 0, 1);
+      const enter = easeOutCubic(age);
+      ctx.save();
+      ctx.globalAlpha = enter;
+      ctx.font = font(12, 500);
+      const toastW = Math.min(SCREEN_WIDTH - 36, Math.max(142, ctx.measureText(this.toast.text).width + 46));
+      const toastX = (SCREEN_WIDTH - toastW) / 2;
+      const ty = toastY + (1 - enter) * 8;
+      ctx.shadowColor = 'rgba(0,0,0,0.22)';
+      ctx.shadowBlur = 16;
+      ctx.shadowOffsetY = 6;
+      fillRoundRect(ctx, toastX, ty, toastW, 36, 18, 'rgba(14,22,35,0.94)');
+      ctx.shadowColor = 'transparent';
+      strokeRoundRect(ctx, toastX + 0.5, ty + 0.5, toastW - 1, 35, 18, 'rgba(255,255,255,0.15)', 1);
+      ctx.fillStyle = COLORS.gold;
+      ctx.beginPath();
+      ctx.arc(toastX + 18, ty + 18, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = COLORS.ink;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(this.toast.text, SCREEN_WIDTH / 2, toastY + 15);
+      ctx.fillText(this.toast.text, toastX + toastW / 2 + 7, ty + 18);
+      ctx.restore();
     } else if (this.toast && Date.now() >= this.toast.until) {
       this.toast = null;
     }
+    this.renderSceneTransition();
     if (this.narrative) {
       this.renderNarrativeOverlay();
     }
   }
 
+  renderSceneTransition() {
+    const elapsed = Date.now() - Number(this.sceneEnteredAt || 0);
+    if (elapsed < 0 || elapsed >= 240) return;
+    const t = easeOutCubic(elapsed / 240);
+    ctx.save();
+    ctx.globalAlpha = 1 - t;
+    ctx.fillStyle = '#09111D';
+    ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    ctx.globalAlpha = (1 - t) * 0.7;
+    const sweep = ctx.createLinearGradient(0, 0, SCREEN_WIDTH, 0);
+    sweep.addColorStop(0, 'rgba(255,255,255,0)');
+    sweep.addColorStop(0.5, 'rgba(255,255,255,0.14)');
+    sweep.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = sweep;
+    ctx.fillRect((t - 0.35) * SCREEN_WIDTH, 0, SCREEN_WIDTH * 0.34, SCREEN_HEIGHT);
+    ctx.restore();
+  }
+
   renderNarrativeOverlay() {
     const n = this.narrative;
-    const pad = 20;
-    const w = SCREEN_WIDTH - pad * 2;
-    const overlayH = Math.min(SCREEN_HEIGHT - 120, 420);
+    const pad = 14;
     const ox = pad;
-    const oy = (SCREEN_HEIGHT - overlayH) / 2 - 50;
+    const w = SCREEN_WIDTH - pad * 2;
+    const radius = 22;
+    const hasOptions = Array.isArray(n.options) && n.options.length > 0;
+    const optionRowH = 45;
+    const optionGap = 8;
+    const optionsTotalH = hasOptions
+      ? n.options.length * optionRowH + (n.options.length - 1) * optionGap
+      : 0;
+    const btnH = 44;
+    const textLeft = ox + 24;
+    const textW = w - 48;
+    const lineH = 23;
+    let measuredTextHeight = 0;
+    ctx.save();
+    ctx.font = font(15, 400);
+    String(n.text || '').split('\n').forEach((paragraph) => {
+      if (!paragraph.trim()) {
+        measuredTextHeight += lineH;
+        return;
+      }
+      const lineCount = this.splitWrappedLines(paragraph, textW, 999).length;
+      measuredTextHeight += lineCount * lineH;
+    });
+    ctx.restore();
+    const actionH = hasOptions ? optionsTotalH : btnH;
+    const availableH = SCREEN_HEIGHT - SAFE_TOP - SAFE_BOTTOM - 12;
+    const overlayH = Math.min(
+      availableH,
+      Math.max(300, 62 + Math.min(measuredTextHeight, 370) + 22 + actionH + 34),
+    );
+    const enter = easeOutCubic(clamp((Date.now() - Number(n.openedAt || 0)) / 180, 0, 1));
+    const oy = Math.max(SAFE_TOP + 2, (SCREEN_HEIGHT - overlayH) / 2 - 18) + (1 - enter) * 16;
+    const actionTop = oy + overlayH - 18 - (hasOptions ? optionsTotalH : btnH);
+    const optionTop = actionTop;
+    const textTop = oy + 62;
+    const textBottom = actionTop - 16;
 
-    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    ctx.save();
+    ctx.fillStyle = `rgba(4, 8, 16, ${0.72 * enter})`;
     ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    drawPaperPanel(ctx, ox, oy, w, overlayH, { radius, shadow: true });
 
-    // 尝试使用背景图片
-    const bgAsset = this.assets.ui_panel_bg;
-    if (bgAsset && bgAsset.__ready && !bgAsset.__failed) {
-      ctx.drawImage(bgAsset, ox, oy, w, overlayH);
-      // 添加半透明遮罩确保文字可读性
-      ctx.fillStyle = 'rgba(24, 16, 10, 0.3)';
-      ctx.fillRect(ox, oy, w, overlayH);
-    } else {
-      // 备用纯色背景
-      ctx.fillStyle = uiTheme.colors.panel || '#2d3550';
-      ctx.fillRect(ox, oy, w, overlayH);
-    }
+    ctx.fillStyle = COLORS.coralDeep;
+    fillRoundRect(ctx, ox + 24, oy + 22, 34, 3, 2, COLORS.coralDeep);
+    ctx.font = font(10, 700);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('这一幕', ox + 24, oy + 35);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = 'rgba(38,48,65,0.38)';
+    ctx.font = font(9.5, 500);
+    ctx.fillText('CAMPUS JOURNAL', ox + w - 24, oy + 35);
 
-    // 绘制边框
-    ctx.strokeStyle = uiTheme.colors.accent || '#ffd166';
-    ctx.lineWidth = 2;
-    const r = uiTheme.radius?.md || 12;
-    ctx.beginPath();
-    ctx.moveTo(ox + r, oy);
-    ctx.lineTo(ox + w - r, oy);
-    ctx.arcTo(ox + w, oy, ox + w, oy + r, r);
-    ctx.lineTo(ox + w, oy + overlayH - r);
-    ctx.arcTo(ox + w, oy + overlayH, ox + w - r, oy + overlayH, r);
-    ctx.lineTo(ox + r, oy + overlayH);
-    ctx.arcTo(ox, oy + overlayH, ox, oy + overlayH - r, r);
-    ctx.lineTo(ox, oy + r);
-    ctx.arcTo(ox, oy, ox + r, oy, r);
-    ctx.closePath();
-    ctx.stroke();
-
-    // 添加装饰星星
-    const starAsset = this.assets.star;
-    if (starAsset && starAsset.__ready && !starAsset.__failed) {
-      ctx.globalAlpha = 0.3;
-      ctx.drawImage(starAsset, ox + 10, oy + 10, 20, 20);
-      ctx.drawImage(starAsset, ox + w - 30, oy + 10, 20, 20);
-      ctx.globalAlpha = 1;
-    }
-
-    ctx.fillStyle = uiTheme.colors.textMain || '#fff';
-    ctx.font = `${uiTheme.font.body}px sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
+    ctx.fillStyle = COLORS.paperInk;
+    const viewportH = Math.max(lineH, textBottom - textTop);
+    n.maxScroll = Math.max(0, measuredTextHeight - viewportH);
+    this.narrativeScroll = clamp(Number(this.narrativeScroll || 0), 0, n.maxScroll);
 
-    const hasOptions = Array.isArray(n.options) && n.options.length > 0;
-    const btnW = 120;
-    const btnH = 36;
-    const btnX = ox + (w - btnW) / 2;
-    const btnY = oy + overlayH - btnH - 16;
-    const optionRowH = 42;
-    const optionGap = 8;
-    const optionsTotalH = hasOptions ? n.options.length * optionRowH + (n.options.length - 1) * optionGap : 0;
-    const optionTop = oy + overlayH - 16 - optionsTotalH;
-    const statusAreaY = hasOptions ? optionTop - 8 : btnY - 35;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(textLeft - 2, textTop, textW + 4, viewportH);
+    ctx.clip();
+    ctx.font = font(15, 400);
+    ctx.fillStyle = 'rgba(38,48,65,0.86)';
+    this.drawParagraphText(
+      n.text,
+      textLeft,
+      textTop - this.narrativeScroll,
+      textW,
+      lineH,
+      999,
+    );
+    ctx.restore();
 
-    let ty = oy + 18;
-    const maxW = w - 32;
-    const lineH = uiTheme.lineHeight?.body || 19;
-    
-    // 计算文本可用的高度，为状态变化区域预留空间
-    const maxTextHeight = statusAreaY - ty - 10;
-    const maxTextLines = Math.floor(maxTextHeight / lineH);
-    this.drawParagraphText(n.text, ox + 16, ty, maxW, lineH, maxTextLines);
+    if (n.maxScroll > 0) {
+      const trackH = 54;
+      const thumbH = Math.max(18, (viewportH / Math.max(viewportH, measuredTextHeight)) * trackH);
+      const thumbY = textTop + (this.narrativeScroll / n.maxScroll) * (trackH - thumbH);
+      fillRoundRect(ctx, ox + w - 12, textTop + 8, 2, trackH, 1, 'rgba(38,48,65,0.12)');
+      fillRoundRect(ctx, ox + w - 12, thumbY, 2, thumbH, 1, 'rgba(233,105,77,0.6)');
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillStyle = 'rgba(38,48,65,0.42)';
+      ctx.font = font(9.5, 500);
+      ctx.fillText('上下滑动阅读', ox + w / 2, textBottom - 1);
+    }
 
-    // 状态变化标签固定在按钮上方
-    if (n.changes && n.changes.length) {
-      ctx.fillStyle = uiTheme.colors.textSub || '#e7d7c4';
-      ctx.font = `${uiTheme.font.small}px sans-serif`;
-      let cx = ox + 16;
-      let cy = statusAreaY;
-      
-      n.changes.forEach((ch) => {
-        const tw = ctx.measureText(ch.label).width;
-        // 检查是否会超出边界
-        if (cx + tw + 8 > ox + w - 16) {
-          cx = ox + 16;
-          cy += 22;
-          // 如果状态变化太多，可能会超出按钮区域，这里做简单保护
-          if (cy >= btnY - 5) return;
-        }
-        ctx.fillStyle = 'rgba(0,0,0,0.25)';
-        ctx.fillRect(cx - 4, cy - 2, tw + 8, 18);
-        ctx.fillStyle = ch.color || uiTheme.colors.textSub;
-        ctx.fillText(ch.label, cx, cy);
-        cx += tw + 14;
+    if (Array.isArray(n.changes) && n.changes.length) {
+      let chipX = textLeft;
+      const chipY = textBottom - 18;
+      n.changes.slice(0, 3).forEach((change) => {
+        ctx.font = font(10, 600);
+        const label = String(change.label || '');
+        const chipW = Math.min(textW, ctx.measureText(label).width + 18);
+        if (chipX + chipW > textLeft + textW) return;
+        fillRoundRect(ctx, chipX, chipY, chipW, 20, 10, 'rgba(233,105,77,0.12)');
+        ctx.fillStyle = change.color || COLORS.coralDeep;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, chipX + chipW / 2, chipY + 10);
+        chipX += chipW + 6;
       });
     }
 
@@ -6087,52 +6526,57 @@ export default class SimulationMain {
       n.optionRects = [];
       n.options.forEach((op, idx) => {
         const by = optionTop + idx * (optionRowH + optionGap);
-        const bx = ox + 18;
-        const bw = w - 36;
-        ctx.fillStyle = op.variant === 'danger' ? 'rgba(210,80,80,0.88)' : (uiTheme.colors.accent || '#ffd166');
-        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-        ctx.lineWidth = 1;
-        this.fillRoundRect(bx, by, bw, optionRowH, 8);
-        this.strokeRoundRect(bx, by, bw, optionRowH, 8);
-        ctx.fillStyle = '#1a1a2e';
-        ctx.font = `bold ${uiTheme.font.body}px sans-serif`;
+        const bx = ox + 24;
+        const bw = w - 48;
+        const fill = op.variant === 'danger'
+          ? 'rgba(231,110,102,0.16)'
+          : 'rgba(255,138,107,0.14)';
+        fillRoundRect(ctx, bx, by, bw, optionRowH, 13, fill);
+        strokeRoundRect(
+          ctx,
+          bx + 0.5,
+          by + 0.5,
+          bw - 1,
+          optionRowH - 1,
+          13,
+          op.variant === 'danger' ? 'rgba(211,86,80,0.34)' : 'rgba(233,105,77,0.26)',
+          1,
+        );
+        ctx.fillStyle = op.variant === 'danger' ? COLORS.danger : COLORS.coralDeep;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
+        ctx.font = font(13.5, 650);
         ctx.fillText(this.fitText(op.label, bw - 18), bx + bw / 2, by + optionRowH / 2);
         n.optionRects.push({ x: bx, y: by, w: bw, h: optionRowH, onSelect: op.onSelect });
       });
       n.btnRect = null;
     } else {
-      ctx.fillStyle = uiTheme.colors.accent || '#ffd166';
-      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-      ctx.lineWidth = 1;
-      const br = 8;
-      ctx.beginPath();
-      ctx.moveTo(btnX + br, btnY);
-      ctx.lineTo(btnX + btnW - br, btnY);
-      ctx.arcTo(btnX + btnW, btnY, btnX + btnW, btnY + br, br);
-      ctx.lineTo(btnX + btnW, btnY + btnH - br);
-      ctx.arcTo(btnX + btnW, btnY + btnH, btnX + btnW - br, btnY + btnH, br);
-      ctx.lineTo(btnX + br, btnY + btnH);
-      ctx.arcTo(btnX, btnY + btnH, btnX, btnY + btnH - br, br);
-      ctx.lineTo(btnX, btnY + br);
-      ctx.arcTo(btnX, btnY, btnX + br, btnY, br);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#1a1a2e';
-      ctx.font = `bold ${uiTheme.font.body}px sans-serif`;
+      const btnX = ox + 24;
+      const btnW = w - 48;
+      const btnY = actionTop;
+      const gradient = ctx.createLinearGradient(btnX, btnY, btnX + btnW, btnY + btnH);
+      gradient.addColorStop(0, '#F4D28E');
+      gradient.addColorStop(1, COLORS.coralDeep);
+      fillRoundRect(ctx, btnX, btnY, btnW, btnH, 14, gradient);
+      ctx.fillStyle = '#172231';
+      ctx.font = font(14, 700);
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('确定', btnX + btnW / 2, btnY + btnH / 2);
+      ctx.fillText(this.narrativeScroll < n.maxScroll ? '继续阅读' : '翻过这一页', btnX + btnW / 2, btnY + btnH / 2);
       this.narrative.btnRect = { x: btnX, y: btnY, w: btnW, h: btnH };
     }
+    ctx.restore();
   }
 
-  loop() {
+  loop(timestamp = 0) {
+    const now = Number(timestamp || Date.now());
+    if (now - Number(this._lastFrameAt || 0) < 32) {
+      requestAnimationFrame(this.boundLoop);
+      return;
+    }
+    this._lastFrameAt = now;
     this.render();
-    requestAnimationFrame(this.loop.bind(this));
+    requestAnimationFrame(this.boundLoop);
   }
 
   renderRelations() {
@@ -6142,15 +6586,19 @@ export default class SimulationMain {
       return;
     }
     this.drawSceneBackground();
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText('关系网', SCREEN_WIDTH / 2, SAFE_TOP);
+    const light = this.themeMode === 'light';
+    drawSceneKicker(ctx, 15, SAFE_TOP + 5, 'CONNECTIONS', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = light ? COLORS.paperInk : COLORS.ink;
+    ctx.font = font(25, 730);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('身边的人', 15, SAFE_TOP + 18);
     this.ensureNpcUnlockState();
     this.pruneRelationshipUnlocks();
     const scroll = this.relationsScroll || 0;
     const listTop = SAFE_TOP + 72;
-    const listBottom = SCREEN_HEIGHT - 56;
+    const backY = SCREEN_HEIGHT - SAFE_BOTTOM - 42;
+    const listBottom = backY - 10;
     let y = listTop - scroll;
     const roleOrder = { roommate: 0, mentor: 1, romance: 2, senior: 3 };
     const rows = [];
@@ -6170,11 +6618,11 @@ export default class SimulationMain {
       if (ra !== rb) return ra - rb;
       return b.aff - a.aff;
     });
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.textAlign = 'center';
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.56)' : COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.textAlign = 'left';
     if (rows.length) {
-      ctx.fillText(`已结识 ${rows.length} 人`, SCREEN_WIDTH / 2, SAFE_TOP + 28);
+      ctx.fillText(`已结识 ${rows.length} 人 · 关系会随共同经历变化`, 15, SAFE_TOP + 51);
     }
     if (!rows.length) {
       ctx.fillStyle = uiTheme.colors.textSub;
@@ -6183,36 +6631,56 @@ export default class SimulationMain {
       this.wrapText('关系网暂时为空。继续推进周行动并触发剧情，可逐步认识室友与学长姐；选定导师或心动对象后，他们才会出现在这里。', 24, listTop + 8, SCREEN_WIDTH - 48, 20, 5);
       y = listTop + 150;
     }
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, listTop, SCREEN_WIDTH, listBottom - listTop);
+    ctx.clip();
+    const cardX = 15;
+    const cardW = SCREEN_WIDTH - 30;
+    const rowH = 82;
     rows.forEach((row) => {
-      if (y > listBottom || y < listTop - 40) {
-        y += 72;
+      if (y > listBottom || y < listTop - rowH) {
+        y += rowH + 8;
         return;
       }
-      ctx.fillStyle = uiTheme.colors.textMain;
-      ctx.font = `bold ${uiTheme.font.body}px sans-serif`;
+      drawGlassPanel(ctx, cardX, y, cardW, rowH, { radius: 17, strong: true, shadow: false });
+      fillRoundRect(ctx, cardX + 12, y + 13, 38, 38, 19, 'rgba(235,199,121,0.12)');
+      ctx.fillStyle = COLORS.gold;
+      ctx.font = font(15, 700);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(String(row.n.name || '同').slice(0, 1), cardX + 31, y + 32);
+      ctx.fillStyle = COLORS.ink;
+      ctx.font = font(14, 650);
       ctx.textAlign = 'left';
-      ctx.fillText(`${row.n.name}，${row.label}`, 16, y);
-      ctx.fillStyle = uiTheme.colors.textSub;
-      ctx.font = `${uiTheme.font.small}px sans-serif`;
-      this.wrapText(this.fitText(row.line, SCREEN_WIDTH - 40), 16, y + 20, SCREEN_WIDTH - 32, 16, 2);
-      const barY = y + 52;
-      const barW = SCREEN_WIDTH - 32;
-      ctx.fillStyle = uiTheme.colors.panelSoft;
-      ctx.fillRect(16, barY, barW, 6);
-      ctx.fillStyle = uiTheme.colors.good;
-      ctx.fillRect(16, barY, (barW * row.aff) / 100, 6);
-      y += 72;
+      ctx.textBaseline = 'top';
+      ctx.fillText(row.n.name, cardX + 60, y + 12);
+      ctx.fillStyle = COLORS.inkFaint;
+      ctx.font = font(9.5, 500);
+      ctx.fillText(row.label, cardX + 60, y + 32);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = COLORS.inkMuted;
+      ctx.font = font(10, 550);
+      ctx.fillText(`亲近度 ${Math.round(row.aff)}`, cardX + cardW - 13, y + 14);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = COLORS.inkMuted;
+      ctx.font = font(10.3, 430);
+      this.wrapText(this.fitText(row.line, cardW - 78), cardX + 60, y + 49, cardW - 78, 14, 1);
+      fillRoundRect(ctx, cardX + 60, y + rowH - 13, cardW - 78, 3, 1.5, 'rgba(255,255,255,0.08)');
+      fillRoundRect(ctx, cardX + 60, y + rowH - 13, Math.max(2, (cardW - 78) * row.aff / 100), 3, 1.5, row.aff >= 68 ? COLORS.jade : COLORS.gold);
+      y += rowH + 8;
     });
+    ctx.restore();
     const maxScroll = Math.max(0, y - listBottom + scroll);
     this._relationsScrollMax = maxScroll;
     this.drawScrollIndicator(listTop, listBottom - listTop, scroll, maxScroll);
     this.buttons = [
       {
         id: 'relations_back_bottom',
-        x: 16,
-        y: SCREEN_HEIGHT - 52,
-        w: SCREEN_WIDTH - 32,
-        h: 40,
+        x: 15,
+        y: backY,
+        w: SCREEN_WIDTH - 30,
+        h: 42,
         label: '返回',
         variant: 'secondary',
         disabled: false,
@@ -6229,6 +6697,7 @@ export default class SimulationMain {
       title: ending.title || '',
       fullText: chunks.join('\n\n').trim(),
     };
+    this.endingPlaybackScroll = 0;
     this.goScene('ending_playback', { clearPending: true });
   }
 
@@ -6242,6 +6711,7 @@ export default class SimulationMain {
       storyText,
       conditionText,
     };
+    this.achievementPlaybackScroll = 0;
     this.goScene('achievement_playback', { clearPending: true });
   }
 
@@ -6253,36 +6723,66 @@ export default class SimulationMain {
     }
     const ending = endingsCatalog.find((x) => x.id === ep.endingId);
     this.drawSceneBackground();
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.fillText(ep.title || ending?.title || '结局回放', SCREEN_WIDTH / 2, 52);
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.fillText('已解锁结局全文', SCREEN_WIDTH / 2, 78);
-
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `${uiTheme.font.body}px sans-serif`;
+    const light = this.themeMode === 'light';
+    drawSceneKicker(ctx, 15, SAFE_TOP + 5, 'ENDING FILE', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = light ? COLORS.paperInk : COLORS.ink;
+    ctx.font = font(24, 720);
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    this.drawParagraphText(ep.fullText || '暂无结局内容', 20, 102, SCREEN_WIDTH - 40, 22, 14);
-    this.buttons = [];
-    const pad = 16;
-    const w = SCREEN_WIDTH - pad * 2;
-    this.buttons.push({
-      x: pad,
-      y: SCREEN_HEIGHT - 112,
-      w,
-      h: 40,
-      label: '返回图鉴',
-      variant: 'primary',
+    ctx.fillText(this.fitText(ep.title || ending?.title || '结局回放', SCREEN_WIDTH - 30), 15, SAFE_TOP + 18);
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.56)' : COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText('已收录的结局全文', 15, SAFE_TOP + 51);
+
+    const pad = 15;
+    const cardX = pad;
+    const cardW = SCREEN_WIDTH - pad * 2;
+    const cardY = SAFE_TOP + 72;
+    const backY = SCREEN_HEIGHT - SAFE_BOTTOM - 42;
+    const cardH = Math.max(200, backY - cardY - 10);
+    drawPaperPanel(ctx, cardX, cardY, cardW, cardH, { radius: 21 });
+    const textX = cardX + 21;
+    const textW = cardW - 42;
+    const top = cardY + 18;
+    const bottom = cardY + cardH - 18;
+    const scroll = this.endingPlaybackScroll || 0;
+    let penY = top - scroll;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(cardX + 8, cardY + 8, cardW - 16, cardH - 16);
+    ctx.clip();
+    ctx.fillStyle = 'rgba(38,48,65,0.84)';
+    ctx.font = font(13.5, 430);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    penY = this.drawParagraphText(ep.fullText || '暂无结局内容', textX, penY, textW, 22, 999);
+    ctx.restore();
+    const maxScroll = Math.max(0, penY + scroll - bottom);
+    this._endingPlaybackScrollMax = maxScroll;
+    this.endingPlaybackScroll = clamp(scroll, 0, maxScroll);
+    if (maxScroll > 0) {
+      const trackH = cardH - 36;
+      const thumbH = Math.max(22, (trackH / (trackH + maxScroll)) * trackH);
+      const thumbY = top + (this.endingPlaybackScroll / maxScroll) * (trackH - thumbH);
+      fillRoundRect(ctx, cardX + cardW - 11, top, 2, trackH, 1, 'rgba(38,48,65,0.12)');
+      fillRoundRect(ctx, cardX + cardW - 11, thumbY, 2, thumbH, 1, 'rgba(233,105,77,0.55)');
+    }
+    this.buttons = [{
+      id: 'ending_playback_back',
+      x: 15,
+      y: backY,
+      w: SCREEN_WIDTH - 30,
+      h: 42,
+      label: '返回结局档案',
+      variant: 'secondary',
+      disabled: false,
       onClick: () => {
         this.endingPlayback = null;
         this.goScene('gallery', { clearPending: true });
       },
-    });
+    }];
   }
+
 
   renderAchievementPlayback() {
     const ap = this.achievementPlayback;
@@ -6292,58 +6792,71 @@ export default class SimulationMain {
     }
     const achievement = achievementsCatalog.find((x) => x.id === ap.achievementId);
     this.drawSceneBackground();
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `bold ${uiTheme.font.h2}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.fillText(ap.title || achievement?.title || '成就详情', SCREEN_WIDTH / 2, 52);
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `${uiTheme.font.small}px sans-serif`;
-    ctx.fillText('已达成成就详情', SCREEN_WIDTH / 2, 78);
-
-    const cardX = 16;
-    const cardW = SCREEN_WIDTH - 32;
-    const storyY = 102;
-    const storyH = 270;
-    ctx.fillStyle = 'rgba(255,255,255,0.1)';
-    this.fillRoundRect(cardX, storyY, cardW, storyH, 10);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.lineWidth = 1.2;
-    this.strokeRoundRect(cardX, storyY, cardW, storyH, 10);
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `${uiTheme.font.body}px sans-serif`;
+    const light = this.themeMode === 'light';
+    drawSceneKicker(ctx, 15, SAFE_TOP + 5, 'MILESTONE', light ? COLORS.coralDeep : COLORS.gold);
+    ctx.fillStyle = light ? COLORS.paperInk : COLORS.ink;
+    ctx.font = font(24, 720);
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    this.drawParagraphText(ap.storyText || '暂无成就内容', cardX + 12, storyY + 12, cardW - 24, 21, 10);
+    ctx.fillText(this.fitText(ap.title || achievement?.title || '成就详情', SCREEN_WIDTH - 30), 15, SAFE_TOP + 18);
+    ctx.fillStyle = light ? 'rgba(38,48,65,0.56)' : COLORS.inkMuted;
+    ctx.font = font(10.5, 450);
+    ctx.fillText('这一项已经达成', 15, SAFE_TOP + 51);
 
-    const condY = storyY + storyH + 10;
-    const condH = 82;
-    ctx.fillStyle = 'rgba(0,0,0,0.22)';
-    this.fillRoundRect(cardX, condY, cardW, condH, 10);
-    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-    ctx.lineWidth = 1;
-    this.strokeRoundRect(cardX, condY, cardW, condH, 10);
-    ctx.fillStyle = uiTheme.colors.textSub;
-    ctx.font = `bold ${uiTheme.font.small}px sans-serif`;
-    ctx.fillText('达成条件', cardX + 12, condY + 10);
-    ctx.fillStyle = uiTheme.colors.textMain;
-    ctx.font = `${uiTheme.font.small}px monospace`;
-    this.wrapText(ap.conditionText || '暂无条件描述', cardX + 12, condY + 30, cardW - 24, 18, 3);
-
-    this.buttons = [];
-    const pad = 16;
-    const w = SCREEN_WIDTH - pad * 2;
-    this.buttons.push({
-      x: pad,
-      y: SCREEN_HEIGHT - 112,
-      w,
-      h: 40,
-      label: '返回成就列表',
-      variant: 'primary',
+    const cardX = 15;
+    const cardW = SCREEN_WIDTH - 30;
+    const cardY = SAFE_TOP + 72;
+    const backY = SCREEN_HEIGHT - SAFE_BOTTOM - 42;
+    const cardH = Math.max(210, backY - cardY - 10);
+    drawPaperPanel(ctx, cardX, cardY, cardW, cardH, { radius: 21 });
+    const textX = cardX + 21;
+    const textW = cardW - 42;
+    const top = cardY + 18;
+    const bottom = cardY + cardH - 18;
+    const scroll = this.achievementPlaybackScroll || 0;
+    let penY = top - scroll;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(cardX + 8, cardY + 8, cardW - 16, cardH - 16);
+    ctx.clip();
+    ctx.fillStyle = 'rgba(38,48,65,0.84)';
+    ctx.font = font(13.5, 430);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    penY = this.drawParagraphText(ap.storyText || '暂无成就内容', textX, penY, textW, 22, 999);
+    penY += 20;
+    ctx.fillStyle = COLORS.coralDeep;
+    ctx.font = font(10, 700);
+    ctx.fillText('达成条件', textX, penY);
+    penY += 20;
+    ctx.fillStyle = 'rgba(38,48,65,0.68)';
+    ctx.font = font(11, 430);
+    penY = this.wrapText(ap.conditionText || '暂无附加条件', textX, penY, textW, 18, 999);
+    ctx.restore();
+    const maxScroll = Math.max(0, penY + scroll - bottom);
+    this._achievementPlaybackScrollMax = maxScroll;
+    this.achievementPlaybackScroll = clamp(scroll, 0, maxScroll);
+    if (maxScroll > 0) {
+      const trackH = cardH - 36;
+      const thumbH = Math.max(22, (trackH / (trackH + maxScroll)) * trackH);
+      const thumbY = top + (this.achievementPlaybackScroll / maxScroll) * (trackH - thumbH);
+      fillRoundRect(ctx, cardX + cardW - 11, top, 2, trackH, 1, 'rgba(38,48,65,0.12)');
+      fillRoundRect(ctx, cardX + cardW - 11, thumbY, 2, thumbH, 1, 'rgba(233,105,77,0.55)');
+    }
+    this.buttons = [{
+      id: 'achievement_playback_back',
+      x: 15,
+      y: backY,
+      w: SCREEN_WIDTH - 30,
+      h: 42,
+      label: '返回成就',
+      variant: 'secondary',
+      disabled: false,
       onClick: () => {
         this.achievementPlayback = null;
         this.goScene('achievements', { clearPending: true });
       },
-    });
+    }];
   }
+
 }

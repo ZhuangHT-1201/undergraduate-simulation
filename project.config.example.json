@@ -37,7 +37,38 @@
     "miniprogram": { "current": -1, "list": [] }
   },
   "simulatorPluginLibVersion": {},
-  "packOptions": { "ignore": [], "include": [] },
+  "packOptions": {
+    "ignore": [
+      { "type": "folder", "value": "tools" },
+      { "type": "folder", "value": ".cursor" },
+      { "type": "folder", "value": "js/base" },
+      { "type": "folder", "value": "js/runtime" },
+      { "type": "folder", "value": "js/libs" },
+      { "type": "file", "value": "js/databus.js" },
+      { "type": "file", "value": "README.md" },
+      { "type": "file", "value": "游戏介绍.md" },
+      { "type": "file", "value": "ASSETS_NOTICE.md" },
+      { "type": "file", "value": "LICENSE" },
+      { "type": "file", "value": "apply_fix.js" },
+      { "type": "file", "value": "temp_fix.js" },
+      { "type": "file", "value": "fix_talent_card.bat" },
+      { "type": "file", "value": "images/generated/ui_panel_bg.jpg" },
+      { "type": "file", "value": "images/generated/ui_button_primary.jpg" },
+      { "type": "file", "value": "images/generated/manifest.json" },
+      { "type": "file", "value": "config/v1/achievements.json" },
+      { "type": "file", "value": "config/v1/actions.json" },
+      { "type": "file", "value": "config/v1/audioConfig.json" },
+      { "type": "file", "value": "config/v1/endings.json" },
+      { "type": "file", "value": "config/v1/events.json" },
+      { "type": "file", "value": "config/v1/items.json" },
+      { "type": "file", "value": "config/v1/npcs.json" },
+      { "type": "file", "value": "config/v1/randomEvents.json" },
+      { "type": "file", "value": "config/v1/relationships.json" },
+      { "type": "file", "value": "config/v1/semesterSummaries.json" },
+      { "type": "file", "value": "config/v1/uiTheme.json" }
+    ],
+    "include": []
+  },
   "isGameTourist": false,
   "editorSetting": {}
 }

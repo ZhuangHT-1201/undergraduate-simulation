@@ -58,7 +58,7 @@
   {
     "id": "ach_civil_track",
     "title": "申论素材库收藏家",
-    "description": "申论素材、面试礼仪与编制结局在同一条时间线上汇合，你终于把「上岸」从梗变成存档。",
+    "description": "申论、面试和一次次等待终于汇到一起。你拿到了编制，也真正开始适应这份工作的日常。",
     "hint": "结局为 end_civil_pass 或 end_teacher_staff",
     "conditions": {
       "endingIn": [
@@ -385,7 +385,7 @@
   {
     "id": "ach_story_explorer",
     "title": "剧情探索者",
-    "description": "考证、竞赛、科研你都沾过边，像刻意把校园 DLC 全图点亮了一角。",
+    "description": "考证、竞赛和科研你都试过，未必每一条都走得很远，但这些经历让你更清楚自己适合什么。",
     "hint": "certProgress>=1、contestProgress>=1、researchProgress>=1",
     "conditions": {
       "flags": [
@@ -560,8 +560,8 @@
   },
   {
     "id": "ach_crush_line_open",
-    "title": "心动副本已加载",
-    "description": "恋爱承诺线正式加载：心动不再是随机事件，而是会分叉的主线任务。",
+    "title": "心动开始有了名字",
+    "description": "你们把好感说开，关系正式确定下来。之后要面对的不只是心动，还有时间、边界和共同计划。",
     "hint": "romanceCommitted",
     "conditions": {
       "flags": [
@@ -576,7 +576,7 @@
   {
     "id": "ach_crush_skipped",
     "title": "暗恋未遂（自愿跳过）",
-    "description": "你主动跳过恋情开局，仍顺利毕业——把精力留给绩点、实习或自我升级。",
+    "description": "你没有开始一段恋爱，而是把精力留在课业、实习和自己的生活上，也顺利走到了毕业。",
     "hint": "romanceSkipped 且非退学",
     "conditions": {
       "flags": [
@@ -591,7 +591,7 @@
   {
     "id": "ach_npc_events_light",
     "title": "关系网浅尝",
-    "description": "校园里几个 NPC 的专属剧情被你轻轻触发，关系网从陌生变成有回声。",
+    "description": "你参与了几位同学各自的故事，关系从陌生变成了能互相打招呼、继续聊下去的熟悉。",
     "hint": "npcEventHits 汇总 >= 2",
     "conditions": {
       "flags": [
@@ -620,8 +620,8 @@
   },
   {
     "id": "ach_npc_events_whale",
-    "title": "NPC 剧情收割机",
-    "description": "NPC 互动计数爆表，你几乎把可遇见的人都聊成了「熟脸模组」。",
+    "title": "很多人都记得你",
+    "description": "你和许多人有了具体交集，走到食堂或教学楼时，总有人愿意停下来和你聊两句。",
     "hint": "npcEventHits 汇总 >= 12",
     "conditions": {
       "flags": [
@@ -757,7 +757,7 @@
   },
   {
     "id": "ach_off_campus_adult",
-    "title": "外宿早熟玩家",
+    "title": "第一次独自租房",
     "description": "外宿生活教会你水电、通勤与独处，压力却没失控——早熟但不脆皮。",
     "hint": "offCampus + 压力<=70",
     "conditions": {
@@ -815,7 +815,7 @@
   {
     "id": "ach_civil_marathon",
     "title": "考公里程碑 marathon",
-    "description": "考公路线走长程，刷题、模考与材料准备像赛季一样一季季推进。",
+    "description": "考公路线拉得很长，刷题、模考和材料准备占去了一学期又一学期。",
     "hint": "civilTrack + civilProgress>=2",
     "conditions": {
       "flags": [
@@ -834,7 +834,7 @@
   {
     "id": "ach_teach_track_shadow",
     "title": "站上讲台预演",
-    "description": "学生工作与考编意向并行，你已经在讲台上预演过「老师」这个皮肤。",
+    "description": "学生工作和考编准备同时推进，你已经在讲台上体验过被学生认真注视的感觉。",
     "hint": "studentWork>=2 且 publicInstitutionTrack",
     "conditions": {
       "flags": [
@@ -916,7 +916,7 @@
   {
     "id": "ach_mentor_letter_runner",
     "title": "推荐信集邮",
-    "description": "导师信件类互动被解锁，推荐信从传说变成可以追的进度条。",
+    "description": "你开始认真争取推荐信，也明白了它需要长时间相处和具体成果作为基础。",
     "hint": "mentorUnlocked",
     "conditions": {
       "flags": [
@@ -973,7 +973,7 @@
   {
     "id": "ach_postgrad_lock_in",
     "title": "推免锁档成功",
-    "description": "推免锁档成功且绩点漂亮，深造副本从「可能」变成系统通知里的确定项。",
+    "description": "推免资格终于确定，绩点也足够漂亮。继续深造从模糊的愿望变成了下一阶段的计划。",
     "hint": "postgradLockedIn + gpa>=3.5",
     "conditions": {
       "flags": [
@@ -1076,8 +1076,8 @@
   },
   {
     "id": "ach_end_npc_event_chain_master",
-    "title": "结局：关系网高密玩家",
-    "description": "高密 NPC 互动结局落地，校园像开放世界，而你几乎清完了人际支线。",
+    "title": "结局：被很多人记住的人",
+    "description": "你和许多同学都有过深入交流，毕业时才发现，校园里到处都有能叫出你名字的人。",
     "hint": "结局 end_npc_event_chain_master",
     "conditions": {
       "endingIn": [
@@ -1150,7 +1150,7 @@
   {
     "id": "ach_npc_events_1",
     "title": "关系网触电",
-    "description": "第一次触发 NPC 专属事件，像关系网里亮了一盏小灯：原来路人也有剧本。",
+    "description": "你第一次真正参与某位同学的故事。原本只是点头之交的人，也有自己的难题和选择。",
     "hint": "npcEventHits >= 1",
     "conditions": {
       "flags": [
@@ -1165,7 +1165,7 @@
   {
     "id": "ach_npc_events_3",
     "title": "关系网加厚",
-    "description": "三次 NPC 专属互动后，校园地图开始对你显示隐藏对话选项。",
+    "description": "几次深入交流之后，你发现校园里的关系开始互相连接，许多话题不再只停在寒暄。",
     "hint": "npcEventHits >= 3",
     "conditions": {
       "flags": [
@@ -1180,7 +1180,7 @@
   {
     "id": "ach_npc_events_5",
     "title": "关系网主线",
-    "description": "五条人际支线被你串联，剧情密度从「偶遇」升级成「连载」。",
+    "description": "你和五个人的关系持续有了后续，偶遇慢慢变成了会互相惦记的联系。",
     "hint": "npcEventHits >= 5",
     "conditions": {
       "flags": [
@@ -1195,7 +1195,7 @@
   {
     "id": "ach_roommate_night",
     "title": "室友夜谈备份",
-    "description": "宿舍向周行动累计到位，夜谈、值日或寝室副本都成了可复盘记忆。",
+    "description": "宿舍里的夜谈、值日和共同生活被你反复记住，也成了大学生活最具体的一部分。",
     "hint": "dormProgress >= 1 且用了室友夜谈",
     "conditions": {
       "flags": [
@@ -1225,7 +1225,7 @@
   {
     "id": "ach_off_campus",
     "title": "外宿通勤勇士",
-    "description": "外宿路线通关：通勤、房租与独居噪声都被你写进毕业存档的备注栏。",
+    "description": "外宿生活走到毕业，通勤、房租和独居噪声都成了你真正学会处理的日常。",
     "hint": "offCampus",
     "conditions": {
       "flags": [
@@ -1269,8 +1269,8 @@
   },
   {
     "id": "ach_postgrad_flag",
-    "title": "保研副本通关",
-    "description": "保研/推免相关旗标锁定，深造副本进入「待启动」而不是「待许愿」。",
+    "title": "推免资格到手",
+    "description": "推免资格已经确定，继续深造不再只是一个愿望。",
     "hint": "postgradLockedIn",
     "conditions": {
       "flags": [

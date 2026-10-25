@@ -56,16 +56,16 @@ function describeSemesterPace(total) {
 
 function describePressure(st) {
   const p = clampNumber(st.pressure, 50);
-  if (p >= 72) return '压力一直顶在弦上，你是硬扛过来的';
-  if (p >= 55) return '忙起来的时候像上了发条';
-  if (p <= 32) return '整体比较从容，很少被 deadline 追着跑';
-  return '起伏有，但大体还能自己掌舵';
+  if (p >= 72) return '压力多数时候偏高，你靠硬撑走完了这一段';
+  if (p >= 55) return '忙起来的几周节奏很紧';
+  if (p <= 32) return '整体比较从容，很少被截止日期追着跑';
+  return '有起伏，但大体还能自己安排节奏';
 }
 
 function describeHealth(st) {
   const h = clampNumber(st.health, 50);
-  if (h >= 78) return '身体状态跟得上你的野心';
-  if (h <= 38) return '身体曾亮过黄灯，值得下学期多留一点余地';
+  if (h >= 78) return '身体状态一直跟得上日程';
+  if (h <= 38) return '身体亮过黄灯，下学期需要多留一点余地';
   return '作息不算完美，也还撑得住';
 }
 
@@ -132,21 +132,21 @@ export function inferSemesterTendencyTags(run, completedSemesterIndex) {
 }
 
 const TAG_PORTRAIT = {
-  卷王: '你把学期当成副本在通关，细节控得很紧',
-  佛系: '嘴上随缘，关键节点还是会伸手捞一把',
-  学业上行: '教室和自习室占了你不少心神',
-  社牛: '人脉像路由器，连接比独处更顺手',
-  恋爱: '感情线悄悄挤进了日程表',
-  创业: '脑子里总有一条「要是能成」的支线',
-  考公: '稳定感在你心里分量越来越重',
-  科研: '实验记录和组会邮件成了背景音',
-  实习: '职场气息开始渗进校园日常',
-  养生: '你知道状态才是长跑的底牌',
-  搞钱: '钱包和野心在同一张表上博弈',
-  恋家: '远方与故乡在消息栏里来回拉扯',
-  拖延: 'DDL 仍是第一生产力，只是触发略晚',
-  兼职: '课余时间被兼职切成好几块',
-  日常: '没有夸张人设，但日子真实可感',
+  卷王: '你把很多时间留给了课业和目标，也真正感到了疲惫',
+  佛系: '你给自己留了呼吸的余地，要紧的节点并没有松手',
+  学业上行: '教室和自习室占据了你不少时间',
+  社牛: '你更愿意走出宿舍，和不同的人产生交集',
+  恋爱: '一段关系进入了你的日常，也改变了时间的分配',
+  创业: '你开始把一个念头变成能拿给别人看的作品',
+  考公: '你对稳定生活的想象变得更具体',
+  科研: '实验、文献和讨论成了反复出现的内容',
+  实习: '你开始用职场标准整理自己的经历',
+  养生: '你比过去更在意睡眠和身体状态',
+  搞钱: '你开始认真计算收入和支出',
+  恋家: '远方和故乡在电话里来回出现',
+  拖延: '截止日期仍会推着你向前，只是常常来得晚一点',
+  兼职: '课余时间被工作切成了几块',
+  日常: '没有夸张的标签，但每一天都有具体的重量',
 };
 
 /**
@@ -197,18 +197,18 @@ function pickMemorableLogLines(run, completedSemesterIndex, resolveEventTitle, m
  * 内置学期总结模板（标题 + 正文，仅 {name} {topAction} 占位，不含次数）
  */
 export const semesterSummaryTemplates = [
-  { id: 'sm_calm', tags: ['佛系', '日常'], title: '从容的学期节拍', body: '{name}这学期像在慢镜头里走路，{topAction}偶尔露面，更多时候是在和自己和解。' },
-  { id: 'sm_grind', tags: ['卷王', '学业上行'], title: '高压下的通关感', body: '别人喊累的时候，{name}还在把 {topAction} 当成主战场——这学期靠一股韧劲撑过来了。' },
-  { id: 'sm_love', tags: ['恋爱'], title: '心动挤进课表', body: '{name}的恋爱线和任务线撞过车，{topAction} 成了夹缝里仍能抓住的日常。' },
-  { id: 'sm_social', tags: ['社牛'], title: '人脉地图被点亮', body: '{name}这学期社交能量不低，{topAction} 像是固定聚会前的热身动作。' },
-  { id: 'sm_money', tags: ['搞钱', '兼职', '恋家'], title: '钱包与野心的拉锯', body: '{name}对钱的嗅觉变灵敏了，{topAction} 里藏着不少「先活下去」的小算盘。' },
-  { id: 'sm_health', tags: ['养生'], title: '状态优先的学期', body: '{name}开始把身体当回事，{topAction} 不再只是消遣，更像给下周存电。' },
-  { id: 'sm_delay', tags: ['拖延'], title: 'DDL 仍是第一生产力', body: '{name}拖延症也在进化——{topAction} 总在截止线前突然变得重要起来。' },
-  { id: 'sm_research', tags: ['科研'], title: '实验室点灯季', body: '{name}被数据和组会牵着走，{topAction} 是喘口气时仍会回来的据点。' },
-  { id: 'sm_job', tags: ['实习', '考公', '创业'], title: '面向未来的预习', body: '{name}这学期明显在往毕业后挪重心，{topAction} 是简历之外仍在打磨的基本功。' },
-  { id: 'sm_dorm', tags: ['日常', '恋家'], title: '寝室新闻联播', body: '{name}的寝室像小型剧场，{topAction} 则是幕间休息时的固定节目。' },
-  { id: 'sm_night', tags: ['卷王', '拖延'], title: '闭馆音乐常客', body: '图书馆的灯比路灯更熟 {name} 这张脸，{topAction} 常出现在闭馆前的最后一小时。' },
-  { id: 'sm_balance', tags: ['学业上行', '社牛'], title: '卷与玩的平衡术', body: '{name}在「要成绩」和「要生活」之间走钢丝，{topAction} 是平衡木上的落脚点。' },
+  { id: 'sm_calm', tags: ['佛系', '日常'], title: '慢下来的这一学期', body: '{name}这学期没有把日程塞满，{topAction}偶尔出现，更多时候，你在给生活留一点余地。' },
+  { id: 'sm_grind', tags: ['卷王', '学业上行'], title: '把时间交给了课表', body: '{name}这学期把不少时间放在课业和目标上，{topAction}是常见节奏，疲惫也是真的。' },
+  { id: 'sm_love', tags: ['恋爱'], title: '心动进入日常', body: '{name}开始把另一个人放进日程，{topAction}前后常会多出一句问候或一次见面。' },
+  { id: 'sm_social', tags: ['社牛'], title: '认识了很多名字', body: '{name}这学期更愿意走出去，{topAction}之后常能续上一顿饭或一段闲聊。' },
+  { id: 'sm_money', tags: ['搞钱', '兼职', '恋家'], title: '认真算了算生活费', body: '{name}开始关注每一笔支出，{topAction}之外，也多了几次关于预算和未来的盘算。' },
+  { id: 'sm_health', tags: ['养生'], title: '先把状态照顾好', body: '{name}开始把睡眠和身体放在前面，{topAction}不只是消遣，也是让下周继续运转的准备。' },
+  { id: 'sm_delay', tags: ['拖延'], title: '和截止日期反复交手', body: '{name}的计划改过几次日期，{topAction}总在最后关头变得格外重要。' },
+  { id: 'sm_research', tags: ['科研'], title: '实验室的灯亮到很晚', body: '{name}花了不少时间和数据、文献打交道，{topAction}是暂时离开屏幕后仍会想起的安静片段。' },
+  { id: 'sm_job', tags: ['实习', '考公', '创业'], title: '开始为毕业以后做准备', body: '{name}这学期把一部分注意力移向未来，{topAction}之外，也在整理经历和方向。' },
+  { id: 'sm_dorm', tags: ['日常', '恋家'], title: '宿舍里的小事', body: '{name}的日常由很多小事组成，{topAction}是其中反复出现的一段，也让生活更有实感。' },
+  { id: 'sm_night', tags: ['卷王', '拖延'], title: '图书馆闭馆之前', body: '这学期有不少夜晚在书桌前结束，{topAction}常出现在最后一小时，第二天的疲惫也随之而来。' },
+  { id: 'sm_balance', tags: ['学业上行', '社牛'], title: '学习和生活之间', body: '{name}试着兼顾成绩和关系，{topAction}成了两边之间相对稳定的落脚点。' },
 ];
 
 /**
@@ -231,7 +231,7 @@ export function buildDefaultSemesterSummary(run, completedSemesterIndex) {
     `${playerName}的第 ${semNo} 学期告一段落。整体节奏${pace}，${portrait}。`,
   ];
   if (habit) {
-    lines.push(`你最常落下的脚印在「${topAction}」——${habit}。`);
+    lines.push(`你最常做的是「${topAction}」，${habit}。`);
   }
   const vibes = [describeGpa(st), describePressure(st), describeHealth(st), describeMoney(st)].filter(Boolean);
   if (vibes.length) {
@@ -318,7 +318,7 @@ export function buildSemesterSummaryPopupText(run, completedSemesterIndex, templ
     memorable.forEach((title) => lines.push(`· ${title}`));
   }
   lines.push('');
-  lines.push('下一学期的钟声快响了。收拾心情，继续向前。');
+  lines.push('学期结束了，新的课表已经在等你。');
   return lines.join('\n');
 }
 

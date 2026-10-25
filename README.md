@@ -65,9 +65,12 @@ Common scripts (run from the repo root):
 | `tools/polish-chinese-copy.mjs` | Batch polish in-game narrative copy |
 | `tools/run-sim-regression.mjs` | Lightweight regression simulation |
 
-### Ads (Optional)
+### Ads
 
-Configure rewarded/interstitial ads in `js/ads/adAdapter.js`. Ads are **disabled** by default for local and open-source builds.
+Rewarded and interstitial ad units are configured in `js/ads/adAdapter.js`. The game only calls the WeChat ad APIs when they exist, so browser previews and unsupported clients continue to run normally.
+
+- Interstitial ads are considered only after an even-numbered semester summary closes, with a persisted semester marker and a six-minute cooldown.
+- Rewarded videos are opt-in. The “emergency recovery” offer appears only when health or pressure reaches a warning line, grants health +8 / pressure −8 after a completed view, and is limited to once per semester.
 
 ---
 
@@ -81,6 +84,7 @@ Configure rewarded/interstitial ads in `js/ads/adAdapter.js`. Ads are **disabled
 │   ├── main.js             # Main loop, scenes, rendering
 │   ├── core/               # Event engine, saves, achievements, semester summary
 │   ├── data/catalog.js     # Runtime data (synced via tools)
+│   ├── ui/                 # Responsive Canvas theme, icons, and background renderer
 │   ├── ads/                # Ad adapter
 │   └── audio/
 ├── images/                 # UI, CG, avatars

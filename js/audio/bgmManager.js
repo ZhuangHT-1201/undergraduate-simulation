@@ -14,6 +14,7 @@ export default class BgmManager {
     this.currentBgmName = '';
     this.currentScene = '';
     this.audioMap = {};
+    this.tapAudio = null;
     this.sceneToBgm = {
       menu: 'main',
       create_role: 'main',
@@ -50,6 +51,11 @@ export default class BgmManager {
       audio.volume = this.volume;
       this.audioMap[bgmName] = audio;
     });
+    if (wx.createInnerAudioContext) {
+      this.tapAudio = wx.createInnerAudioContext();
+      this.tapAudio.src = 'audio/ui_tap.mp3';
+      this.tapAudio.volume = Math.min(0.16, this.volume * 0.24);
+    }
   }
 
   playBgm(bgmName, force = false) {
@@ -86,12 +92,25 @@ export default class BgmManager {
     this.currentScene = '';
   }
 
+  playTap() {
+    if (this.muted || !this.tapAudio) return;
+    try {
+      this.tapAudio.stop();
+      if (typeof this.tapAudio.seek === 'function') this.tapAudio.seek(0);
+      this.tapAudio.volume = Math.min(0.16, Math.max(0.025, this.volume * 0.24));
+      this.tapAudio.play();
+    } catch (e) {
+      // Ignore audio failures; haptic and visual feedback remain available.
+    }
+  }
+
   setVolume(v) {
     const next = Math.max(0, Math.min(1, Number(v)));
     this.volume = next;
     Object.keys(this.audioMap).forEach((name) => {
       this.audioMap[name].volume = next;
     });
+    if (this.tapAudio) this.tapAudio.volume = Math.min(0.16, Math.max(0.025, next * 0.24));
   }
 
   toggleMute() {

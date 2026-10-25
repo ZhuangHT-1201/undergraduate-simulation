@@ -36,6 +36,8 @@ function createDefaultMeta() {
     unlockedCgs: [],
     cgUnlockOrder: [],
     unlockedBgms: ['bgm_main_theme'],
+    lastInterstitialAt: 0,
+    lastInterstitialSemester: 0,
   };
 }
 
