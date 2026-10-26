@@ -1,8 +1,8 @@
-# 本科生的四年日记
+# Undergraduate Simulation
 
-### Undergraduate Simulation
+### Four Years, One Campus
 
-一款原生 Canvas + ES Modules 开发的微信小游戏。选择学校与专业，在八个学期里安排每周行动、处理突发事件、经营关系，并走向不同的毕业结局。
+A native Canvas + ES Modules WeChat Mini Game about four years of college life. Choose a school and major, plan each week, respond to unexpected events, build relationships, and discover where your choices lead.
 
 [![WeChat Mini Game](https://img.shields.io/badge/WeChat-Mini%20Game-07C160?logo=wechat&logoColor=white)](#)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES%20Modules-F7DF1E?logo=javascript&logoColor=111)](#)
@@ -13,138 +13,129 @@
 
 <p align="center">
   <a href="docs/screenshots/main-menu.webp">
-    <img src="docs/screenshots/main-menu.webp" width="330" alt="本科生的四年日记主菜单">
+    <img src="docs/screenshots/main-menu.webp" width="330" alt="Undergraduate Simulation main menu">
   </a>
 </p>
 
-<p align="center"><sub>四年、八个学期，以及每一次真正改变方向的选择。</sub></p>
+<p align="center"><sub>Four years, eight semesters, and every choice that changes direction.</sub></p>
 
-> 游戏中的学校、人物与故事均为虚构，不代表或关联任何现实院校。
+> All schools, characters, and storylines in the game are fictional and are not affiliated with any real institution.
 
 ---
 
-## 游戏预览
+## Preview
 
 <p align="center">
   <a href="docs/screenshots/character-creation.webp">
-    <img src="docs/screenshots/character-creation.webp" width="45%" alt="角色创建：姓名、难度与初始特质">
+    <img src="docs/screenshots/character-creation.webp" width="45%" alt="Character creation with name, difficulty, and starting trait">
   </a>
   <a href="docs/screenshots/weekly-planning.webp">
-    <img src="docs/screenshots/weekly-planning.webp" width="45%" alt="每周行动与状态面板">
+    <img src="docs/screenshots/weekly-planning.webp" width="45%" alt="Weekly planning screen with player stats">
   </a>
 </p>
 
 <p align="center">
   <a href="docs/screenshots/story-scene.webp">
-    <img src="docs/screenshots/story-scene.webp" width="45%" alt="可完整滚动的剧情阅读页">
+    <img src="docs/screenshots/story-scene.webp" width="45%" alt="Scrollable story scene">
   </a>
   <a href="docs/screenshots/moment-gallery.webp">
-    <img src="docs/screenshots/moment-gallery.webp" width="45%" alt="校园影像图鉴">
+    <img src="docs/screenshots/moment-gallery.webp" width="45%" alt="Campus moment gallery">
   </a>
 </p>
 
 <p align="center">
   <a href="docs/screenshots/ending.webp">
-    <img src="docs/screenshots/ending.webp" width="45%" alt="毕业结局与四年回顾">
+    <img src="docs/screenshots/ending.webp" width="45%" alt="Graduation ending and four-year recap">
   </a>
 </p>
 
 ---
 
-## 核心特色
+## Highlights
 
-- **完整四年流程**：8 个学期、每周行动、学期目标与阶段事件。
-- **可读的状态系统**：绩点、健康、压力、社交、能力与生活费共同影响路线。
-- **分支叙事**：学校、专业、选择、关系与随机事件会改变可触发的内容和结局。
-- **校园生活模拟**：社团、兼职、科研、实习、考公、恋爱、宿舍关系与日常活动。
-- **收集系统**：多结局图鉴、成就、校园 CG、原声音乐与可解锁学校/专业。
-- **移动端交互**：安全区适配、触控滚动、按压反馈、轻触震动、场景过渡与点击音。
-- **原生视觉**：响应式 Canvas 校园插画、统一图标与玻璃材质，不依赖低清 UI 贴图。
-- **数据驱动**：事件、行动、结局、成就、NPC 与物品均可通过配置文件维护。
+- **A complete four-year run**: eight semesters, weekly actions, semester goals, and milestone events.
+- **Readable progression**: GPA, health, pressure, social life, skills, and money shape the journey together.
+- **Branching narrative**: school, major, relationships, random events, and player choices unlock different paths and endings.
+- **Campus life simulation**: clubs, part-time work, research, internships, civil service, romance, dorm life, and everyday activities.
+- **Collection systems**: ending archive, achievements, campus CG gallery, soundtrack collection, and unlockable schools and majors.
+- **Mobile-first interaction**: safe-area layouts, touch scrolling, press feedback, haptics, scene transitions, and subtle tap sounds.
+- **Native visual presentation**: responsive Canvas scenery, custom icons, and glass surfaces without low-resolution interface overlays.
+- **Data-driven content**: events, actions, endings, achievements, characters, and items are maintained through configuration files.
 
-## 在线体验
+## Play Online
 
-在微信小游戏商店搜索 **本科生的四年日记**。
+Search for **Undergraduate's Four-Year Diary** in the WeChat Mini Game store. The in-game interface is currently in Simplified Chinese.
 
-> 商店名称与版本以微信发布页为准。
+> The store title and available version are determined by the WeChat release page.
 
-## 本地运行
+## Local Development
 
-### 环境要求
+### Requirements
 
-- [微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)
-- Node.js 18+（仅运行内容同步与回归工具时需要）
+- [WeChat DevTools](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)
+- Node.js 18+ (only required for content sync and regression tools)
 
-### 导入项目
+### Import the Project
 
-1. 克隆本仓库。
-2. 复制项目配置并填写自己的小游戏 AppID：
+1. Clone this repository.
+2. Copy the project config template and add your Mini Game AppID:
 
    ```powershell
    Copy-Item project.config.example.json project.config.json
    ```
 
-3. 用微信开发者工具导入仓库根目录，项目类型选择 **小游戏**。
-4. 在模拟器或真机中编译预览。
+3. Open WeChat DevTools, import the repository root, and select **Mini Game** as the project type.
+4. Compile and preview in the simulator or on a device.
 
-### 修改游戏内容
+### Edit Game Content
 
-1. 修改 `config/v1/*.json`，全局规则位于 `config/v1/rules.js`。
-2. 将内容同步到运行时目录：
+1. Edit content in `config/v1/*.json`; shared rules live in `config/v1/rules.js`.
+2. Sync the JSON files into the runtime catalog:
 
    ```bash
    node tools/sync-catalog-from-json.mjs
    ```
 
-3. 重新编译微信小游戏。
+3. Rebuild the Mini Game in WeChat DevTools.
 
-常用开发脚本：
+Useful development scripts:
 
-| 脚本 | 用途 |
+| Script | Purpose |
 | --- | --- |
-| `tools/sync-catalog-from-json.mjs` | 同步 JSON 内容到 `js/data/catalog.js` |
-| `tools/polish-chinese-copy.mjs` | 批量清理重复表达与统一中文文案 |
-| `tools/run-sim-regression.mjs` | 运行多局数值与结局分布回归 |
-| `tools/test-ads.mjs` | 验证广告回调、失败重试与奖励接口 |
+| `tools/sync-catalog-from-json.mjs` | Sync JSON content into `js/data/catalog.js` |
+| `tools/polish-chinese-copy.mjs` | Normalize repeated phrasing and polish Chinese copy |
+| `tools/run-sim-regression.mjs` | Run multi-run balance and ending-distribution checks |
 
-## 广告
-
-广告适配器位于 `js/ads/adAdapter.js`，仅在微信广告 API 可用时初始化，加载失败不会阻塞游戏。
-
-- 插屏广告只在一学期总结关闭后低频尝试展示，并有学期去重与冷却限制。
-- 激励视频由玩家主动选择观看。健康或压力进入警戒状态时可使用一次“应急补给”，完整观看后恢复状态，每学期限一次。
-
-## 项目结构
+## Project Structure
 
 ```text
-├── game.js                 # 小游戏入口
+├── game.js                 # Mini Game entry
 ├── game.json
-├── config/v1/              # 规则与游戏内容
+├── config/v1/              # Rules and game content
 ├── js/
-│   ├── main.js             # 场景、交互、主循环与界面编排
-│   ├── core/               # 事件引擎、存档、成就、关系与学期总结
-│   ├── data/catalog.js     # 运行时内容目录
-│   ├── ui/                 # Canvas 主题、图标与背景渲染
-│   ├── ads/                # 微信广告适配
-│   └── audio/              # 音乐与界面音效
-├── images/                 # CG、头像与分享资源
-├── audio/                  # BGM 与点击音
-└── docs/screenshots/       # README 展示截图，不进入小游戏包
+│   ├── main.js             # Scenes, interaction, main loop, and UI composition
+│   ├── core/               # Event engine, saves, achievements, relationships
+│   ├── data/catalog.js     # Runtime content catalog
+│   ├── ui/                 # Canvas theme, icons, and background rendering
+│   └── audio/              # Music and interface sound effects
+├── images/                 # CG, avatars, and share assets
+├── audio/                  # BGM and tap sound
+└── docs/screenshots/       # README screenshots, excluded from the Mini Game bundle
 ```
 
-## 贡献
+## Contributing
 
-欢迎提交程序改进与 Bug 修复。叙事文本、数值设计、图片和音频的使用与修改请先阅读 [ASSETS_NOTICE.md](ASSETS_NOTICE.md)。
+Program improvements, compatibility fixes, and bug reports are welcome. Please read [ASSETS_NOTICE.md](ASSETS_NOTICE.md) before using or modifying narrative text, numerical design, images, or audio.
 
-修改 `config/v1` 中的内容后，请运行 `node tools/sync-catalog-from-json.mjs` 并一并提交 `js/data/catalog.js`。
+After changing content under `config/v1`, run `node tools/sync-catalog-from-json.mjs` and include the updated `js/data/catalog.js` in your change.
 
-## 许可证
+## License
 
-- **程序代码**：[MIT License](LICENSE)
-- **叙事、游戏设计数据、图片与音频**：[All Rights Reserved](ASSETS_NOTICE.md)
+- **Program code**: [MIT License](LICENSE)
+- **Narrative, game design data, images, and audio**: [All Rights Reserved](ASSETS_NOTICE.md)
 
 ---
 
-## 作者
+## Author
 
 [ZhuangHT-1201](https://github.com/ZhuangHT-1201)
